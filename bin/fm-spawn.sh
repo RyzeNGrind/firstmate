@@ -104,7 +104,7 @@
 #   profile consultation. A --secondmate spawn is exempt and resolves the SECONDMATE
 #   harness (config/secondmate-harness -> config/crew-harness -> own), so the
 #   secondmate-vs-crewmate split is DURABLE across every respawn (recovery,
-#   /updatefirstmate, restart). A bare adapter name (claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse)
+#   /updatefirstmate, restart). A bare adapter name (claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini)
 #   overrides it for this spawn (either kind). A non-flag string containing
 #   whitespace is treated as a RAW launch command - the escape hatch for verifying
 #   new adapters. For pi and pi-signed, fm-spawn resolves the selected executable
@@ -178,6 +178,12 @@
 # muse installs no hook at all - its plugin engine is off in the default build - so
 # it writes state/<id>.muse-session to bind the pane to muse's own session event
 # log; muse is crewmate/scout only and is refused for --secondmate.
+# gemini installs no wiring at all: its AfterAgent hook dialect is
+# bundle-verified but has never been observed firing live (gemini 0.58.0,
+# 2026-09-07 - the installed API key's project quota blocked every model turn),
+# so the adapter runs with a DEGRADED turn-end contract (pane supervision only)
+# rather than a faked hook; gemini is crewmate/scout only and is refused for
+# --secondmate.
 # cursor installs no per-task hook either: it writes state/<id>.cursor-session to
 # bind the pane to cursor's own conversation transcript (projects root, the exact
 # workspace path cursor records in .workspace-trusted, and the conversations that
@@ -1166,7 +1172,7 @@ if [ "$RELAUNCH" -eq 1 ]; then
   }
 elif [ "$KIND" = secondmate ]; then
   case "${POS[1]:-}" in
-    ''|claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse)
+    ''|claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini)
       ARG3=${POS[1]:-}
       ;;
     *' '*)
@@ -1296,6 +1302,25 @@ launch_template() {
     # written below. Nothing to place in the template for it.
     # codex, opencode, and kimi are also markerless and share this inherited-marker hazard; changing their verified launch boundaries belongs in follow-up work.
     muse) printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS XDG_CONFIG_HOME=__MUSECONFIG__ XDG_DATA_HOME=__MUSEDATA__ MUSE_EXPERIMENTAL_FOREIGN_PERSONAL_CONTEXT_KILL=on __MUSEBIN__ --yolo __MODELFLAG____EFFORTFLAG__"$(__OPINPUT__ encode launch-brief < __BRIEF__)"' ;;
+    # gemini (Gemini CLI): the brief rides -i/--prompt-interactive, which
+    # executes the prompt and then STAYS in the interactive TUI - the shape
+    # firstmate's supervised-pane model needs (plain -p exits headless).
+    # --yolo auto-approves every tool call; --skip-trust trusts the workspace
+    # for the session, which an unattended crewmate needs because every task
+    # worktree is a fresh path gemini's trust dialog would otherwise block
+    # (same trap as cursor's --trust). -w/--worktree is deliberately never
+    # passed: it allocates gemini's OWN git worktree and would break
+    # firstmate's per-task worktree isolation contract. The foreign primary
+    # markers are cleared because gemini is detected by ancestry alone (its
+    # GEMINI_CLI child marker is unpromoted; see bin/fm-harness.sh), so a
+    # retained CLAUDECODE would misidentify the worker before ancestry runs.
+    # No verified reasoning-effort flag exists, so the shared effort axis is
+    # deliberately omitted and stays in task metadata only. gemini's turn-end
+    # signal rides neither the launch command nor installed wiring: its
+    # AfterAgent hook dialect is bundle-verified but unproven live (gemini
+    # 0.58.0), so the contract is documented DEGRADED in the harness-adapters
+    # skill instead of faking a hook here.
+    gemini) printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS gemini --yolo --skip-trust __MODELFLAG__--prompt-interactive "$(__OPINPUT__ encode launch-brief < __BRIEF__)"' ;;
     *) return 1 ;;
   esac
 }
@@ -1344,6 +1369,16 @@ esac
 # secondmate whose supervision cycle could never be armed.
 if [ "$KIND" = secondmate ] && [ "$HARNESS" = muse ]; then
   echo "error: muse is a verified crewmate/scout adapter only and cannot run a secondmate; it has no primary supervision protocol. Select a harness verified for secondmates." >&2
+  exit 1
+fi
+
+# gemini is likewise a CREWMATE/SCOUT adapter only. No primary supervision
+# protocol has been verified for it, and its turn-end contract is itself
+# DEGRADED (AfterAgent hook unproven live, gemini 0.58.0), so a secondmate on
+# gemini could never arm a supervision cycle. Refusing here keeps that gap
+# loud instead of standing up an unsupervisable secondmate.
+if [ "$KIND" = secondmate ] && [ "$HARNESS" = gemini ]; then
+  echo "error: gemini is a verified crewmate/scout adapter only and cannot run a secondmate; it has no primary supervision protocol. Select a harness verified for secondmates." >&2
   exit 1
 fi
 
@@ -1484,6 +1519,12 @@ model_flag_for_harness() {
     claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse)
       printf -- '--model %s ' "$(shell_quote "$model")"
       ;;
+    gemini)
+      # gemini accepts both -m and --model (gemini 0.58.0 --help); the short
+      # form is composed so the launch line stays within the TUI-safe width
+      # the send path assumes for the longest model ids.
+      printf -- '-m %s ' "$(shell_quote "$model")"
+      ;;
   esac
 }
 
@@ -1540,7 +1581,8 @@ effort_flag_for_harness() {
     # kimi likewise has no reasoning-effort flag; the requested axis stays in
     # task metadata but never reaches the launch command. Cursor encodes effort
     # in model ids such as cursor-grok-4.5-high, so it also receives no separate
-    # effort flag.
+    # effort flag. gemini 0.58.0 exposes no reasoning-effort flag either
+    # (--help verified), so it too keeps the axis in task metadata only.
   esac
 }
 
@@ -2971,7 +3013,7 @@ case "$HARNESS" in
 esac
 LAUNCH=${LAUNCH//__WORKTREE__/$sq_worktree}
 case "$HARNESS" in
-  claude|codex|opencode|pi|pi-signed|grok|kimi|muse)
+  claude|codex|opencode|pi|pi-signed|grok|kimi|muse|gemini)
     LAUNCH="env -u CURSOR_AGENT -u CURSOR_INVOKED_AS $LAUNCH"
     ;;
 esac

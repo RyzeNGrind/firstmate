@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Detect the agent harness this process tree runs on.
-# Usage: fm-harness.sh                  print own harness: claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|unknown
+# Usage: fm-harness.sh                  print own harness: claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini|unknown
 #        fm-harness.sh crew             print the effective CREWMATE harness
 #                                        (config/crew-harness; "default" resolves to own)
 #        fm-harness.sh secondmate       print the harness the PRIMARY uses to launch
@@ -72,6 +72,16 @@ detect_own() {
   # by ancestry alone below. Do NOT promote MUSE_CURRENT_SESSION_LOG to a marker
   # without verifying it reaches children AND that it cannot survive in a
   # multiplexer's stored environment, which is the precedence hazard above.
+  # gemini (Gemini CLI) has a CANDIDATE marker that is deliberately not
+  # promoted: its shellExecutionService sets GEMINI_CLI=1 for tool
+  # subprocesses (verified in the published bundle source, gemini 0.58.0,
+  # packages/core shellExecutionService GEMINI_CLI_IDENTIFICATION_ENV_VAR),
+  # but a live tool subprocess carrying it could not be observed on
+  # 2026-09-07 - the installed API key's project answers 429 quota=0 /
+  # 403 denied, so no model turn could run a tool. Do NOT promote
+  # GEMINI_CLI to a layer-1 marker without live-verifying it reaches
+  # children AND that it cannot survive in a multiplexer's stored
+  # environment; until then gemini is detected by ancestry alone below.
   # Layer 2: walk the parent chain and match the command name.
   local pid=$$ comm args argv0
   for _ in 1 2 3 4 5 6 7 8; do
@@ -93,6 +103,13 @@ detect_own() {
       # prefix rather than any exact name. Deliberately anchored, never *muse*, so
       # unrelated commands (musescore, amuse) cannot be misread as this harness.
       muse|muse-bin-*) echo muse; return ;;
+      # gemini (Gemini CLI) is a node script whose launcher keeps the stable
+      # name `gemini` (verified, gemini 0.58.0: /usr/local/bin/gemini is a
+      # `#!/usr/bin/env node` script). When invoked through the interpreter the
+      # comm is `node` and the args fallback below claims it; this arm covers a
+      # directly named executable. Deliberately anchored, never *gemini*, so
+      # unrelated commands (gemini-desktop, geminid) cannot be misread.
+      gemini) echo gemini; return ;;
       pi-signed) echo pi; return ;;
       pi) echo pi; return ;;
       node*|python*)
@@ -103,6 +120,7 @@ detect_own() {
           *codex*) echo codex; return ;;
           *opencode*) echo opencode; return ;;
           *grok*) echo grok; return ;;
+          *gemini*) echo gemini; return ;;
           *" pi "*|*/pi) echo pi; return ;;
         esac ;;
     esac

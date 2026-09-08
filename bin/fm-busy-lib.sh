@@ -181,7 +181,10 @@ fm_busy_current_gen() {  # <state-dir> <id>
 # neither is armed, and both read their live source on demand in the classifier
 # (grok's rendered tail, muse's session log) rather than through a stored
 # record. Listing a source here without a writer that can clear it would seed a
-# busy record nothing could ever settle.
+# busy record nothing could ever settle. Gemini also trusts nothing and has no
+# on-demand source either: its AfterAgent hook is bundle-verified but unproven
+# live (gemini 0.58.0), so its turn-end contract is documented DEGRADED in the
+# harness-adapters skill instead of listed here.
 fm_busy_sources_for_harness() {  # <harness>
   local adapter=
   case "${1:-}" in
