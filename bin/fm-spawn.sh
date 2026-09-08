@@ -1322,22 +1322,35 @@ launch_template() {
     # skill instead of faking a hook here.
     gemini) printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS gemini --yolo --skip-trust __MODELFLAG__--prompt-interactive "$(__OPINPUT__ encode launch-brief < __BRIEF__)"' ;;
     # antigravity (agentapi) is Google's post-2026-09 replacement for the
-    # deprecated Gemini free-tier oauth-personal path. It is a BATCH client:
-    # `agentapi new-conversation [--model=<tier>] "<prompt>"` starts a
-    # conversation, prints the first response JSON on stdout, and EXITS.
-    # There is no interactive TUI to supervise, so this template composes a
-    # one-shot invocation whose pane closes on completion; the scout-kind
-    # classifier reads pane-exit as report-delivered. Ship/secondmate are
-    # refused separately below because the batch shape has no mid-stream
-    # interruption surface and no primary-supervision protocol. The foreign
-    # primary markers are cleared because antigravity is detected by
-    # `agentapi` ancestry alone. --model rides equals form (agentapi rejects
-    # space form) and the tier vocabulary (flash_lite|flash|pro) is enforced
-    # at flag composition, not here. The credential preflight below refuses
-    # spawn when the oauth token or ANTIGRAVITY_LS_ADDRESS are absent, so
-    # the launch never fires a call that would print `{"error":"..."}` and
-    # confuse the supervisor with a wedged-worker verdict.
-    antigravity) printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS __AGENTAPIBIN__ new-conversation __MODELFLAG__"$(__OPINPUT__ encode launch-brief < __BRIEF__)"' ;;
+    # deprecated Gemini free-tier oauth-personal path. agentapi is a BATCH
+    # client (`new-conversation "<prompt>"` prints one JSON response and
+    # exits), so firstmate composes two launch shapes for it:
+    #   - SCOUT: raw `agentapi new-conversation` - the batch shape IS the
+    #     scout contract (one-shot report delivery, pane exits when done).
+    #   - SHIP (crewmate): a bash REPL wrapper (bin/backends/antigravity-repl.sh)
+    #     fires new-conversation to seed the turn, captures the returned
+    #     conversation_id, and then enters a `while read` loop that dispatches
+    #     each fm-send line via `agentapi send-message <id> "<line>"`. This
+    #     turns the batch CLI into a supervised long-lived pane that matches
+    #     firstmate's crewmate contract.
+    # Secondmate remains refused below because agentapi has no primary
+    # supervision protocol (no reawakening/asyncRewake handlers): the REPL
+    # wrapper elevates it to crewmate but not to a firstmate root.
+    # --model rides equals form (agentapi rejects space form) and the tier
+    # vocabulary (flash_lite|flash|pro) is enforced at flag composition, not
+    # here. The credential preflight below refuses spawn when the oauth
+    # token or ANTIGRAVITY_LS_ADDRESS are absent, so the launch never fires
+    # a call that would print `{"error":"..."}` and confuse the supervisor
+    # with a wedged-worker verdict. The REPL wrapper additionally handles
+    # per-turn errors non-fatally so a transient RPC failure does not kill
+    # an otherwise-live pane.
+    antigravity)
+      if [ "$kind" = scout ]; then
+        printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS __AGENTAPIBIN__ new-conversation __MODELFLAG__"$(__OPINPUT__ encode launch-brief < __BRIEF__)"'
+      else
+        printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS FM_ANTIGRAVITY_BIN=__AGENTAPIBIN__ __ANTIGRAVITYREPL__ __BRIEF__ __MODELFLAG__'
+      fi
+      ;;
     *) return 1 ;;
   esac
 }
@@ -1399,20 +1412,17 @@ if [ "$KIND" = secondmate ] && [ "$HARNESS" = gemini ]; then
   exit 1
 fi
 
-# antigravity (agentapi) is SCOUT ONLY at this landing. The batch shape
-# (new-conversation prints one response and exits) has no interruption
-# surface for a multi-turn crewmate and no primary-supervision protocol,
-# so ship (crewmate) and secondmate are refused up front. The upgrade path
-# to crewmate requires a REPL wrapper around `agentapi send-message
-# <conversation_id>`; that wrapper is not yet written or verified, so
-# refusing here keeps the boundary loud rather than standing up a
-# non-supervisable worker.
-if [ "$KIND" = ship ] && [ "$HARNESS" = antigravity ]; then
-  echo "error: antigravity (agentapi) is a verified scout adapter only and cannot run a crewmate; its batch shape has no verified multi-turn contract yet. Select --scout or choose a harness verified for crewmates." >&2
-  exit 1
-fi
+# antigravity (agentapi) supports crewmate (ship) and scout kinds. The ship
+# path uses bin/backends/antigravity-repl.sh - a bash REPL wrapper that
+# turns agentapi's batch shape into a long-lived multi-turn pane by chaining
+# fm-send lines through `agentapi send-message <conversation_id>`. The scout
+# path uses the raw batch invocation (one response, pane exits).
+# Secondmate remains refused: agentapi has no primary supervision protocol,
+# no verified reawakening/asyncRewake handlers, and the REPL wrapper does
+# not itself acquire those - a secondmate needs a supervision cycle the
+# wrapper cannot arm, so refusing here keeps the boundary loud.
 if [ "$KIND" = secondmate ] && [ "$HARNESS" = antigravity ]; then
-  echo "error: antigravity (agentapi) is a verified scout adapter only and cannot run a secondmate; it has no primary supervision protocol. Select a harness verified for secondmates." >&2
+  echo "error: antigravity (agentapi) is a verified crewmate/scout adapter only and cannot run a secondmate; it has no primary supervision protocol. Select a harness verified for secondmates." >&2
   exit 1
 fi
 
@@ -1692,6 +1702,18 @@ case "$LAUNCH" in
       exit 1
     fi
     LAUNCH=${LAUNCH//__AGENTAPIBIN__/$(shell_quote "$AGENTAPI_BIN")}
+    # ship (crewmate) shape uses the REPL wrapper: resolve its absolute
+    # path relative to the fm-spawn root so the composed launch line works
+    # regardless of the pane's initial cwd. FM_ANTIGRAVITY_REPL_OVERRIDE
+    # lets tests point at a wrapper stub.
+    if [ "$KIND" = ship ]; then
+      ANTIGRAVITY_REPL=${FM_ANTIGRAVITY_REPL_OVERRIDE:-$FM_ROOT/bin/backends/antigravity-repl.sh}
+      if [ ! -x "$ANTIGRAVITY_REPL" ]; then
+        echo "error: antigravity REPL wrapper not executable at '$ANTIGRAVITY_REPL'. Ensure bin/backends/antigravity-repl.sh is on disk or set FM_ANTIGRAVITY_REPL_OVERRIDE." >&2
+        exit 1
+      fi
+      LAUNCH=${LAUNCH//__ANTIGRAVITYREPL__/$(shell_quote "$ANTIGRAVITY_REPL")}
+    fi
     ;;
 esac
 

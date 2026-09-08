@@ -132,7 +132,21 @@ make_spawn_case() {
   printf '%s\n' "$case_dir|$home|$proj|$wt|$fakebin|$id|$token|$bin"
 }
 
+make_fake_repl() {  # <case_dir>
+  local dir=$1 repl
+  repl="$dir/antigravity-repl.sh"
+  cat > "$repl" <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+  chmod +x "$repl"
+  printf '%s\n' "$repl"
+}
+
 run_antigravity_spawn() {  # <home> <proj> <wt> <fakebin> <id> <token> <bin> [extra args...]
+  # By default, run the SCOUT shape (batch new-conversation). Callers that
+  # need the crewmate ship shape pass their own --scout override off and
+  # supply a repl via FM_ANTIGRAVITY_REPL_OVERRIDE below.
   local home=$1 proj=$2 wt=$3 fakebin=$4 id=$5 token=$6 bin=$7
   shift 7
   FM_ROOT_OVERRIDE='' FM_HOME="$home" \
@@ -147,6 +161,24 @@ run_antigravity_spawn() {  # <home> <proj> <wt> <fakebin> <id> <token> <bin> [ex
     ANTIGRAVITY_LS_ADDRESS="127.0.0.1:44444" \
     PATH="$fakebin:$PATH" \
     "$SPAWN" "$id" "$proj" antigravity --scout "$@" 2>&1
+}
+
+run_antigravity_ship_spawn() {  # <home> <proj> <wt> <fakebin> <id> <token> <bin> <repl> [extra args...]
+  local home=$1 proj=$2 wt=$3 fakebin=$4 id=$5 token=$6 bin=$7 repl=$8
+  shift 8
+  FM_ROOT_OVERRIDE='' FM_HOME="$home" \
+    FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
+    FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
+    FM_SPAWN_NO_GUARD=1 FM_FAKE_PANE_PATH="$wt" TMUX="fake,1,0" \
+    FM_FAKE_LAUNCH_LOG="$home/launch.log" \
+    FM_FAKE_AGENTAPI_REAL="${fakebin%/fakebin}/real/agentapi" \
+    FM_FAKE_HARNESS_PROBE="$HARNESS" \
+    FM_ANTIGRAVITY_TOKEN_PATH="$token" \
+    FM_ANTIGRAVITY_BIN_OVERRIDE="$bin" \
+    FM_ANTIGRAVITY_REPL_OVERRIDE="$repl" \
+    ANTIGRAVITY_LS_ADDRESS="127.0.0.1:44444" \
+    PATH="$fakebin:$PATH" \
+    "$SPAWN" "$id" "$proj" antigravity "$@" 2>&1
 }
 
 # --- detection --------------------------------------------------------------
@@ -330,27 +362,53 @@ EOF
 
 # --- kind refusals ----------------------------------------------------------
 
-test_spawn_refuses_ship() {
-  local rec case_dir home proj wt fakebin id token bin out status
+test_spawn_ship_uses_repl_wrapper() {
+  local rec case_dir home proj wt fakebin id token bin repl out status launch
   rec=$(make_spawn_case ship)
   IFS='|' read -r case_dir home proj wt fakebin id token bin <<EOF
 $rec
 EOF
-  # Run without --scout so KIND defaults to ship.
-  out=$(FM_ROOT_OVERRIDE='' FM_HOME="$home" \
-    FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
-    FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
-    FM_SPAWN_NO_GUARD=1 FM_FAKE_PANE_PATH="$wt" TMUX="fake,1,0" \
-    FM_FAKE_LAUNCH_LOG="$home/launch.log" \
-    FM_ANTIGRAVITY_TOKEN_PATH="$token" FM_ANTIGRAVITY_BIN_OVERRIDE="$bin" \
-    ANTIGRAVITY_LS_ADDRESS="127.0.0.1:44444" \
-    PATH="$fakebin:$PATH" \
-    "$SPAWN" "$id" "$proj" antigravity --mode no-mistakes --yolo off 2>&1)
+  repl=$(make_fake_repl "$case_dir")
+  out=$(run_antigravity_ship_spawn "$home" "$proj" "$wt" "$fakebin" "$id" "$token" "$bin" "$repl" --mode no-mistakes --yolo off)
   status=$?
-  [ "$status" -ne 0 ] || fail "antigravity was accepted as a crewmate (ship) harness"
-  assert_contains "$out" "scout adapter only" \
-    "antigravity ship refusal did not explain the boundary"
-  pass "antigravity is refused as a crewmate (ship) harness"
+  expect_code 0 "$status" "antigravity ship spawn should succeed: $out"
+  assert_contains "$out" "spawned $id harness=antigravity" "antigravity ship spawn did not report success"
+
+  launch=$(cat "$home/launch.log")
+  # The composed launch line invokes the REPL wrapper (crewmate shape), not
+  # the raw batch new-conversation subcommand the scout shape uses.
+  assert_contains "$launch" "$repl" "antigravity ship launch dropped the REPL wrapper path"
+  assert_not_contains "$launch" 'new-conversation' \
+    "antigravity ship launch reused the scout batch shape instead of the REPL wrapper"
+  # FM_ANTIGRAVITY_BIN is forwarded so the REPL wrapper reaches the same
+  # agentapi binary the preflight resolved rather than re-resolving from PATH.
+  assert_contains "$launch" "FM_ANTIGRAVITY_BIN=" "antigravity ship launch did not forward FM_ANTIGRAVITY_BIN to the REPL"
+  # The brief file path is passed positionally; the wrapper reads it with cat.
+  assert_grep "$home/data/$id/brief.md" "$home/launch.log" \
+    "antigravity ship launch did not pass the brief file path to the REPL"
+  assert_grep 'harness=antigravity' "$home/state/$id.meta" "antigravity harness was not recorded in ship meta"
+  assert_grep 'kind=ship' "$home/state/$id.meta" "antigravity ship spawn recorded the wrong kind"
+  pass "antigravity ship launches through the REPL wrapper with the brief and forwarded binary"
+}
+
+test_spawn_ship_refuses_missing_repl_wrapper() {
+  local rec case_dir home proj wt fakebin id token bin repl out status
+  rec=$(make_spawn_case ship-no-repl)
+  IFS='|' read -r case_dir home proj wt fakebin id token bin <<EOF
+$rec
+EOF
+  # Point the override at a path that does not exist so the preflight
+  # refuses rather than composing a launch that would fail at pane start.
+  # --mode + --yolo are supplied because a ship spawn requires them; the
+  # test is proving the REPL preflight fires AFTER those universal ship
+  # gates, not that a missing --mode is the cause of the refusal.
+  repl="$case_dir/nonexistent-repl.sh"
+  out=$(run_antigravity_ship_spawn "$home" "$proj" "$wt" "$fakebin" "$id" "$token" "$bin" "$repl" --mode no-mistakes --yolo off)
+  status=$?
+  [ "$status" -ne 0 ] || fail "antigravity ship spawn accepted a missing REPL wrapper"
+  assert_contains "$out" "antigravity REPL wrapper not executable" \
+    "antigravity ship refusal did not name the missing REPL wrapper"
+  pass "antigravity ship refuses spawn when the REPL wrapper is not executable"
 }
 
 test_spawn_refuses_secondmate() {
@@ -403,6 +461,7 @@ test_refuses_missing_token
 test_refuses_empty_token
 test_refuses_missing_ls_address
 test_refuses_missing_binary
-test_spawn_refuses_ship
+test_spawn_ship_uses_repl_wrapper
+test_spawn_ship_refuses_missing_repl_wrapper
 test_spawn_refuses_secondmate
 test_antigravity_trusts_no_record_sources

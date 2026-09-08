@@ -3,7 +3,7 @@ name: harness-adapters
 description: >-
   Agent-only reference for firstmate harness operations.
   Use before spawning or recovering a crewmate or secondmate, handling a trust dialog, sending a harness-specific skill invocation, interrupting or exiting an agent, resuming an exited agent, or verifying a new harness adapter.
-  Contains verified facts for claude, codex, opencode, pi, pi-signed, grok, kimi, cursor, muse, gemini, and antigravity.
+  Contains verified facts for claude, codex, opencode, pi, pi-signed, grok, kimi, cursor, muse, gemini, and antigravity (agentapi + REPL wrapper for crewmate mode).
 user-invocable: false
 metadata:
   internal: true
@@ -36,7 +36,7 @@ Deliver lifecycle actions only through `../../../bin/fm-control.sh <task-id> int
 Never type an interrupt key or exit command through `fm-send`, where routing-marked lifecycle text becomes chat.
 Trust handling is complete only when inspection proves the target started processing its instructions; delivery success alone is not proof.
 Muse and gemini are verified only for crewmate and scout work, never a secondmate or primary; gemini additionally carries a DEGRADED turn-end contract (its harness reference owns the detail).
-Antigravity (agentapi) is verified only for scout work — its batch shape has no verified multi-turn contract yet, so crewmate and secondmate are both refused at spawn (its harness reference owns the upgrade path).
+Antigravity (agentapi) is verified for crewmate and scout work (crewmate rides a REPL wrapper that turns agentapi's batch shape into a multi-turn pane), never a secondmate or primary; its harness reference owns the REPL contract and the post-OAuth verification the response-shape assumptions still need.
 
 ## Detection
 
