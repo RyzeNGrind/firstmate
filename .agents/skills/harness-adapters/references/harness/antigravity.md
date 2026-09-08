@@ -35,9 +35,31 @@ See `harness/gemini.md` for the deprecated path's failure shape.
 REQUIRED. The adapter refuses to spawn unless both of the following hold:
 
 1. `${ANTIGRAVITY_TOKEN_PATH:-$HOME/.gemini/antigravity-cli/antigravity-oauth-token}` exists AND parses as JSON AND `.access_token` is a non-empty string.
-2. `ANTIGRAVITY_LS_ADDRESS` is set in the launch environment (agentapi requires it; the CLI prints `{"error":"ANTIGRAVITY_LS_ADDRESS is not set"}` and exits when absent, which the supervisor would read as a wedged worker). When the env var is unset, the preflight invokes `bin/backends/antigravity-ls-detect.sh` (override with `FM_ANTIGRAVITY_LS_DETECT_OVERRIDE`) which greps the Antigravity IDE's `main.log` for the most recent `Port changed! Reloading all windows with URL: https://127.0.0.1:<PORT>/` line and prints `127.0.0.1:<PORT>`. That value is `export`ed into the launch environment before the composed command fires, so both scout batch and ship REPL shapes inherit it. A stale port from a previous IDE run simply fails the next agentapi call with the standard connection error; the operator relaunches the IDE and retries.
+2. `ANTIGRAVITY_LS_ADDRESS` is set in the launch environment (agentapi requires it; the CLI prints `{"error":"ANTIGRAVITY_LS_ADDRESS is not set"}` and exits when absent, which the supervisor would read as a wedged worker). When the env var is unset, the preflight invokes `bin/backends/antigravity-ls-detect.sh` (override with `FM_ANTIGRAVITY_LS_DETECT_OVERRIDE`) which scans the newest per-session `ls-main.log` under `AppData/Roaming/Antigravity IDE/logs/` (v2 layout) and falls back to `AppData/Roaming/Antigravity/logs/main.log` (v1) for the most recent LS gRPC port. That value is `export`ed into the launch environment before the composed command fires, so both scout batch and ship REPL shapes inherit it. A stale port from a previous IDE run simply fails the next agentapi call with the standard connection error; the operator relaunches the IDE and retries.
 
 Neither is copied into the launch line: `ANTIGRAVITY_LS_ADDRESS` is inherited from the environment, and the token file is read by `agentapi` itself. The preflight refuses fast when either is missing, with an actionable message that names the token path and the env var so the operator knows exactly which side to fix.
+
+## WSL2 bridge (Windows-only LS bind, GOTCHA)
+
+The Antigravity IDE runs as a Windows binary and binds the LS to `localhost` = `127.0.0.1` on the *Windows* loopback interface only (verified 2026-09-08 in ls-main.log: `Language server will attempt to listen on host localhost`). Under WSL2 default NAT, `127.0.0.1` inside the guest is the *guest's* loopback, not Windows', so agentapi under WSL cannot dial the LS directly — the auto-detected `127.0.0.1:<PORT>` resolves but every RPC times out with `dial tcp 127.0.0.1:<PORT>: i/o timeout`.
+
+Three bridge paths, in order of pragmatic viability:
+
+1. **Windows portproxy (30 seconds, one-time, admin required)**. Run in an *elevated* `cmd.exe`:
+   ```
+   netsh interface portproxy add v4tov4 listenport=<PORT> listenaddress=0.0.0.0 connectport=<PORT> connectaddress=127.0.0.1
+   ```
+   Replace `<PORT>` with the port `antigravity-ls-detect.sh` prints. After this, WSL can dial `<Windows-side-IP>:<PORT>` (the Hyper-V "Default Switch" IP, discoverable via `ipconfig` — typically `172.24.224.1` or similar). Repeat when the IDE rebinds; the rule can be listed with `netsh interface portproxy show all` and removed with `netsh interface portproxy delete v4tov4 listenport=<PORT>`.
+   Set `ANTIGRAVITY_LS_ADDRESS=<Windows-side-IP>:<PORT>` after each rule update; the auto-detect helper reads the port from log but does not know the Windows-side IP.
+
+2. **WSL2 mirrored networking** (Windows 11 22H2+, one-time config, WSL restart). Add to `C:\Users\<user>\.wslconfig`:
+   ```
+   [wsl2]
+   networkingMode=mirrored
+   ```
+   Then `wsl --shutdown` from Windows. After restart, WSL and Windows share networking; `127.0.0.1:<PORT>` inside WSL reaches Windows-side LS directly and the auto-detect helper's output can be used verbatim.
+
+3. **Antigravity IDE built-in terminal**. The `google.antigravity-remote-wsl` extension may inject `ANTIGRAVITY_LS_ADDRESS` (or a bridge socket) into terminals launched *inside* the IDE. Operator-verified path: open a terminal (Ctrl+`) in Antigravity IDE and `echo "$ANTIGRAVITY_LS_ADDRESS"`. If the extension exports it, no bridge is needed for that specific terminal session, but fm-spawn running from a *different* shell still needs one of the paths above.
 
 ## Turn-end contract (BATCH)
 
