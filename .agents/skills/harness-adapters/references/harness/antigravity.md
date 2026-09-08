@@ -35,9 +35,9 @@ See `harness/gemini.md` for the deprecated path's failure shape.
 REQUIRED. The adapter refuses to spawn unless both of the following hold:
 
 1. `${ANTIGRAVITY_TOKEN_PATH:-$HOME/.gemini/antigravity-cli/antigravity-oauth-token}` exists AND parses as JSON AND `.access_token` is a non-empty string.
-2. `ANTIGRAVITY_LS_ADDRESS` is set in the launch environment (agentapi requires it; the CLI prints `{"error":"ANTIGRAVITY_LS_ADDRESS is not set"}` and exits when absent, which the supervisor would read as a wedged worker).
+2. `ANTIGRAVITY_LS_ADDRESS` is set in the launch environment (agentapi requires it; the CLI prints `{"error":"ANTIGRAVITY_LS_ADDRESS is not set"}` and exits when absent, which the supervisor would read as a wedged worker). When the env var is unset, the preflight invokes `bin/backends/antigravity-ls-detect.sh` (override with `FM_ANTIGRAVITY_LS_DETECT_OVERRIDE`) which greps the Antigravity IDE's `main.log` for the most recent `Port changed! Reloading all windows with URL: https://127.0.0.1:<PORT>/` line and prints `127.0.0.1:<PORT>`. That value is `export`ed into the launch environment before the composed command fires, so both scout batch and ship REPL shapes inherit it. A stale port from a previous IDE run simply fails the next agentapi call with the standard connection error; the operator relaunches the IDE and retries.
 
-Neither is copied into the launch line: `ANTIGRAVITY_LS_ADDRESS` is inherited from the environment fm-spawn runs in, and the token file is read by `agentapi` itself. The preflight refuses fast when either is missing, with an actionable message that names the token path and the env var so the operator knows exactly which side to fix.
+Neither is copied into the launch line: `ANTIGRAVITY_LS_ADDRESS` is inherited from the environment, and the token file is read by `agentapi` itself. The preflight refuses fast when either is missing, with an actionable message that names the token path and the env var so the operator knows exactly which side to fix.
 
 ## Turn-end contract (BATCH)
 

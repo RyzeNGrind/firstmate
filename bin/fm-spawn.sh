@@ -1698,7 +1698,21 @@ case "$LAUNCH" in
       exit 1
     fi
     if [ -z "${ANTIGRAVITY_LS_ADDRESS:-}" ]; then
-      echo "error: ANTIGRAVITY_LS_ADDRESS is not set in the launch environment; agentapi cannot reach the Antigravity IDE language server without it. Start the Antigravity IDE (or export the LS address) before spawning." >&2
+      # Attempt auto-detect from the IDE's main.log before failing. When the
+      # helper resolves an address, export it into the launch environment so
+      # the composed command (both scout batch and ship REPL shapes) inherits
+      # it - the LS_ADDRESS is a runtime configuration knob, not a
+      # per-invocation launch flag, so injecting it here is safer than
+      # threading it through the launch-template placeholders.
+      ANTIGRAVITY_LS_DETECT=${FM_ANTIGRAVITY_LS_DETECT_OVERRIDE:-$FM_ROOT/bin/backends/antigravity-ls-detect.sh}
+      if [ -x "$ANTIGRAVITY_LS_DETECT" ]; then
+        if AUTO_ADDR=$("$ANTIGRAVITY_LS_DETECT" 2>/dev/null) && [ -n "$AUTO_ADDR" ]; then
+          export ANTIGRAVITY_LS_ADDRESS="$AUTO_ADDR"
+        fi
+      fi
+    fi
+    if [ -z "${ANTIGRAVITY_LS_ADDRESS:-}" ]; then
+      echo "error: ANTIGRAVITY_LS_ADDRESS is not set in the launch environment and the IDE-log auto-detect ('$ANTIGRAVITY_LS_DETECT') could not resolve one. Launch the Antigravity IDE (\`agy\`) to have it bind a port and record it in main.log, or export ANTIGRAVITY_LS_ADDRESS manually." >&2
       exit 1
     fi
     LAUNCH=${LAUNCH//__AGENTAPIBIN__/$(shell_quote "$AGENTAPI_BIN")}

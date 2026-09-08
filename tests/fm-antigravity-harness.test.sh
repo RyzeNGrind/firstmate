@@ -320,14 +320,23 @@ EOF
 }
 
 test_refuses_missing_ls_address() {
-  local rec case_dir home proj wt fakebin id token bin out status
+  local rec case_dir home proj wt fakebin id token bin out status detect_stub
   rec=$(make_spawn_case missing-ls)
   IFS='|' read -r case_dir home proj wt fakebin id token bin <<EOF
 $rec
 EOF
-  # Call fm-spawn directly (bypassing run_antigravity_spawn, which supplies
-  # ANTIGRAVITY_LS_ADDRESS) and use `env -u` to guarantee the var is not
-  # inherited from the outer test-runner environment either.
+  # A stub LS-detect helper that always fails: this reproduces the shape of
+  # a fresh install where the operator has never launched the IDE, so
+  # main.log holds no port-bind line for the fm-spawn preflight to auto-
+  # detect. Without this stub the real helper resolves a (possibly stale)
+  # port from the current install and the refusal never fires.
+  detect_stub="$case_dir/ls-detect-stub.sh"
+  cat > "$detect_stub" <<'SH'
+#!/usr/bin/env bash
+exit 3
+SH
+  chmod +x "$detect_stub"
+
   out=$(env -u ANTIGRAVITY_LS_ADDRESS \
     FM_ROOT_OVERRIDE='' FM_HOME="$home" \
     FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
@@ -336,13 +345,47 @@ EOF
     FM_FAKE_LAUNCH_LOG="$home/launch.log" \
     FM_ANTIGRAVITY_TOKEN_PATH="$token" \
     FM_ANTIGRAVITY_BIN_OVERRIDE="$bin" \
+    FM_ANTIGRAVITY_LS_DETECT_OVERRIDE="$detect_stub" \
     PATH="$fakebin:$PATH" \
     "$SPAWN" "$id" "$proj" antigravity --scout 2>&1)
   status=$?
   [ "$status" -ne 0 ] || fail "antigravity spawn accepted a missing ANTIGRAVITY_LS_ADDRESS"
   assert_contains "$out" "ANTIGRAVITY_LS_ADDRESS is not set" \
     "antigravity refusal did not name the missing LS address"
-  pass "antigravity refuses spawn when ANTIGRAVITY_LS_ADDRESS is not set"
+  pass "antigravity refuses spawn when ANTIGRAVITY_LS_ADDRESS is not set and auto-detect returns nothing"
+}
+
+test_auto_detects_ls_address_from_ide_log() {
+  local rec case_dir home proj wt fakebin id token bin out launch detect_stub
+  rec=$(make_spawn_case auto-ls)
+  IFS='|' read -r case_dir home proj wt fakebin id token bin <<EOF
+$rec
+EOF
+  # A stub LS-detect helper that succeeds with a known address: proves the
+  # preflight injects the auto-detected value into the launch environment
+  # when the operator has not exported one manually.
+  detect_stub="$case_dir/ls-detect-ok.sh"
+  cat > "$detect_stub" <<'SH'
+#!/usr/bin/env bash
+echo "127.0.0.1:12345"
+SH
+  chmod +x "$detect_stub"
+
+  out=$(env -u ANTIGRAVITY_LS_ADDRESS \
+    FM_ROOT_OVERRIDE='' FM_HOME="$home" \
+    FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
+    FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
+    FM_SPAWN_NO_GUARD=1 FM_FAKE_PANE_PATH="$wt" TMUX="fake,1,0" \
+    FM_FAKE_LAUNCH_LOG="$home/launch.log" \
+    FM_ANTIGRAVITY_TOKEN_PATH="$token" \
+    FM_ANTIGRAVITY_BIN_OVERRIDE="$bin" \
+    FM_ANTIGRAVITY_LS_DETECT_OVERRIDE="$detect_stub" \
+    PATH="$fakebin:$PATH" \
+    "$SPAWN" "$id" "$proj" antigravity --scout 2>&1)
+  [ $? -eq 0 ] || fail "antigravity spawn should succeed when LS auto-detect resolves an address: $out"
+  assert_contains "$out" "spawned $id harness=antigravity" \
+    "antigravity spawn did not report success under auto-detected LS address"
+  pass "antigravity auto-detects the LS address from the IDE log when the env var is unset"
 }
 
 test_refuses_missing_binary() {
@@ -460,6 +503,7 @@ test_spawn_maps_model_tier_and_omits_effort
 test_refuses_missing_token
 test_refuses_empty_token
 test_refuses_missing_ls_address
+test_auto_detects_ls_address_from_ide_log
 test_refuses_missing_binary
 test_spawn_ship_uses_repl_wrapper
 test_spawn_ship_refuses_missing_repl_wrapper
