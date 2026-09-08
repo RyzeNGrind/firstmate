@@ -45,11 +45,13 @@ The Antigravity IDE runs as a Windows binary and binds the LS to `localhost` = `
 
 Three bridge paths, in order of pragmatic viability:
 
-1. **Windows portproxy (30 seconds, one-time, admin required)**. Run in an *elevated* `cmd.exe`:
+1. **Windows portproxy + firewall exception (30 seconds, one-time per port, admin required)**. Run in an *elevated* `cmd.exe`:
    ```
    netsh interface portproxy add v4tov4 listenport=<PORT> listenaddress=0.0.0.0 connectport=<PORT> connectaddress=127.0.0.1
+   netsh advfirewall firewall add rule name="Antigravity LS <PORT>" dir=in action=allow protocol=TCP localport=<PORT> profile=any
    ```
-   Replace `<PORT>` with the port `antigravity-ls-detect.sh` prints. After this, WSL can dial `<Windows-side-IP>:<PORT>` (the Hyper-V "Default Switch" IP, discoverable via `ipconfig` — typically `172.24.224.1` or similar). Repeat when the IDE rebinds; the rule can be listed with `netsh interface portproxy show all` and removed with `netsh interface portproxy delete v4tov4 listenport=<PORT>`.
+   Replace `<PORT>` with the port `antigravity-ls-detect.sh` prints. The portproxy rule alone is NOT sufficient — Windows Defender Firewall drops inbound traffic to the vEthernet-visible IP by default (verified 2026-09-08: portproxy added, WSL dials still returned 000 with no matching allow rule in `netsh advfirewall firewall show rule` for the port).
+   After both rules exist, WSL can dial `<Windows-side-IP>:<PORT>` where the Windows-side IP is the Hyper-V "Default Switch" address, discoverable via `netsh interface ip show addresses "vEthernet (Default Switch)"` (typically `172.26.0.1` on WSL 2.4+). Repeat both when the IDE rebinds; the portproxy rule can be listed with `netsh interface portproxy show all` and removed with `netsh interface portproxy delete v4tov4 listenport=<PORT>`.
    Set `ANTIGRAVITY_LS_ADDRESS=<Windows-side-IP>:<PORT>` after each rule update; the auto-detect helper reads the port from log but does not know the Windows-side IP.
 
 2. **WSL2 mirrored networking** (Windows 11 22H2+, one-time config, WSL restart). Add to `C:\Users\<user>\.wslconfig`:
