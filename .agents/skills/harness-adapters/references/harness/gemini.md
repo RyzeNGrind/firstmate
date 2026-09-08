@@ -4,6 +4,15 @@ Verified 2026-09-07 on Gemini CLI 0.58.0 (npm `@google/gemini-cli`, node launche
 The router owns Gemini's task-kind boundary: crewmate and scout only, never a secondmate or primary.
 Verification is PARTIAL: launch mechanics, flags, detection, and refusals are live-verified, but no model turn could complete because the installed API key's project answers 429 quota=0 and 403 denied, so every fact marked "bundle-verified" below comes from the published bundle source rather than an observed live run.
 
+## 2026-09-08 update — free-tier oauth-personal DEPRECATED (BLOCKING)
+
+Live-verified 2026-09-08 (session 67ea84db) on gemini 0.58.0 with `~/.gemini/settings.json` selectedType=oauth-personal AND a populated `~/.gemini/oauth_creds.json` (expiry ~1h in future, refresh_token present, access_token present): the FIRST model turn fails with `IneligibleTierError: This client is no longer supported for Gemini Code Assist for individuals. To continue using Gemini, please migrate to the Antigravity suite of products: https://antigravity.google` and the process exits.
+The failure carries `ineligibleTiers[0].reasonCode = 'UNSUPPORTED_CLIENT'` and `tierId = 'free-tier'`, so this is a Google-side client-deprecation, not a quota or auth defect on our side.
+The workspace/enterprise path (`GOOGLE_CLOUD_PROJECT` env plus a service credential) has not been re-verified since this deprecation and may or may not still work; assume it is also affected until re-verified.
+Consequence: on the current fleet a gemini SPAWN under oauth-personal will start the TUI, arm no supervision (see DEGRADED contract below), and then wedge on IneligibleTierError the moment the first tool call fires — a shape the supervisor cannot distinguish from a stalled worker.
+The migration path is the sibling `antigravity.md` reference (agentapi, scout-only at first landing).
+Do NOT re-attempt an oauth-personal gemini spawn without re-verifying Google has restored the tier; escalate to the antigravity adapter or a workspace-tier credential the CI has proven live.
+
 ## Operating facts
 
 | Fact | Value |

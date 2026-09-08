@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Detect the agent harness this process tree runs on.
-# Usage: fm-harness.sh                  print own harness: claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini|unknown
+# Usage: fm-harness.sh                  print own harness: claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini|antigravity|unknown
 #        fm-harness.sh crew             print the effective CREWMATE harness
 #                                        (config/crew-harness; "default" resolves to own)
 #        fm-harness.sh secondmate       print the harness the PRIMARY uses to launch
@@ -110,6 +110,14 @@ detect_own() {
       # directly named executable. Deliberately anchored, never *gemini*, so
       # unrelated commands (gemini-desktop, geminid) cannot be misread.
       gemini) echo gemini; return ;;
+      # antigravity (agentapi) is Google's replacement for Gemini Code Assist
+      # for individuals after the 2026-09-XX free-tier deprecation. The binary
+      # ships at ~/.gemini/antigravity-cli/bin/agentapi with the stable comm
+      # `agentapi` (verified 2026-09-08 via `--help`). Deliberately anchored,
+      # never *agentapi*, so unrelated tools cannot be misread. The batch
+      # shape means the ancestor pane exits with the process, so this arm is
+      # for a still-live agentapi call being probed from a tool subprocess.
+      agentapi) echo antigravity; return ;;
       pi-signed) echo pi; return ;;
       pi) echo pi; return ;;
       node*|python*)

@@ -1172,7 +1172,7 @@ if [ "$RELAUNCH" -eq 1 ]; then
   }
 elif [ "$KIND" = secondmate ]; then
   case "${POS[1]:-}" in
-    ''|claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini)
+    ''|claude|codex|opencode|pi|pi-signed|grok|kimi|cursor|muse|gemini|antigravity)
       ARG3=${POS[1]:-}
       ;;
     *' '*)
@@ -1321,6 +1321,23 @@ launch_template() {
     # 0.58.0), so the contract is documented DEGRADED in the harness-adapters
     # skill instead of faking a hook here.
     gemini) printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS gemini --yolo --skip-trust __MODELFLAG__--prompt-interactive "$(__OPINPUT__ encode launch-brief < __BRIEF__)"' ;;
+    # antigravity (agentapi) is Google's post-2026-09 replacement for the
+    # deprecated Gemini free-tier oauth-personal path. It is a BATCH client:
+    # `agentapi new-conversation [--model=<tier>] "<prompt>"` starts a
+    # conversation, prints the first response JSON on stdout, and EXITS.
+    # There is no interactive TUI to supervise, so this template composes a
+    # one-shot invocation whose pane closes on completion; the scout-kind
+    # classifier reads pane-exit as report-delivered. Ship/secondmate are
+    # refused separately below because the batch shape has no mid-stream
+    # interruption surface and no primary-supervision protocol. The foreign
+    # primary markers are cleared because antigravity is detected by
+    # `agentapi` ancestry alone. --model rides equals form (agentapi rejects
+    # space form) and the tier vocabulary (flash_lite|flash|pro) is enforced
+    # at flag composition, not here. The credential preflight below refuses
+    # spawn when the oauth token or ANTIGRAVITY_LS_ADDRESS are absent, so
+    # the launch never fires a call that would print `{"error":"..."}` and
+    # confuse the supervisor with a wedged-worker verdict.
+    antigravity) printf '%s' 'env -u CLAUDECODE -u PI_CODING_AGENT -u GROK_AGENT -u FM_PI_HARNESS __AGENTAPIBIN__ new-conversation __MODELFLAG__"$(__OPINPUT__ encode launch-brief < __BRIEF__)"' ;;
     *) return 1 ;;
   esac
 }
@@ -1379,6 +1396,23 @@ fi
 # loud instead of standing up an unsupervisable secondmate.
 if [ "$KIND" = secondmate ] && [ "$HARNESS" = gemini ]; then
   echo "error: gemini is a verified crewmate/scout adapter only and cannot run a secondmate; it has no primary supervision protocol. Select a harness verified for secondmates." >&2
+  exit 1
+fi
+
+# antigravity (agentapi) is SCOUT ONLY at this landing. The batch shape
+# (new-conversation prints one response and exits) has no interruption
+# surface for a multi-turn crewmate and no primary-supervision protocol,
+# so ship (crewmate) and secondmate are refused up front. The upgrade path
+# to crewmate requires a REPL wrapper around `agentapi send-message
+# <conversation_id>`; that wrapper is not yet written or verified, so
+# refusing here keeps the boundary loud rather than standing up a
+# non-supervisable worker.
+if [ "$KIND" = ship ] && [ "$HARNESS" = antigravity ]; then
+  echo "error: antigravity (agentapi) is a verified scout adapter only and cannot run a crewmate; its batch shape has no verified multi-turn contract yet. Select --scout or choose a harness verified for crewmates." >&2
+  exit 1
+fi
+if [ "$KIND" = secondmate ] && [ "$HARNESS" = antigravity ]; then
+  echo "error: antigravity (agentapi) is a verified scout adapter only and cannot run a secondmate; it has no primary supervision protocol. Select a harness verified for secondmates." >&2
   exit 1
 fi
 
@@ -1525,6 +1559,17 @@ model_flag_for_harness() {
       # the send path assumes for the longest model ids.
       printf -- '-m %s ' "$(shell_quote "$model")"
       ;;
+    antigravity)
+      # agentapi documents `--model=<flash_lite|flash|pro>` in its --help;
+      # the equals form is required (agentapi 2026-09-08 rejects the space
+      # form as an unexpected positional). Non-tier ids would be silently
+      # ignored by the server, so gate the vocabulary here rather than
+      # passing an arbitrary string that fires a rejected call the
+      # supervisor would read as a wedged worker.
+      case "$model" in
+        flash_lite|flash|pro) printf -- '--model=%s ' "$model" ;;
+      esac
+      ;;
   esac
 }
 
@@ -1603,6 +1648,50 @@ case "$LAUNCH" in
     LAUNCH=${LAUNCH//__MUSEBIN__/$(shell_quote "$MUSE_BIN")}
     LAUNCH=${LAUNCH//__MUSECONFIG__/$(shell_quote "$MUSE_CONFIG_HOME")}
     LAUNCH=${LAUNCH//__MUSEDATA__/$(shell_quote "$MUSE_DATA_HOME")}
+    ;;
+esac
+
+# antigravity (agentapi) credential preflight. Refuse the spawn UP FRONT when
+# either half of the auth surface is missing so the supervisor never observes
+# a wedged pane that agentapi would exit with a JSON error line for. Two
+# independent checks:
+#   1. OAuth token file (FM_ANTIGRAVITY_TOKEN_PATH override, defaulting to
+#      ~/.gemini/antigravity-cli/antigravity-oauth-token) exists, parses as
+#      JSON, and .access_token is a non-empty string. An empty placeholder
+#      (as ships pre-consent: expiry=0, no refresh, access_len=0) fails this
+#      check and is the SIGNAL that the browser OAuth flow has never run.
+#   2. ANTIGRAVITY_LS_ADDRESS is set in the environment. agentapi refuses
+#      every command with `{"error":"ANTIGRAVITY_LS_ADDRESS is not set"}`
+#      otherwise, and that is not something an unattended scout pane can
+#      recover from.
+# Both checks are cheap and the messages name the exact path/var the
+# operator has to touch so a refusal is actionable, not just a wall.
+case "$LAUNCH" in
+  *__AGENTAPIBIN__*)
+    AGENTAPI_BIN=${FM_ANTIGRAVITY_BIN_OVERRIDE:-$HOME/.gemini/antigravity-cli/bin/agentapi}
+    if [ ! -x "$AGENTAPI_BIN" ]; then
+      echo "error: antigravity agentapi binary not found at '$AGENTAPI_BIN'. Install Antigravity CLI or set FM_ANTIGRAVITY_BIN_OVERRIDE to the agentapi path." >&2
+      exit 1
+    fi
+    AGENTAPI_TOKEN_PATH=${FM_ANTIGRAVITY_TOKEN_PATH:-$HOME/.gemini/antigravity-cli/antigravity-oauth-token}
+    if [ ! -s "$AGENTAPI_TOKEN_PATH" ]; then
+      echo "error: antigravity oauth token missing or empty at '$AGENTAPI_TOKEN_PATH'. Complete the Antigravity IDE browser OAuth flow so agentapi has a live access_token, then retry." >&2
+      exit 1
+    fi
+    # Read the token file without a JSON parser dependency: an unpopulated
+    # placeholder ships as `{"access_token":"","refresh_token":"","expiry_date":0}`
+    # and every real token holds the literal `"access_token":"<non-empty>"`.
+    # Reject anything whose access_token value looks empty, whitespace-only,
+    # or missing.
+    if ! grep -Eq '"access_token"[[:space:]]*:[[:space:]]*"[^"]+"' "$AGENTAPI_TOKEN_PATH"; then
+      echo "error: antigravity oauth token at '$AGENTAPI_TOKEN_PATH' holds an empty access_token; the browser OAuth flow has not completed. Run the Antigravity IDE consent flow, then retry." >&2
+      exit 1
+    fi
+    if [ -z "${ANTIGRAVITY_LS_ADDRESS:-}" ]; then
+      echo "error: ANTIGRAVITY_LS_ADDRESS is not set in the launch environment; agentapi cannot reach the Antigravity IDE language server without it. Start the Antigravity IDE (or export the LS address) before spawning." >&2
+      exit 1
+    fi
+    LAUNCH=${LAUNCH//__AGENTAPIBIN__/$(shell_quote "$AGENTAPI_BIN")}
     ;;
 esac
 
@@ -3013,7 +3102,7 @@ case "$HARNESS" in
 esac
 LAUNCH=${LAUNCH//__WORKTREE__/$sq_worktree}
 case "$HARNESS" in
-  claude|codex|opencode|pi|pi-signed|grok|kimi|muse|gemini)
+  claude|codex|opencode|pi|pi-signed|grok|kimi|muse|gemini|antigravity)
     LAUNCH="env -u CURSOR_AGENT -u CURSOR_INVOKED_AS $LAUNCH"
     ;;
 esac

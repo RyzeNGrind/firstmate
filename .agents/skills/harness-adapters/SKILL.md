@@ -3,7 +3,7 @@ name: harness-adapters
 description: >-
   Agent-only reference for firstmate harness operations.
   Use before spawning or recovering a crewmate or secondmate, handling a trust dialog, sending a harness-specific skill invocation, interrupting or exiting an agent, resuming an exited agent, or verifying a new harness adapter.
-  Contains verified facts for claude, codex, opencode, pi, pi-signed, grok, kimi, cursor, muse, and gemini.
+  Contains verified facts for claude, codex, opencode, pi, pi-signed, grok, kimi, cursor, muse, gemini, and antigravity.
 user-invocable: false
 metadata:
   internal: true
@@ -36,6 +36,7 @@ Deliver lifecycle actions only through `../../../bin/fm-control.sh <task-id> int
 Never type an interrupt key or exit command through `fm-send`, where routing-marked lifecycle text becomes chat.
 Trust handling is complete only when inspection proves the target started processing its instructions; delivery success alone is not proof.
 Muse and gemini are verified only for crewmate and scout work, never a secondmate or primary; gemini additionally carries a DEGRADED turn-end contract (its harness reference owns the detail).
+Antigravity (agentapi) is verified only for scout work — its batch shape has no verified multi-turn contract yet, so crewmate and secondmate are both refused at spawn (its harness reference owns the upgrade path).
 
 ## Detection
 
@@ -90,7 +91,8 @@ A new tool remains undispatchable until the `verify` plan, its harness entry, ev
     "kimi": "references/harness/kimi.md",
     "cursor": "references/harness/cursor.md",
     "muse": "references/harness/muse.md",
-    "gemini": "references/harness/gemini.md"
+    "gemini": "references/harness/gemini.md",
+    "antigravity": "references/harness/antigravity.md"
   }
 }
 ```
