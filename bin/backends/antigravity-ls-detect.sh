@@ -94,7 +94,37 @@ if [ -z "$PORT" ]; then
   exit 3
 fi
 
-ADDR="127.0.0.1:$PORT"
+# WSL2 gotcha: the Antigravity IDE runs as a Windows binary and its LS
+# binds on the Windows-side 127.0.0.1. From WSL2 default NAT, that address
+# is the WSL guest's own loopback, not Windows'. When we're inside WSL,
+# swap the host to the Windows-side vEthernet IP (Default Switch) so any
+# operator-configured netsh portproxy + firewall exception on Windows
+# actually bridges the guest's dial to the LS. Mirrored networking
+# (`[wsl2] networkingMode=mirrored` in .wslconfig) collapses the two loopbacks
+# so 127.0.0.1 in WSL reaches Windows directly - honour an explicit override
+# for that case by exporting FM_ANTIGRAVITY_LS_HOST=127.0.0.1 (or any IP).
+HOST=${FM_ANTIGRAVITY_LS_HOST:-127.0.0.1}
+if [ -z "${FM_ANTIGRAVITY_LS_HOST:-}" ] && grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then
+  # WSL detected. Resolve the Windows vEth Default Switch IP via netsh
+  # over WSL-interop; that adapter is the host end of the WSL2 NAT and is
+  # what a portproxy rule listens on. Fall back to 172.26.0.1 (the WSL 2.7+
+  # default subnet on Windows 11) so the helper still emits a plausible
+  # address when netsh cannot be reached.
+  NETSH="/mnt/c/Windows/System32/netsh.exe"
+  if [ -x "$NETSH" ]; then
+    RESOLVED=$("$NETSH" interface ip show addresses "vEthernet (Default Switch)" 2>/dev/null \
+      | tr -d '\r' | awk '/IP Address:/ { print $NF; exit }')
+    if [ -n "$RESOLVED" ]; then
+      HOST=$RESOLVED
+    else
+      HOST=172.26.0.1
+    fi
+  else
+    HOST=172.26.0.1
+  fi
+fi
+
+ADDR="$HOST:$PORT"
 case "$MODE" in
   export) printf 'export ANTIGRAVITY_LS_ADDRESS=%s\n' "$ADDR" ;;
   *) printf '%s\n' "$ADDR" ;;
