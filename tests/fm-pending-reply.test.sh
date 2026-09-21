@@ -1607,11 +1607,19 @@ test_new_id_fallback_path_without_openssl() {
   [ "${#id}" = 16 ] || fail "generated ID must be 16 chars, got ${#id}"
   [[ "$id" =~ ^[a-f0-9]{16}$ ]] || fail "generated ID must be lowercase hex, got $id"
 
-  # Test without openssl (fallback path): hide openssl by excluding /usr/local/bin
-  # from PATH. Include all other paths so the fallback path has access to needed
-  # tools (date, awk, cksum, shasum, tr, cut). The function must not crash
-  # under set -u when openssl is truly absent (command -v openssl returns non-zero).
-  id=$(PATH="/usr/bin:/bin:/usr/sbin:/sbin:/run/current-system/sw/bin" fm_pending_reply_new_id)
+  # Test without openssl (fallback path): build a PATH containing only
+  # symlinks to the specific tools the fallback needs (date, awk, cksum,
+  # shasum, tr, cut), so openssl is unreachable regardless of which OS-standard
+  # bin dir the host installs it in (e.g. /usr/bin on Ubuntu CI). The function
+  # must not crash under set -u when openssl is truly absent (command -v
+  # openssl returns non-zero).
+  local fakepath="$TMP_ROOT/no-openssl-path" tool tool_path
+  mkdir -p "$fakepath"
+  for tool in date awk cksum shasum tr cut; do
+    tool_path=$(command -v "$tool") || fail "missing required tool for fallback test: $tool"
+    ln -sf "$tool_path" "$fakepath/$tool"
+  done
+  id=$(PATH="$fakepath" fm_pending_reply_new_id)
   [ "${#id}" = 16 ] || fail "fallback ID must be 16 chars, got ${#id}"
   [[ "$id" =~ ^[a-f0-9]{16}$ ]] || fail "fallback ID must be lowercase hex, got $id"
   pass "new_id generates valid IDs with both openssl and fallback paths"
