@@ -842,49 +842,52 @@ test_arm_refuses_an_unusable_launch_confirm_window() {
 }
 
 test_confirm_timeout_leaves_consistent_lock_state() {
-  # Regression for the confirm-window wedge: when an arm's confirm timeout fires
-  # and its watcher child was TERMed between lock acquisition and writing
-  # pid-identity, the arm must release that partial hold rather than leaving the
-  # lock dir in a state that blocks the steal path on successor attempts.
+  # Regression for the confirm-window wedge: the arm's confirm-timeout cleanup
+  # path must leave the lock absent and publish .watcher-down so the next arm
+  # can surface queued wakes (docs/watcher-continuity.md invariant).
   #
-  # Direct simulation of the timing window (pid written, identity not yet) is
-  # not feasible without instrumenting fm-watch.sh, so this test verifies the
-  # observable guarantee: after any arm attempt with a short confirm window,
-  # the lock is never in the stranded partial state (dead pid, absent identity).
+  # FM_GUARD_GRACE=0 prevents healthy_watcher from ever succeeding, forcing the
+  # confirm window to expire and the arm to TERM its child. FM_ARM_CONFIRM_TIMEOUT=1
+  # bounds test runtime to ~3s. No prewrite: the watcher runs normally and the arm
+  # fails solely because the confirm window expires, exercising the actual
+  # timeout/cleanup code path rather than the clean-confirm path.
   #
-  # A pre-written status file causes the watcher to emit a signal wake and exit
-  # on its first poll (FM_POLL=1), which lets the arm confirm healthy and exit
-  # within a few seconds without an external interrupt.
-  #
-  # Manual verification of the specific code path: set FM_ARM_CONFIRM_TIMEOUT=1,
-  # induce a slow watcher startup (e.g. a large watcher-down recovery backlog),
-  # confirm state/.watch.lock is absent after the FAILED line, with no
-  # dead-pid-no-identity directory left behind.
-  local dir home state armout arm_rc lock_pid lock_identity
+  # The exact partial-lock race (pid written, pid-identity not yet written before
+  # TERM) is not deterministically reproducible without instrumenting fm-watch.sh.
+  # This test instead verifies the post-timeout observable invariants:
+  #   1. Lock must be absent.
+  #   2. .watcher-down must be published.
+  # These invariants hold whether the watcher's own EXIT trap or the arm's
+  # cleanup code (fm_lock_try_acquire/fm_lock_release) closes the lock.
+  local dir home state fakebin armout arm_rc
   dir=$(make_case confirm-timeout-consistent-lock)
   home="$dir/home"
   state="$dir/state"
+  fakebin="$dir/fakebin"
   armout="$dir/arm.out"
-  mkdir -p "$home/data" "$state"
+  mkdir -p "$home/data"
 
-  # Pre-write a captain-relevant status line so the watcher exits on its first
-  # poll, giving the arm a signal wake to report. This bounds test runtime to
-  # ~4s: 2s confirm window + 1s first poll + watcher exit + arm report.
-  printf 'done: test fixture\n' > "$state/fixture.status"
-
-  PATH="$dir/fakebin:$PATH" FM_HOME="$home" FM_STATE_OVERRIDE="$state" \
+  PATH="$fakebin:$PATH" FM_HOME="$home" FM_STATE_OVERRIDE="$state" \
     FM_POLL=1 FM_SIGNAL_GRACE=0 FM_CHECK_INTERVAL=999999 FM_HEARTBEAT=999999 \
-    FM_ARM_CONFIRM_TIMEOUT=2 "$WATCH_ARM" > "$armout" 2>&1
+    FM_GUARD_GRACE=0 FM_ARM_CONFIRM_TIMEOUT=1 "$WATCH_ARM" > "$armout" 2>&1
   arm_rc=$?
 
-  # Invariant: the lock must not be a dead-pid partial hold (pid present,
-  # identity absent). That state blocks the steal path on every successor arm.
-  lock_pid=$(cat "$state/.watch.lock/pid" 2>/dev/null || true)
-  lock_identity=$(cat "$state/.watch.lock/pid-identity" 2>/dev/null || true)
-  if [ -n "$lock_pid" ] && [ -z "$lock_identity" ] && ! kill -0 "$lock_pid" 2>/dev/null; then
-    fail "arm left stranded partial lock: dead pid=$lock_pid with no identity (arm_rc=$arm_rc)"
-  fi
-  pass "watch-arm: confirm timeout leaves no stranded partial lock"
+  [ "$arm_rc" -ne 0 ] \
+    || fail "arm succeeded with FM_GUARD_GRACE=0 (expected confirm-timeout failure): $(cat "$armout")"
+  grep -q 'watcher: FAILED' "$armout" \
+    || fail "arm did not emit the typed failure line after timeout: $(cat "$armout")"
+
+  # Invariant 1: lock must be absent after a timeout arm failure.
+  [ ! -e "$state/.watch.lock" ] \
+    || fail "lock present after confirm-timeout arm failure (arm_rc=$arm_rc)"
+
+  # Invariant 2: .watcher-down must be published so the next arm can surface
+  # durable queued wakes (docs/watcher-continuity.md: every watcher exit must
+  # publish the downtime marker for the rearm recovery path).
+  [ -e "$state/.watcher-down" ] \
+    || fail ".watcher-down not published after confirm-timeout arm failure (arm_rc=$arm_rc)"
+
+  pass "watch-arm: confirm timeout leaves lock absent and publishes downtime marker"
 }
 
 test_attached_arm_reports_the_delivered_wake
