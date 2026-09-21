@@ -596,10 +596,16 @@ rc=$?
 # writes its pid into the lock before writing pid-identity; if TERMed in that
 # window the lock holds a pid with no identity, which blocks the successor steal
 # path. The child is confirmed dead after wait, so the lock is ours to release.
+# Route through fm_lock_try_acquire/fm_lock_release rather than a manual
+# read+remove: the steal mutex re-verifies liveness at claim time, so a
+# concurrent watcher that has already legitimately reclaimed this lock is
+# left untouched instead of having its fresh owner dir destroyed.
 _lock_pid=$(cat "$WATCH_LOCK/pid" 2>/dev/null || true)
 _lock_identity=$(cat "$WATCH_LOCK/pid-identity" 2>/dev/null || true)
 if [ -n "$_timeout_child" ] && [ "$_lock_pid" = "$_timeout_child" ] && [ -z "$_lock_identity" ]; then
-  fm_lock_remove_path "$WATCH_LOCK" 2>/dev/null || true
+  if fm_lock_try_acquire "$WATCH_LOCK"; then
+    fm_lock_release "$WATCH_LOCK"
+  fi
 fi
 unset _lock_pid _lock_identity _timeout_child
 cycle_log_append "$rc" "$(cycle_signal_name "$rc")" confirmation-timeout none
