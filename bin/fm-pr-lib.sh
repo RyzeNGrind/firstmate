@@ -193,11 +193,11 @@ fm_pr_gerrit_path_valid() {
 # username and repository rules are unchanged, and GitLab and Gerrit each get
 # their own namespace rules rather than a loosened GitHub rule.
 #
-# FM_PR_OWNER and FM_PR_REPO are additionally set for github because
-# bin/fm-pr-merge.sh addresses GitHub by owner/repository. A gitlab or gerrit
-# URL leaves them empty, and those paths address the project by FM_PR_HOST and
-# FM_PR_PATH instead, so a change on any instance resolves without a hardcoded
-# host.
+# FM_PR_OWNER and FM_PR_REPO are additionally set for github and forgejo because
+# bin/fm-pr-merge.sh addresses those forges by owner/repository. A gitlab or
+# gerrit URL leaves them empty, and those paths address the project by
+# FM_PR_HOST and FM_PR_PATH instead, so a change on any instance resolves
+# without a hardcoded host.
 fm_pr_url_parse() {
   local raw=${1-} pattern host path
   local LC_ALL=C
@@ -238,6 +238,28 @@ fm_pr_url_parse() {
     FM_PR_HOST=$host
     FM_PR_PATH=$path
     FM_PR_NUMBER=${BASH_REMATCH[3]}
+    return 0
+  fi
+  # Forgejo: https://<host>/<owner>/<repo>/pulls/<n>. Unambiguous against GitHub
+  # (/pull/) and GitLab (/-/merge_requests/). Owner and repository follow
+  # GitHub naming rules; the host is any valid lowercase DNS name except
+  # github.com, validated by fm_pr_forge_host_valid.
+  pattern='^https://([a-z0-9.-]{1,253})/([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]{0,37}[A-Za-z0-9])/([A-Za-z0-9._-]{1,100})/pulls/([1-9][0-9]*)$'
+  if [[ "$raw" =~ $pattern ]]; then
+    host=${BASH_REMATCH[1]}
+    fm_pr_forge_host_valid "$host" || return 1
+    [[ "${BASH_REMATCH[2]}" != *--* ]] || return 1
+    [ "${BASH_REMATCH[3]}" != . ] && [ "${BASH_REMATCH[3]}" != .. ] || return 1
+    FM_PR_PROVIDER=forgejo
+    FM_PR_URL=$raw
+    FM_PR_HOST=$host
+    FM_PR_PATH="${BASH_REMATCH[2]}/${BASH_REMATCH[3]}"
+    # Consumed by bin/fm-pr-merge.sh, which addresses Forgejo by owner/repository.
+    # shellcheck disable=SC2034
+    FM_PR_OWNER=${BASH_REMATCH[2]}
+    # shellcheck disable=SC2034
+    FM_PR_REPO=${BASH_REMATCH[3]}
+    FM_PR_NUMBER=${BASH_REMATCH[4]}
     return 0
   fi
   # A Gerrit change URL is https://<host>/c/<project>/+/<number>. "+" is outside
@@ -1047,6 +1069,53 @@ FIELDS
   FM_PR_RECORD_MERGED=$merged
 }
 
+fm_pr_forgejo_read_record() {  # <host> <path> <number>
+  local host=$1 path=$2 number=$3 owner repo creds_file
+  local forgejo_token='' json fields _line state='' merged='' total=0 named=0
+  FM_PR_RECORD_STATE=
+  FM_PR_RECORD_MERGED=
+  command -v curl >/dev/null 2>&1 || return 1
+  command -v jq >/dev/null 2>&1 || return 1
+  owner=${path%%/*}
+  repo=${path#*/}
+  creds_file="${FM_FORGEJO_CREDS_FILE:-$HOME/.config/das/forgejo.env}"
+  [ -f "$creds_file" ] || return 1
+  while IFS= read -r _line || [ -n "$_line" ]; do
+    case "$_line" in FORGEJO_TOKEN=*) forgejo_token=${_line#FORGEJO_TOKEN=} ;; esac
+  done < "$creds_file"
+  forgejo_token=${forgejo_token#[\"\']}
+  forgejo_token=${forgejo_token%[\"\']}
+  [ -n "$forgejo_token" ] || return 1
+  json=$(curl -sf --max-time 10 \
+    -H "Authorization: token $forgejo_token" \
+    "https://$host/api/v1/repos/$owner/$repo/pulls/$number" 2>/dev/null) || return 1
+  [ -n "$json" ] || return 1
+  if ! fields=$(printf '%s' "$json" | jq -r '
+      if type == "object" and (.state | type == "string") and .state != "" then
+        "state=" + .state,
+        "merged=" + (if .merged == true then "true" else "false" end)
+      else error("invalid") end' 2>/dev/null); then
+    return 1
+  fi
+  while IFS= read -r _line; do
+    total=$((total + 1))
+    case "$_line" in
+      state=*) state=${_line#state=}; named=$((named + 1)) ;;
+      merged=*) merged=${_line#merged=}; named=$((named + 1)) ;;
+    esac
+  done <<FIELDS
+$fields
+FIELDS
+  [ "$named" -eq 2 ] && [ "$total" -eq 2 ] && [ -n "$state" ] \
+    && { [ "$merged" = true ] || [ "$merged" = false ]; } || return 1
+  # Consumed by bin/fm-crew-state.sh passed_pr_detail.
+  # shellcheck disable=SC2034
+  FM_PR_RECORD_STATE=$state
+  # Consumed by bin/fm-crew-state.sh passed_pr_detail.
+  # shellcheck disable=SC2034
+  FM_PR_RECORD_MERGED=$merged
+}
+
 # gerrit-axi resolves its server from the current directory's origin remote
 # first, so the host is passed explicitly from the parsed identity and a read
 # outside a clone still reaches the right server. A change number is
@@ -1121,6 +1190,7 @@ fm_pr_gerrit_read_revision() {  # <host> <number>
   # shellcheck disable=SC2034
   FM_PR_RECORD_REVISION=$revision
 }
+
 
 fm_pr_poll_retirement_data_valid() {
   local state=$1 id=$2 state_device data data_hash data_identity
