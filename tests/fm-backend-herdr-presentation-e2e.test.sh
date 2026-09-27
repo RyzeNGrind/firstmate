@@ -507,7 +507,7 @@ assert_no_projection_mutation_since() {  # <line-count> <case-name>
 HOME_DIR="$TMP_ROOT/home"
 PROJECT_DIR="$TMP_ROOT/project"
 RECOVERY_PROJECT_DIR="$TMP_ROOT/recovery-project"
-mkdir -p "$HOME_DIR/state" "$HOME_DIR/config" \
+mkdir -p "$HOME_DIR/state/treehouse" "$HOME_DIR/config" \
   "$HOME_DIR/data/anchor" "$HOME_DIR/data/shape" \
   "$HOME_DIR/data/order-a" "$HOME_DIR/data/order-b" \
   "$HOME_DIR/data/order-fail" "$HOME_DIR/data/fm-hibit-resume-r1" \
@@ -969,8 +969,8 @@ pass "real Herdr lab: three repeated concurrent create/order/cleanup waves have 
 # ------------------------------------------------------------------
 SECOND_HOME_A="$TMP_ROOT/home-2ndmate-alpha"
 SECOND_HOME_B="$TMP_ROOT/home-2ndmate-bravo"
-mkdir -p "$SECOND_HOME_A/state" "$SECOND_HOME_A/config" "$SECOND_HOME_A/data" \
-  "$SECOND_HOME_B/state" "$SECOND_HOME_B/config" "$SECOND_HOME_B/data"
+mkdir -p "$SECOND_HOME_A/state/treehouse" "$SECOND_HOME_A/config" "$SECOND_HOME_A/data" \
+  "$SECOND_HOME_B/state/treehouse" "$SECOND_HOME_B/config" "$SECOND_HOME_B/data"
 printf 'alpha\n' > "$SECOND_HOME_A/.fm-secondmate-home"
 printf 'bravo\n' > "$SECOND_HOME_B/.fm-secondmate-home"
 touch "$SECOND_HOME_A/state/.last-watcher-beat" "$SECOND_HOME_B/state/.last-watcher-beat"
