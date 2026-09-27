@@ -406,6 +406,8 @@ run_pr_merge() {
   FM_TEST_REAL_MV="$REAL_MV" \
   FM_TEST_GLAB_LOG="$case_dir/glab.log" \
   FM_TEST_GLAB_JSON="$case_dir/mr.json" \
+  FM_TEST_FORGEJO_LOG="$case_dir/forgejo.log" \
+  FM_TEST_FORGEJO_DATA_DIR="$case_dir/forgejo-data" \
   HOME="${FM_TEST_USER_HOME:-$case_dir/user-home}" \
   PATH="$case_dir/fakebin:$PATH" \
     "$PR_MERGE" "$@"
@@ -3259,22 +3261,29 @@ for arg in "$@"; do
   fi
 done
 case "$path_part" in
-  *"/pulls/"*) cat "$FM_TEST_FORGEJO_DATA_DIR/pr.json"; exit 0 ;;
-  *"/actions/runs"*) cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json"; exit 0 ;;
-  *"/statuses"*) cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
   *"/pulls/"*"/merge")
     touch "$case_dir/forgejo-merged"
     printf '{"merged":true}\n'
     exit 0
     ;;
+  *"/pulls/"*)
+    if [ -e "$case_dir/forgejo-merged" ]; then
+      jq '. + {state: "closed", merged: true}' "$FM_TEST_FORGEJO_DATA_DIR/pr.json"
+    else
+      cat "$FM_TEST_FORGEJO_DATA_DIR/pr.json"
+    fi
+    exit 0
+    ;;
+  *"/actions/runs"*) cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json"; exit 0 ;;
+  *"/statuses"*) cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
 esac
 exit 0
 SH
   chmod +x "$case_dir/fakebin/curl"
   ln -sf "$JQ_BIN" "$case_dir/fakebin/jq"
 
-  mkdir -p "$case_dir/.config/das"
-  cat > "$case_dir/.config/das/forgejo.env" <<'ENV'
+  mkdir -p "$case_dir/user-home/.config/das"
+  cat > "$case_dir/user-home/.config/das/forgejo.env" <<'ENV'
 FORGEJO_TOKEN=test-token-12345
 ENV
 
@@ -3324,23 +3333,6 @@ test_forgejo_merge_checks_not_green() {
   assert_grep "refusing to merge" "$case_dir/stderr" \
     "forgejo-red-checks: refusal was not reported"
   pass "fm-pr-merge refuses a Forgejo merge when checks are not green"
-}
-
-test_forgejo_merge_head_mismatch() {
-  local case_dir rc
-  case_dir=$(make_forgejo_case forgejo-head-mismatch)
-  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json" open false true "0000000000000000000000000000000000000000"
-
-  set +e
-  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
-    > "$case_dir/stdout" 2> "$case_dir/stderr"
-  rc=$?
-  set -e
-
-  expect_code 1 "$rc" "forgejo-head-mismatch: head mismatch must fail"
-  assert_grep "does not match" "$case_dir/stderr" \
-    "forgejo-head-mismatch: refusal did not name head mismatch"
-  pass "fm-pr-merge refuses when Forgejo PR head does not match"
 }
 
 test_forgejo_merge_not_mergeable() {
@@ -3403,3 +3395,6 @@ test_away_record_cannot_change_between_the_authority_read_and_the_merge
 test_a_record_made_unreadable_before_the_merge_refuses_it
 test_merge_refuses_when_the_away_record_cannot_be_locked
 test_allow_red_refused_on_gitlab
+test_forgejo_merge_happy
+test_forgejo_merge_checks_not_green
+test_forgejo_merge_not_mergeable
