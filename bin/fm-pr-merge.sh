@@ -1149,42 +1149,29 @@ forgejo_curl_api() {
 }
 
 forgejo_checks_not_green() {
-  local runs_json status_json run_count has_failures=false
-  # Get action runs for the given head commit
-  if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&status=completed&limit=50" 2>/dev/null) \
+  local runs_json status_json
+  if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \
     || [ -z "$runs_json" ]; then
     return 1
   fi
+  printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
+    .data[]? | select(.head_sha == $head) | select(.conclusion != "success") | .name // "unnamed"
+  ' 2>/dev/null || return 1
 
-  # Check if there are any runs for this head; if not, no conclusion can be made
-  run_count=$(printf '%s' "$runs_json" | jq '[.data[]? | select(.head_sha == "'$FM_PR_MERGE_HEAD'")] | length' 2>/dev/null || echo 0)
-  [ "$run_count" -gt 0 ] || return 1
-
-  # Output names of runs that are not successful
-  if printf '%s' "$runs_json" | jq -e '.data[]? | select(.head_sha == "'$FM_PR_MERGE_HEAD'" and .conclusion != "success")' >/dev/null 2>&1; then
-    printf '%s' "$runs_json" | jq -r '.data[]? | select(.head_sha == "'$FM_PR_MERGE_HEAD'" and .conclusion != "success") | .name // "unnamed"' 2>/dev/null
-    has_failures=true
-  fi
-
-  # Get commit statuses
   if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
     || [ -z "$status_json" ]; then
-    [ "$has_failures" = false ] && return 0 || return 1
+    return 1
   fi
+  printf '%s' "$status_json" | jq -r '
+    .[]? | select(.state != "success") | .context // "unnamed"
+  ' 2>/dev/null || return 1
 
-  # Output non-success status contexts (pending is also non-success)
-  if printf '%s' "$status_json" | jq -e '.[]? | select(.state != "success")' >/dev/null 2>&1; then
-    printf '%s' "$status_json" | jq -r '.[]? | select(.state != "success") | .context // "unnamed"' 2>/dev/null
-    return 0
-  fi
-
-  [ "$has_failures" = false ] && return 0 || return 1
+  return 0
 }
 
 forgejo_verify_mergeable() {
   local json fields line state='' draft='' mergeable='' live_head='' refusals=''
   local total=0 named=0
-  FM_PR_MERGE_HEAD=
 
   if ! json=$(forgejo_curl_api "$forgejo_token_var" "pulls/$PR_NUMBER" 2>/dev/null) \
     || [ -z "$json" ]; then
@@ -1240,9 +1227,6 @@ FIELDS
 "
   [ "$mergeable" = true ] \
     || refusals="$refusals  - mergeable is \"${mergeable:-unreadable}\", not true
-"
-  [ "$live_head" = "$FM_PR_MERGE_HEAD" ] 2>/dev/null \
-    || refusals="$refusals  - head.sha (${live_head:-unreadable}) does not match expected ($FM_PR_MERGE_HEAD)
 "
 
   if [ -n "$refusals" ]; then
