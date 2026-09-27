@@ -1128,6 +1128,135 @@ gitlab_confirm_merged() {
   [ "$state" = merged ]
 }
 
+forgejo_token_load() {
+  local forgejo_token='' _line creds_file
+  forgejo_token_var=''
+  creds_file="${FM_FORGEJO_CREDS_FILE:-$HOME/.config/das/forgejo.env}"
+  [ -f "$creds_file" ] || return 1
+  while IFS= read -r _line || [ -n "$_line" ]; do
+    case "$_line" in FORGEJO_TOKEN=*) forgejo_token=${_line#FORGEJO_TOKEN=} ;; esac
+  done < "$creds_file"
+  forgejo_token=${forgejo_token#[\"\']}
+  forgejo_token=${forgejo_token%[\"\']}
+  [ -n "$forgejo_token" ] || return 1
+  forgejo_token_var=$forgejo_token
+}
+
+forgejo_curl_api() {
+  local forgejo_token=$1; shift
+  curl -sf --max-time 10 -H "Authorization: token $forgejo_token" \
+    "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$@"
+}
+
+forgejo_checks_not_green() {
+  local runs_json status_json run_count has_failures=false
+  # Get action runs for the given head commit
+  if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&status=completed&limit=50" 2>/dev/null) \
+    || [ -z "$runs_json" ]; then
+    return 1
+  fi
+
+  # Check if there are any runs for this head; if not, no conclusion can be made
+  run_count=$(printf '%s' "$runs_json" | jq '[.data[]? | select(.head_sha == "'$FM_PR_MERGE_HEAD'")] | length' 2>/dev/null || echo 0)
+  [ "$run_count" -gt 0 ] || return 1
+
+  # Output names of runs that are not successful
+  if printf '%s' "$runs_json" | jq -e '.data[]? | select(.head_sha == "'$FM_PR_MERGE_HEAD'" and .conclusion != "success")' >/dev/null 2>&1; then
+    printf '%s' "$runs_json" | jq -r '.data[]? | select(.head_sha == "'$FM_PR_MERGE_HEAD'" and .conclusion != "success") | .name // "unnamed"' 2>/dev/null
+    has_failures=true
+  fi
+
+  # Get commit statuses
+  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
+    || [ -z "$status_json" ]; then
+    [ "$has_failures" = false ] && return 0 || return 1
+  fi
+
+  # Output non-success status contexts (pending is also non-success)
+  if printf '%s' "$status_json" | jq -e '.[]? | select(.state != "success")' >/dev/null 2>&1; then
+    printf '%s' "$status_json" | jq -r '.[]? | select(.state != "success") | .context // "unnamed"' 2>/dev/null
+    return 0
+  fi
+
+  [ "$has_failures" = false ] && return 0 || return 1
+}
+
+forgejo_verify_mergeable() {
+  local json fields line state='' draft='' mergeable='' live_head='' refusals=''
+  local total=0 named=0
+  FM_PR_MERGE_HEAD=
+
+  if ! json=$(forgejo_curl_api "$forgejo_token_var" "pulls/$PR_NUMBER" 2>/dev/null) \
+    || [ -z "$json" ]; then
+    echo "error: could not read the Forgejo pull request state before merging" >&2
+    return 1
+  fi
+
+  if ! fields=$(printf '%s' "$json" | jq -r '
+      if type == "object" then
+        "state=" + ((.state // "") | tostring),
+        "draft=" + ((.draft // false) | tostring),
+        "mergeable=" + ((.mergeable // false) | tostring),
+        "head=" + ((.head.sha // "") | tostring)
+      else
+        error("pull request payload is not an object")
+      end' 2>/dev/null); then
+    echo "error: could not read the Forgejo pull request state before merging" >&2
+    return 1
+  fi
+
+  while IFS= read -r line; do
+    total=$((total + 1))
+    case "$line" in
+      state=*) state=${line#state=}; named=$((named + 1)) ;;
+      draft=*) draft=${line#draft=}; named=$((named + 1)) ;;
+      mergeable=*) mergeable=${line#mergeable=}; named=$((named + 1)) ;;
+      head=*) live_head=${line#head=}; named=$((named + 1)) ;;
+      *) continue ;;
+    esac
+  done <<FIELDS
+$fields
+FIELDS
+
+  if [ "$named" -ne 4 ] || [ "$total" -ne 4 ]; then
+    echo "error: could not read the Forgejo pull request state before merging" >&2
+    return 1
+  fi
+
+  if ! fm_pr_head_valid "$live_head"; then
+    echo "error: could not read the Forgejo pull request head commit before merging" >&2
+    return 1
+  fi
+
+  case "$state" in
+    open) ;;
+    *)
+      refusals="$refusals  - state is \"${state:-unreadable}\", not open
+"
+      ;;
+  esac
+  [ "$draft" = false ] \
+    || refusals="$refusals  - the pull request is a draft
+"
+  [ "$mergeable" = true ] \
+    || refusals="$refusals  - mergeable is \"${mergeable:-unreadable}\", not true
+"
+  [ "$live_head" = "$FM_PR_MERGE_HEAD" ] 2>/dev/null \
+    || refusals="$refusals  - head.sha (${live_head:-unreadable}) does not match expected ($FM_PR_MERGE_HEAD)
+"
+
+  if [ -n "$refusals" ]; then
+    printf 'error: refusing to merge %s\n' "$URL" >&2
+    printf '%s' "$refusals" >&2
+    return 1
+  fi
+
+  FM_PR_MERGE_HEAD=$live_head
+  printf 'verified: %s is open and mergeable, with head %s\n' \
+    "$URL" "$live_head" >&2
+  return 0
+}
+
 # Record before either forge call. This arms the merge poll without claiming a
 # landed outcome, so even a provider read failure after a real merge cannot
 # leave teardown without the PR identity it needs to verify the result.
@@ -1232,6 +1361,57 @@ case "$PROVIDER" in
     gitlab_confirm_rc=0
     gitlab_confirm_merged || gitlab_confirm_rc=$?
     [ "$gitlab_confirm_rc" -eq 0 ] || exit 0
+    ;;
+  forgejo)
+    forgejo_token_load || { echo "error: Forgejo credentials not found" >&2; exit 1; }
+    forgejo_verify_mergeable || exit 1
+    red=''
+    if ! red=$(forgejo_checks_not_green); then
+      echo "error: could not read the Forgejo pull request checks before merging" >&2
+      exit 1
+    fi
+    if [ -n "$red" ]; then
+      printf 'error: refusing to merge %s\n' "$URL" >&2
+      printf '%s\n' "$red" | while IFS= read -r name; do
+        [ -n "$name" ] && printf '  - check %s is not green\n' "$name" >&2
+      done
+      exit 1
+    fi
+    hold_away_record_for_merge || exit 1
+    away_status=0
+    require_current_away_authority || away_status=$?
+    [ "$away_status" -eq 0 ] || exit "$away_status"
+    merge_status=0
+    merge_body="{\"Do\":\"merge\",\"head_commit_id\":\"$FM_PR_MERGE_HEAD\"}"
+    merge_output=$(forgejo_curl_api "$forgejo_token_var" "pulls/$PR_NUMBER/merge" \
+      -X POST -H "Content-Type: application/json" -d "$merge_body" 2>&1) || merge_status=$?
+    if [ "$merge_status" -ne 0 ]; then
+      fm_afk_contract_lock_release || true
+      fm_lock_release "$MERGE_CONTROL_LOCK" || true
+      MERGE_CONTROL_LOCK=
+      printf '%s\n' "$merge_output" >&2
+      exit "$merge_status"
+    fi
+    persist_accepted_merge_authority || exit 1
+    fm_afk_contract_lock_release || true
+    fm_lock_release "$MERGE_CONTROL_LOCK" || true
+    MERGE_CONTROL_LOCK=
+    # Confirm merged=true by reading back.
+    FM_FORGEJO_MERGED=false
+    confirm_json=$(forgejo_curl_api "$forgejo_token_var" "pulls/$PR_NUMBER" 2>/dev/null) || true
+    if [ -n "$confirm_json" ] && command -v jq >/dev/null 2>&1; then
+      readback=$(printf '%s' "$confirm_json" | jq -r '
+        if (.merged == true) then "merged=true"
+        elif (.state == "closed") then "merged=unknown-closed"
+        else "merged=false" end' 2>/dev/null) || true
+      [ "$readback" = "merged=true" ] && FM_FORGEJO_MERGED=true
+    fi
+    if [ "$FM_FORGEJO_MERGED" != true ]; then
+      printf 'actionable: merge POST returned 200 for %s but read-back shows merged=%s\n' \
+        "$URL" "$FM_FORGEJO_MERGED" >&2
+      exit 1
+    fi
+    printf 'verified: %s is merged\n' "$URL"
     ;;
   *)
     echo "error: invalid PR merge request" >&2
