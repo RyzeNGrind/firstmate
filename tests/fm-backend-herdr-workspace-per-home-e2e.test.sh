@@ -87,7 +87,7 @@ fm_backend_source herdr || fail "fm_backend_source herdr failed"
 # This test asserts the per-home FLAT workspace shape, so both homes opt out of
 # the default-on presentation projection rather than depending on that default.
 PRIMARY_HOME="$TMP_ROOT/primary-home"
-mkdir -p "$PRIMARY_HOME/state" "$PRIMARY_HOME/data/cm1" "$PRIMARY_HOME/config"
+mkdir -p "$PRIMARY_HOME/state/treehouse" "$PRIMARY_HOME/data/cm1" "$PRIMARY_HOME/config"
 printf 'off\n' > "$PRIMARY_HOME/config/herdr-presentation-spaces"
 cat > "$PRIMARY_HOME/data/cm1/brief.md" <<'EOF'
 # Task
