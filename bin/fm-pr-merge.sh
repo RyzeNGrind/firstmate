@@ -83,7 +83,7 @@
 # ~/.config/das/forgejo.env by default; FM_FORGEJO_CREDS_FILE overrides that
 # path.
 #
-# Before either forge merge, the task's existing per-task control lock
+# Before any forge merge, the task's existing per-task control lock
 # serializes the captain-hold check through the forge command. A still-held or
 # unreadable row refuses before that command, so a captain approval must be
 # recorded as an `answer --release` before this entrypoint is invoked. While
@@ -1264,7 +1264,7 @@ FIELDS
   return 0
 }
 
-# Record before either forge call. This arms the merge poll without claiming a
+# Record before any forge call. This arms the merge poll without claiming a
 # landed outcome, so even a provider read failure after a real merge cannot
 # leave teardown without the PR identity it needs to verify the result.
 away_status=0
@@ -1275,7 +1275,7 @@ record_pr_metadata || exit 1
 require_released_captain_hold || exit 1
 
 # Accepted confused-agent-grade limitation, as in bin/fm-lease-lib.sh, not an
-# oversight: if this lock-owning shell dies while its gh or glab child lives,
+# oversight: if this lock-owning shell dies while its gh, glab, or curl child lives,
 # stale-owner recovery can release the record for archive or replacement and
 # the orphaned forge child can still merge on the lapsed away authority.
 case "$PROVIDER" in
