@@ -18,9 +18,10 @@
 # duplicated doorbell is a no-op by construction (the worker finds the inbox
 # empty or already handled), and a swallowed doorbell is detected by the
 # absence of the worker's acknowledgement and re-rung on a bounded schedule.
-# A positively dead or missing endpoint bypasses that schedule without being
-# typed into, and its unhandled record surfaces through the ordinary stale wake
-# into stuck-crewmate-recovery.
+# A dead or missing endpoint is never typed into, but its unhandled record
+# still walks that schedule and surfaces through the ordinary stale wake into
+# stuck-crewmate-recovery only after the ring budget is spent, so a transiently
+# misclassified-dead endpoint cannot permanently strand the steer.
 #
 # Layout under <state-dir>:
 #   <task>.inbox/NNN.msg       one durable steer, numeric sequence, atomic rename
@@ -277,8 +278,9 @@ fm_task_inbox_doorbell_line() {  # <record-path>
 # Returns 0 rang, 1 skipped because the composer PROVENLY holds pending text
 # other than our own doorbell (the watcher re-rings later), 2 the backend send
 # failed, 3 skipped because the endpoint is positively dead or missing (nothing
-# typed; recovery owns the record). No return value is delivery proof; the
-# acknowledgement move is the only delivery signal.
+# typed; the caller decides whether to consume ladder budget or escalate). No
+# return value is delivery proof; the acknowledgement move is the only delivery
+# signal.
 # The skip is deliberately narrow: only an exact `pending` verdict can defer,
 # because there our Enter could submit someone's real half-typed content.
 # `pending-unproven` and `unknown` still ring - the worst outcome is a garbled
@@ -391,9 +393,9 @@ $ladder
 EOF
   if [ -n "$rec_base" ] && [ "$rec_base" != "$base" ]; then
     # A different oldest message: the previous ladder is stale. An absent
-    # ladder is left alone so a dead-pane escalation, which never rings and so
-    # never writes one, keeps its marker (the marker check below still ignores
-    # a marker naming some other message).
+    # ladder is left alone so any pre-existing .escalated marker naming an
+    # earlier record survives (the marker check below still ignores a marker
+    # naming some other message).
     count=0
     last=0
     rm -f "$dir/.escalated" 2>/dev/null || true
