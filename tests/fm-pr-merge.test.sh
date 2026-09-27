@@ -3213,6 +3213,153 @@ test_allow_red_refused_on_gitlab() {
   pass "fm-pr-merge refuses --allow-red on GitLab"
 }
 
+# Forgejo test helpers and cases
+FORGEJO_HOST=git.example
+FORGEJO_PATH=demo/repo
+FORGEJO_URL="https://$FORGEJO_HOST/$FORGEJO_PATH/pulls/42"
+FORGEJO_HEAD=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+
+write_forgejo_pr_json() {
+  local file=$1 state=${2:-open} draft=${3:-false} mergeable=${4:-true} head=${5:-$FORGEJO_HEAD}
+  cat > "$file" <<JSON
+{"state":"$state","draft":$draft,"mergeable":$mergeable,"head":{"sha":"$head"}}
+JSON
+}
+
+write_forgejo_runs_json() {
+  local file=$1 conclusion=${2:-success}
+  cat > "$file" <<JSON
+{"data":[{"head_sha":"$FORGEJO_HEAD","name":"test-run","conclusion":"$conclusion"}]}
+JSON
+}
+
+write_forgejo_statuses_json() {
+  local file=$1 state=${2:-success}
+  cat > "$file" <<JSON
+[{"context":"status-check","state":"$state"}]
+JSON
+}
+
+add_forgejo_mock() {
+  local case_dir=$1
+  mkdir -p "$case_dir/forgejo-data"
+  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json"
+  write_forgejo_runs_json "$case_dir/forgejo-data/runs.json"
+  write_forgejo_statuses_json "$case_dir/forgejo-data/statuses.json"
+
+  cat > "$case_dir/fakebin/curl" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$FM_TEST_FORGEJO_LOG"
+case_dir=$(dirname "$FM_TEST_FORGEJO_DATA_DIR")
+path_part=""
+for arg in "$@"; do
+  if [[ "$arg" == *"/repos/"* ]]; then
+    path_part=$(echo "$arg" | sed 's/.*repos\///')
+    break
+  fi
+done
+case "$path_part" in
+  *"/pulls/"*) cat "$FM_TEST_FORGEJO_DATA_DIR/pr.json"; exit 0 ;;
+  *"/actions/runs"*) cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json"; exit 0 ;;
+  *"/statuses"*) cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
+  *"/pulls/"*"/merge")
+    touch "$case_dir/forgejo-merged"
+    printf '{"merged":true}\n'
+    exit 0
+    ;;
+esac
+exit 0
+SH
+  chmod +x "$case_dir/fakebin/curl"
+  ln -sf "$JQ_BIN" "$case_dir/fakebin/jq"
+
+  mkdir -p "$case_dir/.config/das"
+  cat > "$case_dir/.config/das/forgejo.env" <<'ENV'
+FORGEJO_TOKEN=test-token-12345
+ENV
+
+  : > "$case_dir/forgejo.log"
+}
+
+make_forgejo_case() {
+  local name=$1 case_dir
+  shift
+  case_dir=$(make_case "$name")
+  mkdir -p "$case_dir/wt"
+  add_gh_mocks "$case_dir" aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  add_forgejo_mock "$case_dir"
+  : > "$case_dir/gh-axi.log"
+  printf '%s\n' "$case_dir"
+}
+
+test_forgejo_merge_happy() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-merged)
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-merged: a merged PR should succeed"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-merged: success was not reported as verified"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-merged: merge API was not called"
+  pass "fm-pr-merge verifies a Forgejo merge"
+}
+
+test_forgejo_merge_checks_not_green() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-red-checks)
+  write_forgejo_runs_json "$case_dir/forgejo-data/runs.json" failure
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-red-checks: red checks must fail the merge"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-red-checks: refusal was not reported"
+  pass "fm-pr-merge refuses a Forgejo merge when checks are not green"
+}
+
+test_forgejo_merge_head_mismatch() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-head-mismatch)
+  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json" open false true "0000000000000000000000000000000000000000"
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-head-mismatch: head mismatch must fail"
+  assert_grep "does not match" "$case_dir/stderr" \
+    "forgejo-head-mismatch: refusal did not name head mismatch"
+  pass "fm-pr-merge refuses when Forgejo PR head does not match"
+}
+
+test_forgejo_merge_not_mergeable() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-not-mergeable)
+  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json" open false false
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-not-mergeable: unmergeable PR must fail"
+  assert_grep "mergeable" "$case_dir/stderr" \
+    "forgejo-not-mergeable: refusal did not name mergeable status"
+  pass "fm-pr-merge refuses when Forgejo PR is not mergeable"
+}
+
 test_gitlab_head_override_args_refuse_before_recording
 test_secondmate_merge_reports_upward_once
 test_secondmate_merge_reports_on_the_local_route
