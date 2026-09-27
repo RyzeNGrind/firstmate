@@ -4,9 +4,10 @@
 # The full canonical URL is parsed by bin/fm-pr-lib.sh. A GitHub pull request is
 # addressed through gh by the derived owner and repository; a GitLab merge
 # request is addressed through glab by the project URL rebuilt from the parsed
-# host and path, so any instance works and no host is hardcoded. A Gerrit change
-# is refused outright: that adapter is read-only, and the refusal at the parse
-# below owns why.
+# host and path; a Forgejo pull request is addressed through the instance's own
+# REST API by the derived host, owner, and repository, so any instance works
+# and no host is hardcoded. A Gerrit change is refused outright: that adapter
+# is read-only, and the refusal at the parse below owns why.
 #
 # Merge method on GitHub defaults to --squash when the caller passes none of
 # --squash, --merge, --rebase, or --method after the optional -- separator.
@@ -25,7 +26,8 @@
 # name, still requires every other check green, and still binds the head. It is
 # refused while the away-posture record exists, and it never
 # applies on GitLab, where a merge already requires the head pipeline to have
-# succeeded. After gh returns success, GitHub's live state is read back and
+# succeeded, nor on Forgejo, where a merge already requires every check green.
+# After gh returns success, GitHub's live state is read back and
 # accepted only when the pull request is merged or in the merge queue. gh's
 # GraphQL API supplies that queue-aware read; when that read fails, gh-axi's
 # own view still proves a landed merge, and every outcome it cannot prove
@@ -67,6 +69,19 @@
 # reported rather than trusted, because a rebase moves the head and leaves the
 # recorded value stale. Reading that state needs glab and jq, and either one
 # absent stops the merge before any state is recorded.
+#
+# A Forgejo merge is refused unless every pre-merge condition holds, each read
+# live at merge time rather than taken from recorded metadata: the pull request
+# is open, not a draft, mergeable, and every Actions run and status context at
+# the exact current head commit is green. The verified head is then passed to
+# the merge POST as head_commit_id, so a push that lands between that read and
+# the merge fails the merge instead of landing commits nothing verified. After
+# the merge POST returns success, a read-back must show merged=true; when it
+# does not, the outcome is refused as actionable rather than reported as landed.
+# Reading that state needs curl and jq, and either one absent stops the merge
+# before any state is recorded. The Forgejo API token is read from
+# ~/.config/das/forgejo.env by default; FM_FORGEJO_CREDS_FILE overrides that
+# path.
 #
 # Before either forge merge, the task's existing per-task control lock
 # serializes the captain-hold check through the forge command. A still-held or
