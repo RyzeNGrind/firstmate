@@ -3335,6 +3335,59 @@ test_forgejo_merge_checks_not_green() {
   pass "fm-pr-merge refuses a Forgejo merge when checks are not green"
 }
 
+# dasagency PR#42 shape: a Forgejo PR with an empty Actions runs list and a
+# single green vercel-preview status context. Regression for the round-1
+# checks-not-green contract fix — an empty runs.data must not short-circuit
+# past the statuses read, and a green status context alone must let the
+# merge proceed. Without the fix this PR reads as "checks unreadable" and
+# the merge refuses instead of landing.
+test_forgejo_merge_status_context_only() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-status-only)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"vercel-preview","state":"success"}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-status-only: merge with no Actions runs and green status should succeed"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-status-only: expected merged verification on stdout"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-status-only: merge API was not called"
+  pass "fm-pr-merge merges a Forgejo PR whose only checks are green status contexts (dasagency shape)"
+}
+
+# Adversarial companion to the check above: same empty runs.data but a red
+# status context. Confirms the statuses read is consulted (not short-circuited
+# past) AND its verdict is honored — a red status context alone must refuse.
+test_forgejo_merge_status_context_only_red() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-status-only-red)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"vercel-preview","state":"failure"}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-status-only-red: a red status context alone must refuse the merge"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-status-only-red: refusal was not reported"
+  assert_grep "vercel-preview" "$case_dir/stderr" \
+    "forgejo-status-only-red: refusal did not name the failing status context"
+  [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-status-only-red: merge API was called despite red status"
+  pass "fm-pr-merge refuses a Forgejo merge when only a red status context exists"
+}
+
 test_allow_red_refused_on_forgejo() {
   local case_dir rc
   case_dir=$(make_forgejo_case forgejo-allow-red)
@@ -3412,5 +3465,7 @@ test_merge_refuses_when_the_away_record_cannot_be_locked
 test_allow_red_refused_on_gitlab
 test_forgejo_merge_happy
 test_forgejo_merge_checks_not_green
+test_forgejo_merge_status_context_only
+test_forgejo_merge_status_context_only_red
 test_forgejo_merge_not_mergeable
 test_allow_red_refused_on_forgejo
