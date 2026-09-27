@@ -3335,6 +3335,21 @@ test_forgejo_merge_checks_not_green() {
   pass "fm-pr-merge refuses a Forgejo merge when checks are not green"
 }
 
+test_allow_red_refused_on_forgejo() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-allow-red)
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" --allow-red lint \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+  expect_code 2 "$rc" "forgejo-allow-red: --allow-red must not apply on Forgejo"
+  assert_grep '--allow-red does not apply to Forgejo' "$case_dir/stderr" \
+    "forgejo-allow-red: refusal did not name Forgejo"
+  [ ! -s "$case_dir/forgejo.log" ] || fail "forgejo-allow-red: curl ran despite --allow-red"
+  pass "fm-pr-merge refuses --allow-red on Forgejo"
+}
+
 test_forgejo_merge_not_mergeable() {
   local case_dir rc
   case_dir=$(make_forgejo_case forgejo-not-mergeable)
@@ -3398,3 +3413,4 @@ test_allow_red_refused_on_gitlab
 test_forgejo_merge_happy
 test_forgejo_merge_checks_not_green
 test_forgejo_merge_not_mergeable
+test_allow_red_refused_on_forgejo

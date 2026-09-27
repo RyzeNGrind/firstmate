@@ -186,9 +186,17 @@ while [ "$#" -gt 0 ]; do
     *) break ;;
   esac
 done
-if [ "${#ALLOW_RED[@]}" -gt 0 ] && [ "$PROVIDER" = gitlab ]; then
-  echo "error: --allow-red does not apply to GitLab, where a merge already requires the head pipeline to have succeeded" >&2
-  exit 2
+if [ "${#ALLOW_RED[@]}" -gt 0 ]; then
+  case "$PROVIDER" in
+    gitlab)
+      echo "error: --allow-red does not apply to GitLab, where a merge already requires the head pipeline to have succeeded" >&2
+      exit 2
+      ;;
+    forgejo)
+      echo "error: --allow-red does not apply to Forgejo, where a merge requires every check to be green" >&2
+      exit 2
+      ;;
+  esac
 fi
 
 caller_has_merge_method() {
