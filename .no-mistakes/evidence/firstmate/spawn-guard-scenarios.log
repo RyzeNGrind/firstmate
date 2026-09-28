@@ -1,0 +1,88 @@
+=== scoping-quoted-git-push-in-intent ===
+want_rc=0  got_rc=0
+cmd: bin/fm-spawn.sh --model sonnet --intent 'plan a git push later'
+stderr/out: spawn-guard: warn: no backlog row resolved from this spawn; finish condition unverified
+
+=== protected-branch-push-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --model sonnet ; git push origin master
+stderr/out: spawn-guard: PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it.
+
+=== feature-branch-push-allowed ===
+want_rc=0  got_rc=0
+cmd: bin/fm-spawn.sh --model sonnet && git push origin feature-x
+stderr/out: spawn-guard: warn: no backlog row resolved from this spawn; finish condition unverified
+
+=== non-spawn-push-passes ===
+want_rc=0  got_rc=0
+cmd: git push origin master
+stderr/out: 
+
+=== missing-model-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --harness claude
+stderr/out: spawn-guard: spawn without an explicit --model (model=default is forbidden). Resolve a profile from config/crew-dispatch.json and pass --model.
+
+=== opus-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --model opus-4
+stderr/out: spawn-guard: model 'opus-4' is forbidden for agents on this host (never default/opus/fable).
+
+=== fable-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --model fable-1
+stderr/out: spawn-guard: model 'fable-1' is forbidden for agents on this host (never default/opus/fable).
+
+=== default-model-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --model default
+stderr/out: spawn-guard: model 'default' is forbidden for agents on this host (never default/opus/fable).
+
+=== claude-non-approved-model-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --model gpt-5
+stderr/out: spawn-guard: claude model 'gpt-5' not allowed: workers use haiku (mechanical/read-only) or sonnet; secondmates sonnet.
+
+=== claude-haiku-allowed ===
+want_rc=0  got_rc=0
+cmd: bin/fm-spawn.sh --model haiku --harness claude
+stderr/out: spawn-guard: warn: no backlog row resolved from this spawn; finish condition unverified
+
+=== secondmate-non-sonnet-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --secondmate --model haiku
+stderr/out: spawn-guard: secondmates run on sonnet, not 'haiku'.
+
+=== secondmate-sonnet-allowed ===
+want_rc=0  got_rc=0
+cmd: bin/fm-spawn.sh --secondmate --model sonnet
+stderr/out: 
+
+=== merge-via-api-denied ===
+want_rc=2  got_rc=2
+cmd: curl -X PUT https://api.github.com/repos/x/y/pulls/1/merge
+stderr/out: spawn-guard: MERGE REFUSED - hard rule 2. Merging a PR needs the captain's explicit word, and it must
+  go through bin/fm-pr-merge.sh, which records the authority and refuses an unproved merge.
+  A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
+  If the captain has given the word for this exact PR, use fm-pr-merge.sh so it is recorded.
+
+=== gh-pr-merge-denied ===
+want_rc=2  got_rc=2
+cmd: gh pr merge 42 --merge
+stderr/out: spawn-guard: MERGE REFUSED - hard rule 2. Merging a PR needs the captain's explicit word, and it must
+  go through bin/fm-pr-merge.sh, which records the authority and refuses an unproved merge.
+  A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
+  If the captain has given the word for this exact PR, use fm-pr-merge.sh so it is recorded.
+
+=== guarded-merge-passes ===
+want_rc=0  got_rc=0
+cmd: bin/fm-pr-merge.sh 42
+stderr/out: 
+
+=== protected-main-push-denied ===
+want_rc=2  got_rc=2
+cmd: bin/fm-spawn.sh --model sonnet ; git push origin main
+stderr/out: spawn-guard: PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it.
+

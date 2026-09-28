@@ -1,0 +1,5 @@
+exit=0
+out=ALLOW cap=2 pct=2
+--- broken quota-axi ---
+exit=0
+out=UNKNOWN cap=1 reason=quota-axi-failed

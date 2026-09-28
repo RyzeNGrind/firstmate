@@ -1,0 +1,44 @@
+=== check-declared-inline ===
+act=check task=task-with-inline want_rc=0 got_rc=0
+out: 
+
+=== check-declared-brief ===
+act=check task=task-with-brief want_rc=0 got_rc=0
+out: 
+
+=== check-missing-declared ===
+act=check task=task-no-finish want_rc=1 got_rc=1
+out: no finish condition declared for task-no-finish
+
+=== show-inline ===
+act=show task=task-with-inline want_rc=0 got_rc=0
+out: file /etc/hostname
+
+=== show-missing ===
+act=show task=task-no-finish want_rc=1 got_rc=1
+out: (none declared)
+
+=== verify-file-exists ===
+act=verify task=task-with-inline want_rc=0 got_rc=0
+out: MET
+
+=== verify-cmd-met ===
+act=verify task=task-cmd-met want_rc=0 got_rc=0
+out: MET
+
+=== verify-cmd-notmet ===
+act=verify task=task-cmd-notmet want_rc=1 got_rc=1
+out: NOT-MET: command non-zero
+
+=== verify-pr-recorded ===
+act=verify task=task-pr-recorded want_rc=0 got_rc=0
+out: MET pr=https://github.com/owner/repo/pull/7
+
+=== verify-pr-missing ===
+act=verify task=task-pr-missing want_rc=1 got_rc=1
+out: NOT-MET: no pr= recorded for task-pr-missing (open the PR, then register it)
+
+=== verify-undeclared ===
+act=verify task=task-no-finish want_rc=1 got_rc=1
+out: UNDECLARED
+
