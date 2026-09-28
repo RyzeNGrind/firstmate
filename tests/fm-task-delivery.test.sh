@@ -370,17 +370,17 @@ STUB
   done
 
   payload="$TMP_ROOT/promote-dod/payload-promote-dod-no-mistakes"
-  assert_grep "ask-user findings are never yours to answer: escalate to firstmate" "$payload" \
+  assert_grep "Never answer an ask-user finding yourself: escalate to firstmate" "$payload" \
     "promoted no-mistakes worker did not receive the ask-user escalation rule"
   assert_grep "write only the ask-user findings, verbatim and unparaphrased (id, severity, file, line, description, authority)" "$payload" \
     "promoted no-mistakes worker did not receive the ask-user-only snapshot contract"
   # shellcheck disable=SC2016  # single quotes are deliberate: the placeholders must stay literal
   assert_grep 'needs-decision [at=<epoch>] [key=nm-<run>-<step>]: ask-user findings=<id1>,<id2>,... file='"$home/data/promote-dod-no-mistakes/nm-<run>-findings.txt" "$payload" \
     "promoted no-mistakes worker did not receive the structured escalation event"
-  assert_grep "NEVER pass \`--yes\` (or \`-y\`)" "$payload" \
+  assert_grep "Never pass \`--yes\` / \`-y\` to any \`no-mistakes axi\` call" "$payload" \
     "promoted no-mistakes worker did not receive the --yes prohibition"
-  assert_grep "It is banned fleet-wide" "$payload" \
-    "promoted no-mistakes worker did not receive the fleet-wide ban wording"
+  assert_grep "is a hard rule violation" "$payload" \
+    "promoted no-mistakes worker did not receive the hard-rule-violation wording"
 
   payload="$TMP_ROOT/promote-dod/payload-promote-dod-direct-pr"
   assert_grep "supersede the scout delivery rules and report-based Definition of done" "$payload" \
@@ -1107,10 +1107,10 @@ test_forge_gerrit_changes_what_no_mistakes_means() {
   # The forge changes the contract's head and tail only: how the pipeline is
   # driven, what --intent may carry, and the two firstmate-specific rules are the
   # same text a GitHub-forge worker receives.
-  assert_grep 'ask-user findings are never yours to answer: escalate to firstmate' "$brief" \
+  assert_grep 'Never answer an ask-user finding yourself: escalate to firstmate' "$brief" \
     "the gerrit worker lost the ask-user escalation rule"
   # shellcheck disable=SC2016 # Backticks are literal generated Markdown.
-  assert_grep 'NEVER pass `--yes` (or `-y`)' "$brief" "the gerrit worker lost the --yes ban"
+  assert_grep 'Never pass `--yes` / `-y` to any `no-mistakes axi` call' "$brief" "the gerrit worker lost the --yes ban"
   FM_HOME="$home" "$BRIEF" forge-dod-n1 other-project --mode no-mistakes >/dev/null \
     || fail "a default-forge no-mistakes brief should scaffold"
   plain="$home/data/forge-dod-n1/brief.md"
