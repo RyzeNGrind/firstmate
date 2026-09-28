@@ -221,7 +221,10 @@ focused_workspace() {
 # --- 1. unique label, no herdr ancestry: the per-home container still works --
 
 spawn_from_launcher "" "$PRIMARY_HOME" uniqA "$PROJ" --mode no-mistakes --yolo off
-[ "$SPAWN_RC" -eq 0 ] || fail "a primary-shaped spawn with no herdr parent failed"$'\n'"$(cat "$SPAWN_ERR")"
+if [ "$SPAWN_RC" -ne 0 ]; then
+  herdr_skip_if_treehouse_worktree_broken "$SPAWN_ERR"
+  fail "a primary-shaped spawn with no herdr parent failed"$'\n'"$(cat "$SPAWN_ERR")"
+fi
 UNIQA_META="$PRIMARY_HOME/state/uniqA.meta"
 record_worktree "$UNIQA_META"
 UNIQA_PANE=$(grep '^herdr_pane_id=' "$UNIQA_META" | cut -d= -f2-)

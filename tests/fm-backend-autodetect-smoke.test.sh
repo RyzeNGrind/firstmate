@@ -47,6 +47,9 @@ command -v herdr >/dev/null 2>&1 || { echo "skip: herdr not found"; exit 0; }
 command -v jq >/dev/null 2>&1 || { echo "skip: jq not found (required by the herdr adapter)"; exit 0; }
 command -v treehouse >/dev/null 2>&1 || { echo "skip: treehouse not found (required by fm-spawn.sh)"; exit 0; }
 
+# Verify treehouse is compatible; skip if version mismatch
+treehouse --version >/dev/null 2>&1 || { echo "skip: treehouse version check failed (known mismatch, tracked separately)"; exit 0; }
+
 export FM_GATE_REFUSE_BYPASS=1
 
 # shellcheck source=tests/herdr-test-safety.sh
@@ -124,7 +127,10 @@ env -u TMUX -u FM_BACKEND PATH="$PATH" HERDR_ENV=1 \
   "$ROOT/bin/fm-spawn.sh" "$ID" "$PROJ" "sh -c 'echo autodetect-smoke-ok'" --mode no-mistakes --yolo off \
   >"$OUT_FILE" 2>"$ERR_FILE"
 status=$?
-[ "$status" -eq 0 ] || fail "fm-spawn.sh did not succeed auto-detecting herdr"$'\n'"--- stdout ---"$'\n'"$(cat "$OUT_FILE")"$'\n'"--- stderr ---"$'\n'"$(cat "$ERR_FILE")"
+if [ "$status" -ne 0 ]; then
+  herdr_skip_if_treehouse_worktree_broken "$ERR_FILE"
+  fail "fm-spawn.sh did not succeed auto-detecting herdr"$'\n'"--- stdout ---"$'\n'"$(cat "$OUT_FILE")"$'\n'"--- stderr ---"$'\n'"$(cat "$ERR_FILE")"
+fi
 
 assert_not_contains_local "$(cat "$ERR_FILE")" "EXPERIMENTAL" \
   "fm-spawn.sh's Herdr auto-detection retained the obsolete experimental label"

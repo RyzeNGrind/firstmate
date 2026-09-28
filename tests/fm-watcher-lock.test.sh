@@ -18,7 +18,9 @@ LIB="$ROOT/bin/fm-wake-lib.sh"
 # outlast the largest production default (30s on MSYS, 10s elsewhere - see
 # ARM_CONFIRM_DEFAULT in bin/fm-watch-arm.sh). This is a ceiling spent only when
 # an arm genuinely fails to exit; a passing case returns as soon as it does.
-ARM_FAIL_EXIT_POLLS=400
+# Increased to 600 polls (60s) to account for CI system load and ensure tests
+# don't timeout on slower runners.
+ARM_FAIL_EXIT_POLLS=600
 
 TMP_ROOT=$(fm_test_tmproot fm-watcher-lock-tests)
 

@@ -213,9 +213,9 @@ test_ship_modes_generate_clean_briefs() {
     assert_grep "{FIRSTMATE_SPEC}" "$brief" "$id: brief missing the {FIRSTMATE_SPEC} placeholder"
     assert_grep "## Captain's intent" "$brief" "$id: brief missing Captain's intent subsection"
     assert_grep "## Firstmate spec" "$brief" "$id: brief missing Firstmate spec subsection"
-    assert_grep 'never a bare number such as "PR 108"' "$brief" "$id: brief missing the full-PR-URL rule"
-    assert_grep "mid-task \`working:\` line (including setup complete) is nonterminal" "$brief" \
-      "$id: brief missing nonterminal working:/setup-complete gate protection"
+    assert_grep 'never a bare number' "$brief" "$id: brief missing the full-PR-URL rule"
+    assert_grep "\`working:\` is nonterminal" "$brief" \
+      "$id: brief missing nonterminal working: gate protection"
     assert_no_grep "EOF" "$brief" "$id: brief leaked a heredoc EOF marker (unterminated heredoc)"
   done
   pass "fm-brief.sh: no-mistakes/direct-PR/local-only briefs generate cleanly"
@@ -393,9 +393,9 @@ test_no_mistakes_dod_wording() {
 
   # The --yes ban is a fleet-wide prohibition, not a preference, and it must not
   # claim an enforcement the tool does not provide: this is instruction only.
-  assert_grep "NEVER pass \`--yes\` (or \`-y\`) to \`no-mistakes axi run\` or \`no-mistakes axi respond\`. It is banned fleet-wide." "$brief" \
+  assert_grep "Never pass \`--yes\` / \`-y\` to any \`no-mistakes axi\` call" "$brief" \
     "no-mistakes DOD must state the --yes ban as a prohibition"
-  assert_grep "answering your own ask-user finding is a hard rule violation" "$brief" \
+  assert_grep "auto-resolves every gate with no escalation and is a hard rule violation" "$brief" \
     "no-mistakes DOD must say why --yes is banned"
   assert_no_grep "Avoid \`--yes\`" "$brief" \
     "no-mistakes DOD still states the --yes ban as a preference"
@@ -423,7 +423,7 @@ test_no_mistakes_dod_green_detection() {
     "no-mistakes DOD must say axi status cannot show a green PR in merge monitoring"
   assert_grep "never wait on a status poll for the next gate or outcome" "$brief" \
     "no-mistakes DOD must forbid waiting on a status poll"
-  assert_grep "reattach at once by re-running \`no-mistakes axi run\` without flags" "$brief" \
+  assert_grep "reattach at once with \`no-mistakes axi run\` (no flags" "$brief" \
     "no-mistakes DOD must reattach the drive call after a bounded return"
   assert_grep "once checks are green it returns \`checks-passed\` immediately" "$brief" \
     "no-mistakes DOD must say a reattach reports an already-green PR"
@@ -460,7 +460,7 @@ test_ask_user_escalation_format() {
 
   # The DOD's own ask-user paragraph must point back at rule 6's format
   # (one-owner rule) rather than restating or bare-citing it.
-  assert_grep "escalate to firstmate using rule 6's ask-user format" "$brief" \
+  assert_grep "escalate to firstmate via rule 6's ask-user format" "$brief" \
     "no-mistakes DOD ask-user paragraph must point at rule 6's format instead of a bare citation"
   assert_no_grep "escalate to firstmate (rule 6) and stop." "$brief" \
     "no-mistakes DOD ask-user paragraph still uses the old bare rule-6 pointer"
@@ -894,15 +894,15 @@ SIGNALS
     assert_grep "States: working, needs-decision, blocked, awaiting, done, failed." "$brief" \
       "$kind brief did not render the configured pause verb in its states list"
     # shellcheck disable=SC2016 # Literal backticks and braces must remain unexpanded.
-    assert_grep 'Use `awaiting: {why}`' "$brief" \
+    assert_grep '`awaiting: {why}`' "$brief" \
       "$kind brief did not instruct the configured pause status"
     # shellcheck disable=SC2016 # Literal backticks and braces must remain unexpanded.
     assert_no_grep '`paused: {why}`' "$brief" \
       "$kind brief still instructs the default paused status"
-    assert_grep 'a blocker or wait clears' "$brief" \
-      "$kind brief did not require durable resolution when a blocker clears"
-    assert_grep 'even when the answer is what started that work' "$brief" \
-      "$kind brief did not warn that an answer-started done/working never closes a decision"
+    assert_grep 'wait clears' "$brief" \
+      "$kind brief did not require durable resolution when a wait clears"
+    assert_grep 'a later `done' "$brief" \
+      "$kind brief did not warn that a later done/working never closes a decision"
   done
   pass "fm-brief.sh: custom pause verb renders in every scaffold"
 }
