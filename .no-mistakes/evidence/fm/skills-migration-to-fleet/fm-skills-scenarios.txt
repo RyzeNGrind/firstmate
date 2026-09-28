@@ -1,0 +1,45 @@
+==== Scenario A: fresh install creates symlinks ====
+(from /tmp/fm-skills-test/A-fresh)
+
+installing:
+  created: alpha
+  created: beta
+post-install ls -la ~/.claude/skills/:
+  alpha -> /tmp/fm-skills-test/A-fresh/root/.agents/skills/alpha
+  beta  -> /tmp/fm-skills-test/A-fresh/root/.agents/skills/beta
+
+==== Scenarios B/C/D: idempotency, outdated update, preserve real dir ====
+
+Round 1 (fresh):    created: alpha, beta, gamma
+Round 2 (rerun):    skipped: alpha, beta, gamma (already correct)
+Perturbed:          alpha->/tmp/somewhere-else (wrong), beta replaced by real dir with user-file
+Round 3 (repair):   updated: alpha; skipped: beta (existing file/directory, not overwriting); skipped: gamma
+Post-repair alpha:  /tmp/fm-skills-test/BCD/root/.agents/skills/alpha
+Post-repair beta:   real directory preserved, user-file intact (contents: 'user data')
+
+==== Scenario E: detect BEFORE install emits MISSING fm-skills ====
+
+MISSING: treehouse (install: curl -fsSL https://kunchenguid.github.io/treehouse/install.sh | sh)
+PRESENTATION_UNAVAILABLE: lavish-axi (requires >=0.1.77; install: npm install -g lavish-axi && lavish-axi setup hooks) - nonvisual work may proceed with plain-text decisions and reports; install or upgrade before using Lavish
+MISSING: fm-skills (install: /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M3K8PT5685787MMHCHN38GP5/bin/fm-install-skills.sh)
+
+==== Scenario F: fm-bootstrap.sh install fm-skills (routes via install_cmd) ====
+
+installing fm-skills: /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M3K8PT5685787MMHCHN38GP5/bin/fm-install-skills.sh
+  created: bar
+  created: foo
+  skipped: bar (already correct)   <-- fallthrough second run, both invocations succeed
+  skipped: foo (already correct)
+
+==== Scenario G: detect AFTER install is silent about fm-skills ====
+
+MISSING: treehouse (install: curl -fsSL https://kunchenguid.github.io/treehouse/install.sh | sh)
+PRESENTATION_UNAVAILABLE: lavish-axi (requires >=0.1.77; install: npm install -g lavish-axi && lavish-axi setup hooks) - nonvisual work may proceed with plain-text decisions and reports; install or upgrade before using Lavish
+
+==== Scenario H: adversarial - partial install, real user dir preserved AND detect still reports MISSING ====
+
+MISSING: treehouse (install: curl -fsSL https://kunchenguid.github.io/treehouse/install.sh | sh)
+PRESENTATION_UNAVAILABLE: lavish-axi (requires >=0.1.77; install: npm install -g lavish-axi && lavish-axi setup hooks) - nonvisual work may proceed with plain-text decisions and reports; install or upgrade before using Lavish
+MISSING: fm-skills (install: /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M3K8PT5685787MMHCHN38GP5/bin/fm-install-skills.sh)
+
+user data survived: 'user data'
