@@ -44,10 +44,10 @@ degraded=${degraded:-}
 if [ -z "$pct" ]; then echo "UNKNOWN cap=1 reason=no-$provider-$scope-row"; exit 0; fi
 
 if awk -v a="$pct" -v b="$deny_below" 'BEGIN{exit !(a<b)}'; then
-  echo "DENY pct=$pct"; exit 3
+  echo "DENY pct=$pct$degraded"; exit 3
 fi
 if awk -v a="$pct" -v b="$cap_below" 'BEGIN{exit !(a<b)}'; then
-  echo "ALLOW cap=$cap_low pct=$pct"
+  echo "ALLOW cap=$cap_low pct=$pct$degraded"
 else
-  echo "ALLOW cap=$cap_high pct=$pct"
+  echo "ALLOW cap=$cap_high pct=$pct$degraded"
 fi
