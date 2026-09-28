@@ -254,6 +254,8 @@ make_forgejo_check_case() {
   mkdir -p "$dir/home/state" "$dir/home/data" "$dir/home/config" "$dir/wt" \
            "$fakebin" "$fake_root/bin"
   git -C "$dir/wt" init -q
+  git -C "$dir/wt" config user.email "test@example.com"
+  git -C "$dir/wt" config user.name "Test User"
   git -C "$dir/wt" commit -q --allow-empty -m init
   git -C "$dir/wt" update-ref refs/remotes/origin/main \
     "$(git -C "$dir/wt" rev-parse HEAD)"
