@@ -93,7 +93,11 @@ check_with_dedup() {
   [ -f "$RECORD" ] && record_output=$(cat "$RECORD")
 
   if [ "$current_output" != "$record_output" ]; then
-    [ -n "$current_output" ] && printf '%s\n' "$current_output" >"$RECORD"
+    if [ -n "$current_output" ]; then
+      printf '%s\n' "$current_output" >"$RECORD"
+    else
+      rm -f "$RECORD"
+    fi
     printf '%s\n' "$current_output"
   fi
 }
