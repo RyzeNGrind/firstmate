@@ -1,0 +1,5 @@
+== v3.1.0 SHA256 pin verification against actual GitHub release assets ==
+OK   treehouse-v3.1.0-linux-amd64.tar.gz      d783b1fdc1e0d2669c0042634850d795e1d12220e586782d82858e70a1a93c25
+OK   treehouse-v3.1.0-linux-arm64.tar.gz      385061511fef62a3cb4f377ac48f3dc022a54c7e1198c10477f1306454a379dc
+OK   treehouse-v3.1.0-darwin-arm64.tar.gz     e78f52f078d90ffa8589da164fc87306020c5524776273ad040af04127dd91df
+OK   treehouse-v3.1.0-darwin-amd64.tar.gz     95a6f5cf582f767a8b102a749a53ea397bf28d20df10467c367927f26073e131

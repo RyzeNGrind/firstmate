@@ -1,0 +1,17 @@
+== Attempted end-to-end run of modified test with treehouse v3.1.0 on PATH ==
+-- PATH & versions --
+/tmp/fm-th-install.lYemWT/treehouse
+v3.1.0
+/run/current-system/sw/bin/herdr
+herdr 0.7.4
+
+-- Default herdr session status (fleet-state tripwire) --
+name                 status   directory                                        socket
+default              stopped  /var/lib/nixbuilder/.config/herdr                /var/lib/nixbuilder/.config/herdr/herdr.sock
+
+-- Test invocation --
+fm-herdr-lab: fleet-state tripwire requires exactly one running default session
+not ok - could not provision isolated Herdr lab session
+fm-herdr-lab: missing fleet-state tripwire for 'fm-lab-fm-autodetect-sm-1375036-10972'; refusing destructive calls
+
+-- Reason live E2E is untested: lab helper refuses because default fleet session is not running (see 'stopped' above); runbook forbids touching the live default Herdr session --
