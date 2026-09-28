@@ -1391,6 +1391,17 @@ if [ "${1:-}" = "install" ]; then
   shift
   [ $# -gt 0 ] || { echo "usage: fm-bootstrap.sh install <tool>..." >&2; exit 1; }
   for t in "$@"; do
+    # Special case: fm-skills is handled by running the install script
+    if [ "$t" = "fm-skills" ]; then
+      if [ -x "$SCRIPT_DIR/fm-install-skills.sh" ]; then
+        echo "installing fm-skills"
+        "$SCRIPT_DIR/fm-install-skills.sh"
+      else
+        echo "error: fm-install-skills.sh not found" >&2
+        exit 1
+      fi
+      continue
+    fi
     if ! cmd=$(install_cmd "$t"); then
       instructions=$(manual_install_url "$t") || { echo "error: unknown tool $t" >&2; exit 1; }
       echo "error: $t requires manual installation (instructions: $instructions)" >&2
@@ -1400,10 +1411,6 @@ if [ "${1:-}" = "install" ]; then
     echo "installing $t: $cmd"
     eval "$cmd"
   done
-  # Install skills symlinks if the script exists
-  if [ -x "$SCRIPT_DIR/fm-install-skills.sh" ]; then
-    "$SCRIPT_DIR/fm-install-skills.sh"
-  fi
   exit 0
 fi
 
