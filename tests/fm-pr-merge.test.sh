@@ -406,6 +406,8 @@ run_pr_merge() {
   FM_TEST_REAL_MV="$REAL_MV" \
   FM_TEST_GLAB_LOG="$case_dir/glab.log" \
   FM_TEST_GLAB_JSON="$case_dir/mr.json" \
+  FM_TEST_FORGEJO_LOG="$case_dir/forgejo.log" \
+  FM_TEST_FORGEJO_DATA_DIR="$case_dir/forgejo-data" \
   HOME="${FM_TEST_USER_HOME:-$case_dir/user-home}" \
   PATH="$case_dir/fakebin:$PATH" \
     "$PR_MERGE" "$@"
@@ -3213,6 +3215,211 @@ test_allow_red_refused_on_gitlab() {
   pass "fm-pr-merge refuses --allow-red on GitLab"
 }
 
+# Forgejo test helpers and cases
+FORGEJO_HOST=git.example
+FORGEJO_PATH=demo/repo
+FORGEJO_URL="https://$FORGEJO_HOST/$FORGEJO_PATH/pulls/42"
+FORGEJO_HEAD=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+
+write_forgejo_pr_json() {
+  local file=$1 state=${2:-open} draft=${3:-false} mergeable=${4:-true} head=${5:-$FORGEJO_HEAD}
+  cat > "$file" <<JSON
+{"state":"$state","draft":$draft,"mergeable":$mergeable,"head":{"sha":"$head"}}
+JSON
+}
+
+write_forgejo_runs_json() {
+  local file=$1 conclusion=${2:-success}
+  cat > "$file" <<JSON
+{"data":[{"head_sha":"$FORGEJO_HEAD","name":"test-run","conclusion":"$conclusion"}]}
+JSON
+}
+
+write_forgejo_statuses_json() {
+  local file=$1 state=${2:-success}
+  cat > "$file" <<JSON
+[{"context":"status-check","state":"$state"}]
+JSON
+}
+
+add_forgejo_mock() {
+  local case_dir=$1
+  mkdir -p "$case_dir/forgejo-data"
+  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json"
+  write_forgejo_runs_json "$case_dir/forgejo-data/runs.json"
+  write_forgejo_statuses_json "$case_dir/forgejo-data/statuses.json"
+
+  cat > "$case_dir/fakebin/curl" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$FM_TEST_FORGEJO_LOG"
+case_dir=$(dirname "$FM_TEST_FORGEJO_DATA_DIR")
+path_part=""
+for arg in "$@"; do
+  if [[ "$arg" == *"/repos/"* ]]; then
+    path_part=$(echo "$arg" | sed 's/.*repos\///')
+    break
+  fi
+done
+case "$path_part" in
+  *"/pulls/"*"/merge")
+    touch "$case_dir/forgejo-merged"
+    printf '{"merged":true}\n'
+    exit 0
+    ;;
+  *"/pulls/"*)
+    if [ -e "$case_dir/forgejo-merged" ]; then
+      jq '. + {state: "closed", merged: true}' "$FM_TEST_FORGEJO_DATA_DIR/pr.json"
+    else
+      cat "$FM_TEST_FORGEJO_DATA_DIR/pr.json"
+    fi
+    exit 0
+    ;;
+  *"/actions/runs"*) cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json"; exit 0 ;;
+  *"/statuses"*) cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
+esac
+exit 0
+SH
+  chmod +x "$case_dir/fakebin/curl"
+  ln -sf "$JQ_BIN" "$case_dir/fakebin/jq"
+
+  mkdir -p "$case_dir/user-home/.config/das"
+  cat > "$case_dir/user-home/.config/das/forgejo.env" <<'ENV'
+FORGEJO_TOKEN=test-token-12345
+ENV
+
+  : > "$case_dir/forgejo.log"
+}
+
+make_forgejo_case() {
+  local name=$1 case_dir
+  shift
+  case_dir=$(make_case "$name")
+  mkdir -p "$case_dir/wt"
+  add_gh_mocks "$case_dir" aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  add_forgejo_mock "$case_dir"
+  : > "$case_dir/gh-axi.log"
+  printf '%s\n' "$case_dir"
+}
+
+test_forgejo_merge_happy() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-merged)
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-merged: a merged PR should succeed"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-merged: success was not reported as verified"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-merged: merge API was not called"
+  pass "fm-pr-merge verifies a Forgejo merge"
+}
+
+test_forgejo_merge_checks_not_green() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-red-checks)
+  write_forgejo_runs_json "$case_dir/forgejo-data/runs.json" failure
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-red-checks: red checks must fail the merge"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-red-checks: refusal was not reported"
+  pass "fm-pr-merge refuses a Forgejo merge when checks are not green"
+}
+
+# dasagency PR#42 shape: a Forgejo PR with an empty Actions runs list and a
+# single green vercel-preview status context. Regression for the round-1
+# checks-not-green contract fix — an empty runs.data must not short-circuit
+# past the statuses read, and a green status context alone must let the
+# merge proceed. Without the fix this PR reads as "checks unreadable" and
+# the merge refuses instead of landing.
+test_forgejo_merge_status_context_only() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-status-only)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"vercel-preview","state":"success"}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-status-only: merge with no Actions runs and green status should succeed"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-status-only: expected merged verification on stdout"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-status-only: merge API was not called"
+  pass "fm-pr-merge merges a Forgejo PR whose only checks are green status contexts (dasagency shape)"
+}
+
+# Adversarial companion to the check above: same empty runs.data but a red
+# status context. Confirms the statuses read is consulted (not short-circuited
+# past) AND its verdict is honored — a red status context alone must refuse.
+test_forgejo_merge_status_context_only_red() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-status-only-red)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"vercel-preview","state":"failure"}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-status-only-red: a red status context alone must refuse the merge"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-status-only-red: refusal was not reported"
+  assert_grep "vercel-preview" "$case_dir/stderr" \
+    "forgejo-status-only-red: refusal did not name the failing status context"
+  [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-status-only-red: merge API was called despite red status"
+  pass "fm-pr-merge refuses a Forgejo merge when only a red status context exists"
+}
+
+test_allow_red_refused_on_forgejo() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-allow-red)
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" --allow-red lint \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+  expect_code 2 "$rc" "forgejo-allow-red: --allow-red must not apply on Forgejo"
+  assert_grep '--allow-red does not apply to Forgejo' "$case_dir/stderr" \
+    "forgejo-allow-red: refusal did not name Forgejo"
+  [ ! -s "$case_dir/forgejo.log" ] || fail "forgejo-allow-red: curl ran despite --allow-red"
+  pass "fm-pr-merge refuses --allow-red on Forgejo"
+}
+
+test_forgejo_merge_not_mergeable() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-not-mergeable)
+  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json" open false false
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-not-mergeable: unmergeable PR must fail"
+  assert_grep "mergeable" "$case_dir/stderr" \
+    "forgejo-not-mergeable: refusal did not name mergeable status"
+  pass "fm-pr-merge refuses when Forgejo PR is not mergeable"
+}
+
 test_gitlab_head_override_args_refuse_before_recording
 test_secondmate_merge_reports_upward_once
 test_secondmate_merge_reports_on_the_local_route
@@ -3256,3 +3463,9 @@ test_away_record_cannot_change_between_the_authority_read_and_the_merge
 test_a_record_made_unreadable_before_the_merge_refuses_it
 test_merge_refuses_when_the_away_record_cannot_be_locked
 test_allow_red_refused_on_gitlab
+test_forgejo_merge_happy
+test_forgejo_merge_checks_not_green
+test_forgejo_merge_status_context_only
+test_forgejo_merge_status_context_only_red
+test_forgejo_merge_not_mergeable
+test_allow_red_refused_on_forgejo
