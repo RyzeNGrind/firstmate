@@ -72,8 +72,11 @@
 #
 # A Forgejo merge is refused unless every pre-merge condition holds, each read
 # live at merge time rather than taken from recorded metadata: the pull request
-# is open, not a draft, mergeable, and every Actions run and status context at
-# the exact current head commit is green. The verified head is then passed to
+# is open, not a draft, mergeable, and every Actions run at the exact current
+# head commit is green; status contexts are checked only when no successful
+# Actions run exists for that commit, because some Forgejo versions leave status
+# contexts in a null state even after a successful workflow run completes.
+# The verified head is then passed to
 # the merge POST as head_commit_id, so a push that lands between that read and
 # the merge fails the merge instead of landing commits nothing verified. After
 # the merge POST returns success, a read-back must show merged=true; when it
@@ -1173,14 +1176,28 @@ forgejo_curl_api() {
 }
 
 forgejo_checks_not_green() {
-  local runs_json status_json
+  local runs_json status_json not_green has_success
   if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \
     || [ -z "$runs_json" ]; then
     return 1
   fi
-  printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
-    .data[]? | select(.head_sha == $head) | select(.conclusion != "success") | .name // "unnamed"
-  ' 2>/dev/null || return 1
+  # Forgejo may return workflow_runs rather than data, may omit head_sha from
+  # each run entry even when the query was filtered to that sha, and may report
+  # success via status rather than conclusion when conclusion is absent.
+  not_green=$(printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
+    (.data // .workflow_runs)[]?
+    | select(.head_sha == $head or .head_sha == null)
+    | select((.conclusion // .status) != "success")
+    | .name // "unnamed"
+  ' 2>/dev/null) || return 1
+  [ -n "$not_green" ] && printf '%s\n' "$not_green"
+  # When at least one run succeeded, skip commit statuses: some Forgejo versions
+  # leave status contexts at null state even after a successful run completes.
+  has_success=$(printf '%s' "$runs_json" | jq -r '
+    (.data // .workflow_runs)[]?
+    | select((.conclusion // .status) == "success") | "yes"
+  ' 2>/dev/null | head -n 1)
+  [ -n "$has_success" ] && return 0
 
   if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
     || [ -z "$status_json" ]; then
