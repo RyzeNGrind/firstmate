@@ -1,0 +1,50 @@
+=== G1: non-fm-spawn command passes through ===
+exit=0
+=== G2: fm-spawn without --model is denied ===
+spawn-guard: spawn without an explicit --model (model=default is forbidden). Resolve a profile from config/crew-dispatch.json and pass --model.
+exit=2
+=== G3: fm-spawn with model=default denied ===
+spawn-guard: model 'default' is forbidden for agents on this host (never default/opus/fable).
+exit=2
+=== G4: fm-spawn with opus in model name denied ===
+spawn-guard: model 'claude-opus-4-5' is forbidden for agents on this host (never default/opus/fable).
+exit=2
+=== G5: fm-spawn with fable model denied ===
+spawn-guard: model 'claude-fable' is forbidden for agents on this host (never default/opus/fable).
+exit=2
+=== G6: git push to protected branch denied ===
+exit=0
+=== G7: git push to feature branch (non-fm-spawn, exits 0) ===
+exit=0
+=== G8: direct forge PR merge denied ===
+spawn-guard: MERGE REFUSED - hard rule 2. Merging a PR needs the captain's explicit word, and it must
+  go through bin/fm-pr-merge.sh, which records the authority and refuses an unproved merge.
+  A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
+  If the captain has given the word for this exact PR, use fm-pr-merge.sh so it is recorded.
+exit=2
+=== G9: guarded merge script allowed ===
+exit=0
+=== G10: secondmate spawn allowed with sonnet ===
+exit=0
+=== G11: secondmate spawn denied with haiku (must be sonnet) ===
+spawn-guard: secondmates run on sonnet, not 'claude-haiku-4-5'.
+exit=2
+=== G12: crewmate spawn with sonnet, healthy quota, allowed ===
+spawn-guard: warn: no backlog row resolved from this spawn; finish condition unverified
+exit=0
+=== G13: crewmate spawn with sonnet, DENY quota (10 percent), refused ===
+spawn-guard: quota gate closed (DENY pct=10): no new spawns below the configured all_models floor; consult quota-axi and wait for reset.
+exit=2
+=== G14: fm-spawn command that includes a protected push denied (chained) ===
+spawn-guard: PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it.
+exit=2
+=== G15: fm-spawn command with disk full check (mock df ok - we can't easily override, so rely on real df) ===
+exit=0
+=== G16: fm-spawn with finish condition MISSING for resolved task denied ===
+spawn-guard: task 'task-beta' has no machine-checkable finish condition. Add one line to its row or brief, then respawn:
+    FINISH: pr <repo> | file <path> | cmd <shell> | branch <repo> <branch>
+  If the finish cannot be written as one of those four, the task is too vague or too large - split it.
+exit=2
+=== G17: fm-spawn with valid task-alpha (has FINISH: file) allowed ===
+exit=0

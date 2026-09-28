@@ -1,0 +1,22 @@
+==== TARGET COMMIT: bin/quota-gate.sh degraded marker fix (c8d6abe) ====
+Commit c8d6abe adds $degraded to three echo lines in quota-gate.sh.
+
+--- E1: DENY path on percentRemaining fallback ---
+DENY pct=8 degraded=percentRemaining-fallback
+(exit 3)
+
+--- E2: ALLOW cap=2 (low) path on percentRemaining fallback ---
+ALLOW cap=2 pct=45 degraded=percentRemaining-fallback
+(exit 0)
+
+--- E3: ALLOW cap=3 (high) path on percentRemaining fallback ---
+ALLOW cap=3 pct=90 degraded=percentRemaining-fallback
+(exit 0)
+
+--- Negative: known-status path (no degraded marker expected) ---
+ALLOW cap=3 pct=85
+(exit 0)
+ALLOW cap=2 pct=45
+(exit 0)
+DENY pct=10
+(exit 3)

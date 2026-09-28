@@ -1,0 +1,26 @@
+F1 check task-alpha (declared):
+exit=0
+F2 check task-beta (undeclared):
+no finish condition declared for task-beta
+exit=1
+F3 show task-alpha:
+file /tmp/does-exist-alpha
+exit=0
+F4 verify task-alpha file exists:
+MET
+exit=0
+F5 verify task-delta cmd (before marker):
+NOT-MET: command non-zero
+exit=1
+F6 verify task-delta cmd (after marker):
+MET
+exit=0
+F7 verify task-gamma pr (no meta):
+NOT-MET: no pr= recorded for task-gamma (open the PR, then register it)
+exit=1
+F8 verify task-gamma pr (meta with pr=):
+MET pr=https://example.org/pr/1
+exit=0
+F9 verify task-beta (undeclared):
+UNDECLARED
+exit=1

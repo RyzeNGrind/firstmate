@@ -1,0 +1,10 @@
+=== C1: 4 live crewmates, cap=3 => denied ===
+spawn-guard: concurrency cap reached: 4 live crewmates >= cap 3 (ALLOW cap=3 pct=85). Wait for one to finish.
+exit=2
+=== C2: 3 delivered (pr=), 1 live, cap=3 => allowed ===
+exit=0
+=== C3: 2 live crewmates, capped quota cap=2 => denied ===
+spawn-guard: concurrency cap reached: 2 live crewmates >= cap 2 (ALLOW cap=2 pct=45). Wait for one to finish.
+exit=2
+=== C4: 1 live crewmate, capped quota cap=2 => allowed ===
+exit=0
