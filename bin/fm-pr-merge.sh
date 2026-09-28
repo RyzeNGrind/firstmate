@@ -1190,14 +1190,17 @@ forgejo_checks_not_green() {
     | select((.conclusion // .status) != "success")
     | .name // "unnamed"
   ' 2>/dev/null) || return 1
-  [ -n "$not_green" ] && printf '%s\n' "$not_green"
-  # When at least one run succeeded, skip commit statuses: some Forgejo versions
-  # leave status contexts at null state even after a successful run completes.
+  # When at least one run succeeded, skip commit statuses and suppress any
+  # co-existing failures: some Forgejo versions leave status contexts at null
+  # state and also keep older failed runs in the list even after a later run
+  # succeeded for the same commit.
   has_success=$(printf '%s' "$runs_json" | jq -r '
     (.data // .workflow_runs)[]?
     | select((.conclusion // .status) == "success") | "yes"
   ' 2>/dev/null | head -n 1)
   [ -n "$has_success" ] && return 0
+  # No successful run — report whatever failed runs exist.
+  [ -n "$not_green" ] && printf '%s\n' "$not_green"
 
   if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
     || [ -z "$status_json" ]; then
