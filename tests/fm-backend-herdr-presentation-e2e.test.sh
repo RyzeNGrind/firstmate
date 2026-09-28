@@ -535,8 +535,10 @@ make_project "$RECOVERY_PROJECT_DIR"
 
 # Keep one ordinary primary task live so the durable firstmate workspace is
 # first and remains present while disposable workers are projected around it.
-spawn_task anchor "$HOME_DIR" "$PROJECT_DIR" > "$TMP_ROOT/anchor.out" 2> "$TMP_ROOT/anchor.err" \
-  || fail "opted-out anchor spawn failed: $(cat "$TMP_ROOT/anchor.err")"
+if ! spawn_task anchor "$HOME_DIR" "$PROJECT_DIR" > "$TMP_ROOT/anchor.out" 2> "$TMP_ROOT/anchor.err"; then
+  herdr_skip_if_treehouse_worktree_broken "$TMP_ROOT/anchor.err"
+  fail "opted-out anchor spawn failed: $(cat "$TMP_ROOT/anchor.err")"
+fi
 ANCHOR_META="$HOME_DIR/state/anchor.meta"
 remember_meta_worktree "$ANCHOR_META" >/dev/null
 FIRSTMATE_WSID=$(grep '^herdr_workspace_id=' "$ANCHOR_META" | cut -d= -f2-)

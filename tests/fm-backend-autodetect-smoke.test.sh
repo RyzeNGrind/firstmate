@@ -127,7 +127,10 @@ env -u TMUX -u FM_BACKEND PATH="$PATH" HERDR_ENV=1 \
   "$ROOT/bin/fm-spawn.sh" "$ID" "$PROJ" "sh -c 'echo autodetect-smoke-ok'" --mode no-mistakes --yolo off \
   >"$OUT_FILE" 2>"$ERR_FILE"
 status=$?
-[ "$status" -eq 0 ] || fail "fm-spawn.sh did not succeed auto-detecting herdr"$'\n'"--- stdout ---"$'\n'"$(cat "$OUT_FILE")"$'\n'"--- stderr ---"$'\n'"$(cat "$ERR_FILE")"
+if [ "$status" -ne 0 ]; then
+  herdr_skip_if_treehouse_worktree_broken "$ERR_FILE"
+  fail "fm-spawn.sh did not succeed auto-detecting herdr"$'\n'"--- stdout ---"$'\n'"$(cat "$OUT_FILE")"$'\n'"--- stderr ---"$'\n'"$(cat "$ERR_FILE")"
+fi
 
 assert_not_contains_local "$(cat "$ERR_FILE")" "EXPERIMENTAL" \
   "fm-spawn.sh's Herdr auto-detection retained the obsolete experimental label"
