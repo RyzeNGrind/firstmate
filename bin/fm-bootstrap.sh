@@ -1399,6 +1399,10 @@ if [ "${1:-}" = "install" ]; then
     echo "installing $t: $cmd"
     eval "$cmd"
   done
+  # Install skills symlinks if the script exists
+  if [ -x "$SCRIPT_DIR/fm-install-skills.sh" ]; then
+    "$SCRIPT_DIR/fm-install-skills.sh"
+  fi
   exit 0
 fi
 
@@ -1490,6 +1494,21 @@ detect_local_tools() {
   fi
   if command -v tasks-axi >/dev/null 2>&1 && ! fm_tasks_axi_compatible; then
     echo "MISSING: tasks-axi (install: $(install_cmd tasks-axi))"
+  fi
+  # Check that firstmate operational skills are symlinked to ~/.claude/skills/
+  if [ -d "$FM_ROOT/.agents/skills" ]; then
+    local skill found_issue
+    for skill_dir in "$FM_ROOT/.agents/skills"/*; do
+      [ -d "$skill_dir" ] || [ -L "$skill_dir" ] || continue
+      skill=$(basename "$skill_dir")
+      target="${HOME}/.claude/skills/$skill"
+      # Check if symlink exists and points to the right place
+      if ! [ -L "$target" ] || [ "$(readlink "$target" 2>/dev/null || true)" != "$skill_dir" ]; then
+        echo "MISSING: fm-skills (install: bin/fm-install-skills.sh)"
+        found_issue=1
+        break
+      fi
+    done
   fi
 }
 
