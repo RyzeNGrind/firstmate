@@ -71,7 +71,7 @@ cap=${cap:-1}
 home=${FM_HOME:-$(cd "$here/../.." && pwd)}
 
 # gate 4 / night order §3: disk rule on alpha - no spawn while / is above 85%.
-disk_used=$(df / 2>/dev/null | awk 'NR==2{print $(NF-1)}' | sed 's/%//')
+disk_used=$(df -P / 2>/dev/null | awk 'NR==2{print $(NF-1)}' | sed 's/%//')
 if [ -n "$disk_used" ] && awk -v used="$disk_used" 'BEGIN{exit !(used > 85)}'; then
   deny "disk full gate: / is $disk_used% full (>85% threshold). Tear down landed crews and retry."
 fi
