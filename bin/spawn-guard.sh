@@ -42,8 +42,6 @@ esac
 
 case "$cmd" in *fm-spawn.sh*) ;; *) exit 0 ;; esac
 
-deny() { printf 'spawn-guard: %s\n' "$1" >&2; exit 2; }
-
 model=$(printf '%s' "$cmd" | sed -nE 's/.*--model[= ]+([^ ]+).*/\1/p' | head -1)
 [ -n "$model" ] || deny "spawn without an explicit --model (model=default is forbidden). Resolve a profile from config/crew-dispatch.json and pass --model."
 case "$model" in
@@ -59,6 +57,8 @@ fi
 case "$cmd" in
   *--secondmate*)
     case "$model" in *sonnet*) ;; *) deny "secondmates run on sonnet, not '$model'." ;; esac
+    # Secondmates are persistent homes, not crews/tasks. Disk and concurrency gates apply to
+    # crewmates and scouts only, not to secondmate spawns which run in their own home.
     exit 0 ;;
 esac
 
@@ -81,7 +81,8 @@ fi
 # warns and passes, because a gate that blocks every spawn on a lookup mismatch would
 # stall the fleet, which is the one outcome the standing order forbids outright.
 task=""
-for tok in $cmd; do
+set -- $cmd
+for tok in "$@"; do
   case "$tok" in -*|*fm-spawn.sh|*/*|*=*) continue ;; esac
   if grep -qE "^- \[.\] ${tok}( |$)" "$home/data/backlog.md" 2>/dev/null || [ -d "$home/data/$tok" ]; then
     task="$tok"; break
@@ -90,7 +91,8 @@ done
 # Fallback: a supervisor relaunched without FM_HOME would otherwise degrade this gate
 # to a warning. Task ids are unique fleet-wide, so resolve the owning home by search.
 if [ -z "$task" ]; then
-  for tok in $cmd; do
+  set -- $cmd
+  for tok in "$@"; do
     case "$tok" in -*|*fm-spawn.sh|*/*|*=*) continue ;; esac
     for cand in /var/lib/firstmate/homes/*/; do
       if grep -qE "^- \[.\] ${tok}( |$)" "$cand/data/backlog.md" 2>/dev/null || [ -d "$cand/data/$tok" ]; then
