@@ -31,16 +31,15 @@ case "$cmd" in
   A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
   If the captain has given the word for this exact PR, use fm-pr-merge.sh so it is recorded." ;;
 esac
-case "$cmd" in
-  *"git push"*)
-      case "$cmd" in
-        *" master"*|*" main"*|*":master"*|*":main"*|*"HEAD:master"*|*"HEAD:main"*)
-            deny "PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
-  never push there. Open a PR and let the captain merge it." ;;
-      esac ;;
-esac
-
 case "$cmd" in *fm-spawn.sh*) ;; *) exit 0 ;; esac
+
+if printf '%s' "$cmd" | grep -qE '(^|;[[:space:]]*|&&[[:space:]]*|\|\|[[:space:]]*)git[[:space:]]+push[[:space:]]'; then
+  case "$cmd" in
+    *" master"*|*" main"*|*":master"*|*":main"*|*"HEAD:master"*|*"HEAD:main"*)
+        deny "PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it." ;;
+  esac
+fi
 
 model=$(printf '%s' "$cmd" | sed -nE 's/.*--model[= ]+([^ ]+).*/\1/p' | head -1)
 [ -n "$model" ] || deny "spawn without an explicit --model (model=default is forbidden). Resolve a profile from config/crew-dispatch.json and pass --model."
@@ -81,6 +80,7 @@ fi
 # warns and passes, because a gate that blocks every spawn on a lookup mismatch would
 # stall the fleet, which is the one outcome the standing order forbids outright.
 task=""
+# shellcheck disable=SC2086
 set -- $cmd
 for tok in "$@"; do
   case "$tok" in -*|*fm-spawn.sh|*/*|*=*) continue ;; esac
@@ -91,6 +91,7 @@ done
 # Fallback: a supervisor relaunched without FM_HOME would otherwise degrade this gate
 # to a warning. Task ids are unique fleet-wide, so resolve the owning home by search.
 if [ -z "$task" ]; then
+  # shellcheck disable=SC2086
   set -- $cmd
   for tok in "$@"; do
     case "$tok" in -*|*fm-spawn.sh|*/*|*=*) continue ;; esac

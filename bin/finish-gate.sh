@@ -36,6 +36,7 @@ esac
 
 # verify
 [ -n "$cond" ] || { echo "UNDECLARED"; exit 1; }
+# shellcheck disable=SC2086
 set -- $cond
 kind=${1:-}; shift || true
 case "$kind" in
