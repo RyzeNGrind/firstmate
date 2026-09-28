@@ -1,9 +1,0 @@
-[Unit]
-Description=Firstmate ask ledger check service
-Documentation=bin/fm-ask-ledger-check.sh
-
-[Service]
-Type=oneshot
-ExecStart=%h/.local/bin/fm-ask-ledger-check.sh check
-StandardOutput=journal
-StandardError=journal
