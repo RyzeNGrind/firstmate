@@ -1,0 +1,5 @@
+ok - reports pass when supervisor group is gone
+ok - reports pass when PID is reused by a different process (race fix)
+ok - reports fail when same supervisor is still alive
+
+Results: 3 passed, 0 failed

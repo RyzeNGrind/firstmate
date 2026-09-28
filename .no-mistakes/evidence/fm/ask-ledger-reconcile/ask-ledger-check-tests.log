@@ -1,0 +1,12 @@
+Running fm-ask-ledger-check tests...
+
+✓ Detects unreconciled CAPTAIN ASK note
+✓ Ignores non-CAPTAIN ASK notes
+✓ Reconciles when ask is in backlog
+✓ First check reports unreconciled
+✓ Deduplicates repeated checks
+✓ Handles empty inbox gracefully
+✓ Reports multiple unreconciled asks (ask-a)
+✓ Reports multiple unreconciled asks (ask-b)
+
+Results: 8/8 passed
