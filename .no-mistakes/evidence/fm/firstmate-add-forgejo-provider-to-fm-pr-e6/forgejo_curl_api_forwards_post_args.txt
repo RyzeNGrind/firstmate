@@ -1,0 +1,12 @@
+arg[1]=-sf
+arg[2]=--max-time
+arg[3]=10
+arg[4]=-H
+arg[5]=Authorization: token TOK
+arg[6]=https://git.example/api/v1/repos/demo/repo/pulls/42/merge
+arg[7]=-X
+arg[8]=POST
+arg[9]=-H
+arg[10]=Content-Type: application/json
+arg[11]=-d
+arg[12]={"Do":"merge","head_commit_id":"deadbeef"}
