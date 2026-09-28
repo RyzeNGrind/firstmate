@@ -1,0 +1,10 @@
+== Time 1: unreconciled ==
+unreconciled asks: ask-42
+record: unreconciled asks: ask-42
+== Time 2: repeat, dedup silent ==
+== Time 3: reconciled ==
+
+record: NONE
+== Time 4: unreconciled again ==
+unreconciled asks: ask-42
+record: unreconciled asks: ask-42
