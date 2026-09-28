@@ -1504,7 +1504,8 @@ detect_local_tools() {
     echo "MISSING: tasks-axi (install: $(install_cmd tasks-axi))"
   fi
   # Check that firstmate operational skills are symlinked to ~/.claude/skills/
-  if [ -d "$FM_ROOT/.agents/skills" ]; then
+  # Skip this check in test/CI environments where HOME might not be set correctly
+  if [ -d "$FM_ROOT/.agents/skills" ] && [ -n "${HOME:-}" ]; then
     local skill_dir skill target
     for skill_dir in "$FM_ROOT/.agents/skills"/*; do
       [ -d "$skill_dir" ] || [ -L "$skill_dir" ] || continue
