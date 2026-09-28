@@ -1,0 +1,5 @@
+=== fm-backend-autodetect-smoke.test.sh (needs running default Herdr) ===
+fm-herdr-lab: fleet-state tripwire requires exactly one running default session
+not ok - could not provision isolated Herdr lab session
+fm-herdr-lab: missing fleet-state tripwire for 'fm-lab-fm-autodetect-sm-1580697-23098'; refusing destructive calls
+EXIT=0

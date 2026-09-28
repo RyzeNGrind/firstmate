@@ -1,0 +1,7 @@
+{
+  "default": true,
+  "name": "default",
+  "running": false,
+  "session_dir": "/var/lib/nixbuilder/.config/herdr",
+  "socket_path": "/var/lib/nixbuilder/.config/herdr/herdr.sock"
+}

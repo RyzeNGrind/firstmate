@@ -1,0 +1,8 @@
+=== fm-install-treehouse.sh v3.1.0 install (linux-arm64) ===
+fm-install-treehouse.sh: downloading treehouse-v3.1.0-linux-arm64.tar.gz from https://github.com/kunchenguid/treehouse/releases/download/v3.1.0/treehouse-v3.1.0-linux-arm64.tar.gz
+fm-install-treehouse.sh: installed treehouse v3.1.0 to /tmp/fm-test-treehouse.yiF7Ss/treehouse
+v3.1.0
+=== installed binary --version ===
+v3.1.0
+=== --root flag (v3.1.0 native support) ===
+      --root string   Worktree root directory, overriding TREEHOUSE_ROOT and config; relative paths (e.g. "." for an in-project pool) resolve from the repo root

@@ -1,0 +1,8 @@
+=== fm-watcher-lock: ARM_FAIL_EXIT_POLLS=700 cases (self-eviction + peer-attached-arm) ===
+ok - arm turns clean self-eviction without a successor into a typed failure
+ok - arm attaches to a peer watcher after child stands down and surfaces a missing successor
+
+real	2m3.562s
+user	0m11.605s
+sys	0m6.066s
+EXIT=0
