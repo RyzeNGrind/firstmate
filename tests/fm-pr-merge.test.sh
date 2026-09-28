@@ -26,6 +26,16 @@ MR_URL="$MR_PROJECT_URL/-/merge_requests/7"
 MR_HEAD=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 MR_STALE_HEAD=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
+# The Forgejo fixture. A placeholder Forgejo instance, a two-segment owner/repo
+# path, and a short pull request number distinct from the GitLab fixture.
+FORGEJO_HOST=git.beta.nixify.dev
+FORGEJO_OWNER=testowner
+FORGEJO_REPO=testrepo
+FORGEJO_PATH=$FORGEJO_OWNER/$FORGEJO_REPO
+FORGEJO_URL="https://$FORGEJO_HOST/$FORGEJO_OWNER/$FORGEJO_REPO/pulls/5"
+FORGEJO_HEAD=dddddddddddddddddddddddddddddddddddddddd
+FORGEJO_STALE_HEAD=eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
 JQ_BIN=$(command -v jq) || fail "these tests read glab's JSON with the real jq, which was not found"
 REAL_MV=$(command -v mv) || fail "these tests need mv to simulate a failed poll publish"
 
@@ -295,6 +305,123 @@ SH
   ln -sf "$JQ_BIN" "$case_dir/fakebin/jq"
 }
 
+# curl mock that handles the three Forgejo API calls fm-pr-merge makes: the
+# pre-merge PR view GET, the commit-status GET at the head SHA, and the merge
+# POST. The case dir is derived from FM_TEST_FORGEJO_PR_JSON so no test leaks
+# environment into a shared runner. Marker files in the case dir drive the
+# failure modes:
+#   curl-merge-fails   if present, the merge POST exits non-zero
+#   curl-stays-open    if present, the post-merge confirm returns the pre-merge JSON
+# The merge POST body is written to curl-merge-body.json so tests can verify
+# the Do and head_commit_id fields.
+add_curl_mock() {
+  local case_dir=$1
+  cat > "$case_dir/fakebin/curl" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$FM_TEST_FORGEJO_CURL_LOG"
+case_dir=$(dirname "$FM_TEST_FORGEJO_PR_JSON")
+
+# Find the URL and -X/-d argument values from the positional args.
+url=
+is_post=0
+body=
+prev=
+for a in "$@"; do
+  case "$a" in https://*) url=$a ;; esac
+  [ "$prev" = "-X" ] && [ "$a" = "POST" ] && is_post=1
+  [ "$prev" = "-d" ] && body=$a
+  prev=$a
+done
+
+if [ "$is_post" -eq 1 ]; then
+  [ ! -e "$case_dir/curl-merge-fails" ] || exit 1
+  : > "$case_dir/curl-merge-called"
+  [ -z "$body" ] || printf '%s\n' "$body" > "$case_dir/curl-merge-body.json"
+  exit 0
+fi
+
+case "$url" in
+  */commits/*/status)
+    if [ -f "$case_dir/forgejo-status.json" ]; then
+      cat "$case_dir/forgejo-status.json"
+    else
+      printf '{"state":"success","total_count":1}\n'
+    fi
+    ;;
+  */pulls/*)
+    if [ -e "$case_dir/curl-merge-called" ] && [ ! -e "$case_dir/curl-stays-open" ]; then
+      printf '{"state":"closed","merged":true}\n'
+    else
+      cat "$FM_TEST_FORGEJO_PR_JSON"
+    fi
+    ;;
+  *)
+    exit 1
+    ;;
+esac
+exit 0
+SH
+  chmod +x "$case_dir/fakebin/curl"
+  ln -sf "$JQ_BIN" "$case_dir/fakebin/jq"
+}
+
+# write_forgejo_pr_json <file> [<field>=<value> ...]
+# A Forgejo pull request payload that satisfies every pre-merge condition, with
+# the named fields overridden so one case drives exactly one condition.
+write_forgejo_pr_json() {
+  local file=$1 kv key value
+  local state=open draft=false mergeable=true head=$FORGEJO_HEAD
+  shift
+  for kv in "$@"; do
+    key=${kv%%=*}
+    value=${kv#*=}
+    case "$key" in
+      state) state=$value ;;
+      draft) draft=$value ;;
+      mergeable) mergeable=$value ;;
+      head) head=$value ;;
+      *) fail "write_forgejo_pr_json: unknown field '$key'" ;;
+    esac
+  done
+  printf '{"number":5,"state":"%s","draft":%s,"mergeable":%s,"head":{"sha":"%s"}}\n' \
+    "$state" "$draft" "$mergeable" "$head" > "$file"
+}
+
+# write_forgejo_status_json <file> [<field>=<value> ...]
+# A Forgejo combined commit status payload. total_count defaults to 1 with a
+# success state so tests that change just the state get a realistic response.
+write_forgejo_status_json() {
+  local file=$1 kv key value
+  local state=success total_count=1
+  shift
+  for kv in "$@"; do
+    key=${kv%%=*}
+    value=${kv#*=}
+    case "$key" in
+      state) state=$value ;;
+      total_count) total_count=$value ;;
+      *) fail "write_forgejo_status_json: unknown field '$key'" ;;
+    esac
+  done
+  printf '{"state":"%s","total_count":%s}\n' "$state" "$total_count" > "$file"
+}
+
+# make_forgejo_case <name> [<field>=<value> ...]: a case dir with the curl
+# mock, a Forgejo credentials file, and a pull request payload. Extra fields
+# are forwarded to write_forgejo_pr_json. Echoes the case dir.
+make_forgejo_case() {
+  local name=$1 case_dir
+  shift
+  case_dir=$(make_case "$name")
+  mkdir -p "$case_dir/user-home/.config/das"
+  printf 'FORGEJO_TOKEN=test-forgejo-token-xxxxxxxxxxxx\n' \
+    > "$case_dir/user-home/.config/das/forgejo.env"
+  add_curl_mock "$case_dir"
+  write_forgejo_pr_json "$case_dir/forgejo-pr.json" "$@"
+  : > "$case_dir/forgejo-curl.log"
+  printf '%s\n' "$case_dir"
+}
+
 # write_mr_json <file> [<field>=<value> ...]
 # A merge request payload that satisfies every pre-merge condition, with the
 # named fields overridden so one case drives exactly one condition. Values are
@@ -406,6 +533,8 @@ run_pr_merge() {
   FM_TEST_REAL_MV="$REAL_MV" \
   FM_TEST_GLAB_LOG="$case_dir/glab.log" \
   FM_TEST_GLAB_JSON="$case_dir/mr.json" \
+  FM_TEST_FORGEJO_PR_JSON="$case_dir/forgejo-pr.json" \
+  FM_TEST_FORGEJO_CURL_LOG="$case_dir/forgejo-curl.log" \
   HOME="${FM_TEST_USER_HOME:-$case_dir/user-home}" \
   PATH="$case_dir/fakebin:$PATH" \
     "$PR_MERGE" "$@"
@@ -3256,3 +3385,214 @@ test_away_record_cannot_change_between_the_authority_read_and_the_merge
 test_a_record_made_unreadable_before_the_merge_refuses_it
 test_merge_refuses_when_the_away_record_cannot_be_locked
 test_allow_red_refused_on_gitlab
+
+# Forgejo merge tests
+# ───────────────────────────────────────────────────────────────
+
+test_forgejo_basic_merge_succeeds() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-merge-ok)
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-merge-ok: a green Forgejo merge should succeed"
+  [ -e "$case_dir/curl-merge-called" ] \
+    || fail "forgejo-merge-ok: the curl merge POST was never called"
+  assert_grep "pr=$FORGEJO_URL" "$case_dir/state/task-x1.meta" \
+    "forgejo-merge-ok: pr= was not recorded"
+  assert_grep "pr_head=$FORGEJO_HEAD" "$case_dir/state/task-x1.meta" \
+    "forgejo-merge-ok: pr_head= was not recorded"
+  pass "fm-pr-merge succeeds for a green Forgejo pull request"
+}
+
+test_forgejo_pre_merge_conditions_refuse_independently() {
+  local case_dir rc label condition field value
+  # Each condition is driven by a single field override; the others are clean.
+  for spec in \
+    'not-open|state is|state=closed' \
+    'draft|pull request is a draft|draft=true' \
+    'conflicts|mergeable is|mergeable=false'
+  do
+    label=${spec%%|*}
+    condition=${spec#*|}
+    condition=${condition%%|*}
+    field_value=${spec##*|}
+    case_dir=$(make_forgejo_case "forgejo-refuses-$label" "$field_value")
+
+    set +e
+    run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+      > "$case_dir/stdout" 2> "$case_dir/stderr"
+    rc=$?
+    set -e
+
+    expect_code 1 "$rc" "forgejo-refuses-$label: the merge should be refused"
+    assert_grep "$condition" "$case_dir/stderr" \
+      "forgejo-refuses-$label: refusal did not name the condition"
+    [ ! -e "$case_dir/curl-merge-called" ] \
+      || fail "forgejo-refuses-$label: the merge POST ran despite the refusal"
+  done
+  pass "fm-pr-merge refuses each Forgejo pre-merge condition independently"
+}
+
+test_forgejo_red_commit_status_refuses() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-red-status)
+  write_forgejo_status_json "$case_dir/forgejo-status.json" state=failure
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-red-status: a non-success commit status must refuse"
+  assert_grep 'commit status at head is "failure"' "$case_dir/stderr" \
+    "forgejo-red-status: refusal did not name the failed status"
+  [ ! -e "$case_dir/curl-merge-called" ] \
+    || fail "forgejo-red-status: the merge POST ran despite a red commit status"
+  pass "fm-pr-merge refuses a Forgejo pull request whose commit status is not success"
+}
+
+test_forgejo_no_ci_configured_merges() {
+  local case_dir
+  case_dir=$(make_forgejo_case forgejo-no-ci)
+  write_forgejo_status_json "$case_dir/forgejo-status.json" state=pending total_count=0
+
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr" \
+    || fail "forgejo-no-ci: a pull request with no CI configured should merge"
+  [ -e "$case_dir/curl-merge-called" ] \
+    || fail "forgejo-no-ci: the merge POST was not called"
+  pass "fm-pr-merge merges a Forgejo pull request with no CI configured (total_count=0)"
+}
+
+test_forgejo_all_conditions_reported_together() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-all-bad \
+    state=closed draft=true mergeable=false)
+  write_forgejo_status_json "$case_dir/forgejo-status.json" state=pending
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-all-bad: all bad conditions must refuse"
+  assert_grep 'state is' "$case_dir/stderr" \
+    "forgejo-all-bad: state condition not reported"
+  assert_grep 'pull request is a draft' "$case_dir/stderr" \
+    "forgejo-all-bad: draft condition not reported"
+  assert_grep 'mergeable is' "$case_dir/stderr" \
+    "forgejo-all-bad: mergeable condition not reported"
+  assert_grep 'commit status at head is' "$case_dir/stderr" \
+    "forgejo-all-bad: commit status condition not reported"
+  [ ! -e "$case_dir/curl-merge-called" ] \
+    || fail "forgejo-all-bad: the merge POST ran despite all conditions failing"
+  pass "fm-pr-merge reports all failing Forgejo pre-merge conditions together"
+}
+
+test_forgejo_merge_failure_propagates() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-merge-fails)
+  : > "$case_dir/curl-merge-fails"
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  [ "$rc" -ne 0 ] || fail "forgejo-merge-fails: a failed merge POST must exit non-zero"
+  assert_absent "$case_dir/state/.wake-queue" \
+    "forgejo-merge-fails: a failed merge wrote a durable outcome"
+  pass "fm-pr-merge propagates a Forgejo merge POST failure"
+}
+
+test_forgejo_missing_credentials_refuses() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-no-creds)
+  rm -f "$case_dir/user-home/.config/das/forgejo.env"
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-no-creds: missing credentials must refuse"
+  assert_grep 'Forgejo credentials file not found' "$case_dir/stderr" \
+    "forgejo-no-creds: refusal did not name the missing credentials"
+  [ ! -e "$case_dir/curl-merge-called" ] \
+    || fail "forgejo-no-creds: the merge POST ran without credentials"
+  pass "fm-pr-merge refuses a Forgejo merge when the credentials file is absent"
+}
+
+test_forgejo_allow_red_refused() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-allow-red)
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" --allow-red lint \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 2 "$rc" "forgejo-allow-red: --allow-red must not apply on Forgejo"
+  assert_grep 'does not apply to GitLab or Forgejo' "$case_dir/stderr" \
+    "forgejo-allow-red: refusal did not name Forgejo"
+  [ ! -e "$case_dir/curl-merge-called" ] \
+    || fail "forgejo-allow-red: the merge POST ran despite --allow-red refusal"
+  pass "fm-pr-merge refuses --allow-red on Forgejo"
+}
+
+test_forgejo_method_flags_map_to_do_field() {
+  local case_dir body do_val method
+  for method in squash merge rebase; do
+    case_dir=$(make_forgejo_case "forgejo-method-$method")
+
+    run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" "--$method" \
+      > "$case_dir/stdout" 2> "$case_dir/stderr" \
+      || fail "forgejo-method-$method: merge should succeed: $(cat "$case_dir/stderr")"
+
+    [ -f "$case_dir/curl-merge-body.json" ] \
+      || fail "forgejo-method-$method: merge body was not captured"
+    do_val=$(jq -r '.Do' "$case_dir/curl-merge-body.json") \
+      || fail "forgejo-method-$method: could not parse Do from merge body"
+    [ "$do_val" = "$method" ] \
+      || fail "forgejo-method-$method: Do field is '$do_val', want '$method'"
+  done
+  pass "fm-pr-merge maps --squash/--merge/--rebase to the Forgejo merge Do field"
+}
+
+test_forgejo_merge_body_binds_head_commit() {
+  local case_dir bound_head
+  case_dir=$(make_forgejo_case forgejo-head-binding)
+
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr" \
+    || fail "forgejo-head-binding: merge should succeed: $(cat "$case_dir/stderr")"
+
+  [ -f "$case_dir/curl-merge-body.json" ] \
+    || fail "forgejo-head-binding: merge body was not captured"
+  bound_head=$(jq -r '.head_commit_id' "$case_dir/curl-merge-body.json") \
+    || fail "forgejo-head-binding: could not parse head_commit_id from merge body"
+  [ "$bound_head" = "$FORGEJO_HEAD" ] \
+    || fail "forgejo-head-binding: head_commit_id is '$bound_head', want '$FORGEJO_HEAD'"
+  pass "fm-pr-merge passes the verified head SHA as head_commit_id in the Forgejo merge body"
+}
+
+test_forgejo_basic_merge_succeeds
+test_forgejo_pre_merge_conditions_refuse_independently
+test_forgejo_red_commit_status_refuses
+test_forgejo_no_ci_configured_merges
+test_forgejo_all_conditions_reported_together
+test_forgejo_merge_failure_propagates
+test_forgejo_missing_credentials_refuses
+test_forgejo_allow_red_refused
+test_forgejo_method_flags_map_to_do_field
+test_forgejo_merge_body_binds_head_commit

@@ -99,14 +99,13 @@ fi
 
 "$FM_ROOT/bin/fm-guard.sh" || true
 
-# pr_head is recorded only when the forge's CLI can supply it. gh exposes the
-# head commit as a selectable field; plain glab exposes it only inside its JSON
-# output, which would need a JSON processor firstmate does not require, so a
-# GitLab task records no pr_head, and neither does a Gerrit task: a Gerrit
-# revision names one patch set, every amend or rebase is a new patch set, and
-# bin/fm-review-diff.sh has no Gerrit path to resolve a current head with, so a
-# recorded revision would silently become the reviewed content. Both consumers
-# already treat it as optional:
+# pr_head is recorded for GitHub (via gh) and Forgejo (via curl+jq), but not
+# for GitLab or Gerrit. Plain glab exposes the head only inside its JSON output,
+# which would need a JSON processor firstmate does not require for GitLab, so a
+# GitLab task records no pr_head. A Gerrit revision names one patch set, every
+# amend or rebase is a new patch set, and bin/fm-review-diff.sh has no Gerrit
+# path to resolve a current head with, so a recorded revision would silently
+# become the reviewed content. Both consumers already treat it as optional:
 # bin/fm-teardown.sh reads the head from the forge at teardown rather than from
 # metadata and falls back to its provider-agnostic content check, and
 # bin/fm-review-diff.sh fetches a pull request head from the remote when none is
@@ -119,6 +118,27 @@ if [ "$PROVIDER" = github ] && [ -n "$WT" ] && [ -d "$WT" ] && command -v gh >/d
   if REMOTE_HEAD=$(cd "$WT" && gh pr view "$URL" --json headRefOid -q .headRefOid 2>/dev/null) \
     && fm_pr_head_valid "$REMOTE_HEAD"; then
     PR_HEAD=$REMOTE_HEAD
+  fi
+fi
+if [ "$PROVIDER" = forgejo ] && command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  _fcreds="${FM_FORGEJO_CREDS_FILE:-$HOME/.config/das/forgejo.env}"
+  if [ -f "$_fcreds" ]; then
+    _ftoken=
+    while IFS= read -r _fline || [ -n "$_fline" ]; do
+      case "$_fline" in FORGEJO_TOKEN=*) _ftoken=${_fline#FORGEJO_TOKEN=} ;; esac
+    done < "$_fcreds"
+    _ftoken=${_ftoken#[\"\']}
+    _ftoken=${_ftoken%[\"\']}
+    if [ -n "$_ftoken" ]; then
+      _fjson=$(curl -sf --max-time 10 \
+        -H "Authorization: token $_ftoken" \
+        "https://$HOST/api/v1/repos/$FM_PR_OWNER/$FM_PR_REPO/pulls/$NUMBER" 2>/dev/null) || true
+      if [ -n "$_fjson" ]; then
+        REMOTE_HEAD=$(printf '%s' "$_fjson" | jq -r \
+          'if type == "object" then (.head.sha // "") else "" end' 2>/dev/null) || true
+        fm_pr_head_valid "$REMOTE_HEAD" && PR_HEAD=$REMOTE_HEAD || true
+      fi
+    fi
   fi
 fi
 
