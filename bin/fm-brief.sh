@@ -580,6 +580,7 @@ $ASK_USER_BLOCK
 7. Never stop, restart, or update the shared \`no-mistakes\` daemon; only firstmate manages it.
    - Before \`blocked:\` on the pipeline: run \`no-mistakes daemon status\` and \`no-mistakes axi status\`.
    - If the socket refuses or is missing: append \`blocked [at=<epoch>]: {daemon error}\` and stop (run record can be stale after daemon exit).
+   - A run record failed with a daemon error is also a real block.
    - A drive-call timeout, killed call, or slow read is NOT a daemon error: the daemon kept running in the background.
    - After ruling out socket failure: reattach with \`no-mistakes axi run\` (no flags, backgrounded) and keep going.
 
