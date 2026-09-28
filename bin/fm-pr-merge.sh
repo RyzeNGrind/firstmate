@@ -1168,7 +1168,7 @@ forgejo_token_load() {
 forgejo_curl_api() {
   local forgejo_token=$1; shift
   curl -sf --max-time 10 -H "Authorization: token $forgejo_token" \
-    "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$@"
+    "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$*"
 }
 
 forgejo_checks_not_green() {
