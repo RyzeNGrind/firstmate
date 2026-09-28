@@ -344,19 +344,13 @@ When the captain's intent refers to a report, decision, or PR ("do items 1, 2, 3
 This replaces the no-mistakes skill's advice to enrich \`--intent\` with decisions and tradeoffs; that advice does not apply to Firstmate-dispatched work.
 Do not hand-edit, commit, or fix findings yourself while a run is active - the pipeline applies every fix.
 
-One drive call blocks until the next gate or outcome, which routinely outlives what your harness lets a single command run: Claude Code kills a command at ten minutes maximum, while one fix round is capped around thirty minutes and up to three rounds chain.
-So background the drive call instead of sitting in one blocking hold your harness will kill, and read its return when it finishes.
-Where a harness's own command limit is not established, assume it bounds commands and use that same backgrounded shape.
-${pr_return_line}Whenever a drive call returns without a gate or an outcome - its own wait elapsed, or it was killed or timed out - reattach at once by re-running \`no-mistakes axi run\` without flags, backgrounded the same way${pr_reattach_clause} if it refuses because no run is active, read the finished outcome from \`no-mistakes axi status\`.
-A killed or timed-out call is never evidence the daemon died: the daemon accepts your response immediately and runs the round in the background, so the call was only ever waiting for a read while the run kept working.
-Reattach and keep going rather than reporting the pipeline blocked; rule 7 owns the checks that decide when a pipeline block is real.
+Background every drive call: a fix round takes up to 30 min across three chained rounds, far beyond the ~10 min command limit any harness enforces.
+${pr_return_line}On any return without a gate or outcome (elapsed, killed, or timed out): reattach at once with \`no-mistakes axi run\` (no flags, backgrounded)${pr_reattach_clause} if it refuses with no active run, read the outcome from \`no-mistakes axi status\`.
+A killed or timed-out call is never evidence the daemon died; rule 7 owns the checks for a real pipeline block.
 
-Two firstmate-specific rules layer on top of that guidance:
-- ask-user findings are never yours to answer: escalate to firstmate using rule 6's ask-user format and stop.
-  Firstmate applies \`ask-user-authority\` and obtains any required captain decision.
-  When the decision comes back, feed it to the gate with \`no-mistakes axi respond\` and let the pipeline apply it - do not route the question to "the user" or implement the fix yourself.
-- NEVER pass \`--yes\` (or \`-y\`) to \`no-mistakes axi run\` or \`no-mistakes axi respond\`. It is banned fleet-wide.
-  It auto-resolves every gate including ask-user findings with no escalation, and answering your own ask-user finding is a hard rule violation.
+Two firstmate-specific rules:
+- Never answer an ask-user finding yourself: escalate to firstmate via rule 6's ask-user format and stop. Feed the decision back with \`no-mistakes axi respond\`; do not implement the fix yourself.
+- Never pass \`--yes\` / \`-y\` to any \`no-mistakes axi\` call; it auto-resolves every gate with no escalation and is a hard rule violation.
 EOF
 }
 
