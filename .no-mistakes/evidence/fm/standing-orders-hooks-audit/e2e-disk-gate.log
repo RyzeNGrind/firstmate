@@ -1,0 +1,4 @@
+exit=2
+stderr=/var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M3KCJ6PJ20JR1JC25K5A9F0Z/bin/spawn-guard.sh: line 65: /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M3KCJ6PJ20JR1JC25K5A9F0Z/bin/quota-gate.sh: No such file or directory
+spawn-guard: disk full gate: / is 90% full (>85% threshold). Tear down landed crews and retry.
+OK-disk-gate-fires

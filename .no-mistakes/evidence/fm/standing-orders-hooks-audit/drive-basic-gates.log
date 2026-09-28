@@ -1,0 +1,52 @@
+[PASS] s01_unrelated_passthrough (exit=0)
+       cmd: ls -la
+[PASS] s02_gh_pr_merge_refused (exit=2)
+       cmd: gh pr merge 42 --squash
+       stderr: spawn-guard: MERGE REFUSED - hard rule 2. Merging a PR needs the captain's explicit word, and it must
+  go through bin/fm-pr-merge.sh, which records the authority and refuses an unproved merge.
+  A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
+  If the capt
+[PASS] s03_forge_api_merge_refused (exit=2)
+       cmd: curl -X POST https://forge.example.com/api/repos/foo/bar/pulls/29/merge
+       stderr: spawn-guard: MERGE REFUSED - hard rule 2. Merging a PR needs the captain's explicit word, and it must
+  go through bin/fm-pr-merge.sh, which records the authority and refuses an unproved merge.
+  A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
+  If the capt
+[PASS] s04_guarded_merge_path_allowed (exit=0)
+       cmd: bin/fm-pr-merge.sh 42
+[PASS] s05_push_main_refused (exit=2)
+       cmd: git push origin main
+       stderr: spawn-guard: PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it.
+[PASS] s06_push_master_refused (exit=2)
+       cmd: git push origin HEAD:master
+       stderr: spawn-guard: PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it.
+[PASS] s07_push_colon_master_refused (exit=2)
+       cmd: git push origin foo:master
+       stderr: spawn-guard: PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
+  never push there. Open a PR and let the captain merge it.
+[PASS] s08_push_feature_ok (exit=0)
+       cmd: git push origin fm/some-feature
+[PASS] s09_spawn_missing_model (exit=2)
+       cmd: bin/fm-spawn.sh some-task
+       stderr: spawn-guard: spawn without an explicit --model (model=default is forbidden). Resolve a profile from config/crew-dispatch.json and pass --model.
+[PASS] s10_spawn_model_default (exit=2)
+       cmd: bin/fm-spawn.sh --model default some-task
+       stderr: spawn-guard: model 'default' is forbidden for agents on this host (never default/opus/fable).
+[PASS] s11_spawn_model_opus (exit=2)
+       cmd: bin/fm-spawn.sh --model claude-opus-4-7 some-task
+       stderr: spawn-guard: model 'claude-opus-4-7' is forbidden for agents on this host (never default/opus/fable).
+[PASS] s12_spawn_model_fable (exit=2)
+       cmd: bin/fm-spawn.sh --model fable-x some-task
+       stderr: spawn-guard: model 'fable-x' is forbidden for agents on this host (never default/opus/fable).
+[PASS] s13_spawn_claude_wrong_model (exit=2)
+       cmd: bin/fm-spawn.sh --harness claude --model gpt-5 some-task
+       stderr: spawn-guard: claude model 'gpt-5' not allowed: workers use haiku (mechanical/read-only) or sonnet; secondmates sonnet.
+[PASS] s14_secondmate_sonnet_ok (exit=0)
+       cmd: bin/fm-spawn.sh --secondmate --model claude-sonnet-4-6 some-task
+[PASS] s15_secondmate_haiku_refused (exit=2)
+       cmd: bin/fm-spawn.sh --secondmate --model claude-haiku-4-5 some-task
+       stderr: spawn-guard: secondmates run on sonnet, not 'claude-haiku-4-5'.
+
+summary: 15 pass, 0 fail

@@ -1,0 +1,14 @@
+=== raw df / (as seen by the pre-fix code path) ===
+Filesystem     1K-blocks     Used Available Use% Mounted on
+/dev/mapper/vg--data-lv--home--0000000000000000000000000
+                49691512 44722361   4969151  90% /
+
+=== raw df -P / (as seen by the post-fix code path) ===
+Filesystem                                              1024-blocks      Used Available Capacity Mounted on
+/dev/mapper/vg--data-lv--home--0000000000000000000000000  49691512  44722361   4969151      90% /
+
+pre-fix parse (df /):    /dev/mapper/vg--data-lv--home--0000000000000000000000000
+post-fix parse (df -P /): 90
+
+pre-fix: numeric-check treats used='/dev/mapper/vg--data-lv--home--0000000000000000000000000' as NOT > 85 -> DISK GATE STAYS OPEN
+post-fix: numeric-check treats used='90' as > 85 -> DISK GATE FIRES
