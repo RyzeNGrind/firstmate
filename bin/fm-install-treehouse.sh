@@ -42,7 +42,7 @@ case "${os}-${arch}" in
     ;;
   Darwin-x86_64)
     ARCHIVE=treehouse-v${FM_TREEHOUSE_CI_VERSION}-darwin-amd64.tar.gz
-    SHA256=1cf44580a5837f995e1d3bb74f4fbd3112b642acd20406087d9735a8106112fd
+    SHA256=95a6f5cf582f767a8b102a749a53ea397bf28d20df10467c367927f26073e131
     ;;
   *)
     die "unsupported platform ${os}-${arch}; official Treehouse assets are linux/darwin amd64 and arm64"
