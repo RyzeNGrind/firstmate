@@ -9,12 +9,12 @@
 # Usage:
 #   fm-install-treehouse.sh <destination-directory>
 #
-# Pins Treehouse v2.0.1, the version exercised by the local real-Herdr suite.
+# Pins Treehouse v3.1.0, the version exercised by the local real-Herdr suite.
 set -eu
 
-FM_TREEHOUSE_CI_VERSION=2.0.1
+FM_TREEHOUSE_CI_VERSION=3.1.0
 FM_TREEHOUSE_CI_TAG="v${FM_TREEHOUSE_CI_VERSION}"
-# Bounded download ceiling (bytes). Official 2.0.1 archives are under 8 MiB.
+# Bounded download ceiling (bytes). Official 3.1.0 archives are under 8 MiB.
 FM_TREEHOUSE_CI_MAX_BYTES=15000000
 FM_TREEHOUSE_CI_REPO=kunchenguid/treehouse
 
@@ -30,15 +30,15 @@ arch=$(uname -m)
 case "${os}-${arch}" in
   Linux-x86_64)
     ARCHIVE=treehouse-v${FM_TREEHOUSE_CI_VERSION}-linux-amd64.tar.gz
-    SHA256=1d5a32751ab921670103fd201ddb2b91b47338cb13976f45642b827cf8976af2
+    SHA256=d783b1fdc1e0d2669c0042634850d795e1d12220e586782d82858e70a1a93c25
     ;;
   Linux-aarch64|Linux-arm64)
     ARCHIVE=treehouse-v${FM_TREEHOUSE_CI_VERSION}-linux-arm64.tar.gz
-    SHA256=eaccc9c5b98125df8bd77425598eeecee66cb0371db4eb1cf75f0d813c18fab9
+    SHA256=385061511fef62a3cb4f377ac48f3dc022a54c7e1198c10477f1306454a379dc
     ;;
   Darwin-arm64)
     ARCHIVE=treehouse-v${FM_TREEHOUSE_CI_VERSION}-darwin-arm64.tar.gz
-    SHA256=7ee5078f3d1f33c01196548797fce65408e459d53530b77d4ba56e074fa1c1a2
+    SHA256=e78f52f078d90ffa8589da164fc87306020c5524776273ad040af04127dd91df
     ;;
   Darwin-x86_64)
     ARCHIVE=treehouse-v${FM_TREEHOUSE_CI_VERSION}-darwin-amd64.tar.gz
