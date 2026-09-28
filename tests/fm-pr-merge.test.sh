@@ -3420,6 +3420,76 @@ test_forgejo_merge_not_mergeable() {
   pass "fm-pr-merge refuses when Forgejo PR is not mergeable"
 }
 
+# workflow_runs format: newer Forgejo versions return workflow_runs instead of
+# data and may omit head_sha and conclusion from each entry, reporting success
+# via status instead.
+write_forgejo_runs_json_workflow_runs() {
+  local file=$1 status=${2:-success}
+  cat > "$file" <<JSON
+{"workflow_runs":[{"id":1,"status":"$status","conclusion":null,"name":null,"head_sha":null}],"total_count":1}
+JSON
+}
+
+test_forgejo_merge_workflow_runs_success() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-workflow-runs-success)
+  write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-workflow-runs-success: a green workflow_runs run should succeed"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-workflow-runs-success: success was not reported"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-workflow-runs-success: merge API was not called"
+  pass "fm-pr-merge merges when Forgejo returns workflow_runs format with status=success"
+}
+
+test_forgejo_merge_workflow_runs_failure() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-workflow-runs-failure)
+  write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" failure
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-workflow-runs-failure: a failed workflow_runs run must refuse"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-workflow-runs-failure: refusal was not reported"
+  [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-workflow-runs-failure: merge API was called despite failure"
+  pass "fm-pr-merge refuses when Forgejo workflow_runs run has status=failure"
+}
+
+# Regression: a successful workflow_runs run must not be blocked by null-state
+# commit statuses, which some Forgejo versions leave unupdated after a run
+# completes successfully.
+test_forgejo_merge_workflow_runs_success_skips_null_statuses() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-workflow-runs-null-statuses)
+  write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"pr-check / build-offload (pull_request)","state":null},{"context":"pr-check / eval-gate (pull_request)","state":null}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-workflow-runs-null-statuses: null-state statuses must not block a successful workflow run"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-workflow-runs-null-statuses: success was not reported"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-workflow-runs-null-statuses: merge API was not called"
+  pass "fm-pr-merge merges when successful workflow_runs run exists despite null-state commit statuses"
+}
+
 test_gitlab_head_override_args_refuse_before_recording
 test_secondmate_merge_reports_upward_once
 test_secondmate_merge_reports_on_the_local_route
@@ -3468,4 +3538,7 @@ test_forgejo_merge_checks_not_green
 test_forgejo_merge_status_context_only
 test_forgejo_merge_status_context_only_red
 test_forgejo_merge_not_mergeable
+test_forgejo_merge_workflow_runs_success
+test_forgejo_merge_workflow_runs_failure
+test_forgejo_merge_workflow_runs_success_skips_null_statuses
 test_allow_red_refused_on_forgejo
