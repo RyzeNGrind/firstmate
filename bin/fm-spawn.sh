@@ -3342,6 +3342,9 @@ else
     # stays $T (the name form), which is safe now that rename is disabled.
     WID=$(fm_backend_tmux_create_task "$SES" "$W" "$PROJ_ABS") || exit 1
     WT_TARGET="$WID"
+    if [ "$KIND" = secondmate ]; then
+      tmux set-option -t "$WID" remain-on-exit on
+    fi
     ;;
   herdr)
     # fm_backend_herdr_workspace_label resolves the target workspace from
