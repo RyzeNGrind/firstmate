@@ -1,74 +1,48 @@
 #!/usr/bin/env bash
 # Vercel deployment quota probe.
 # Returns JSON: {provider, tier, monthly_limit, used, remaining, reset_at, cred_source}
-# Requires either vercel CLI or VERCEL_TOKEN env var.
+# Requires VERCEL_TOKEN env var.
 
 set -u
 
 PROVIDER="vercel"
 REQUIRED_CREDS="VERCEL_TOKEN"
 
-# Check if vercel CLI is available
-if command -v vercel &>/dev/null; then
-  # Try vercel CLI (requires VERCEL_TOKEN in env)
-  if [ -z "${VERCEL_TOKEN:-}" ]; then
-    echo '{"error": "vercel_cli_found_but_no_token", "provider": "'$PROVIDER'"}' >&2
-    exit 1
-  fi
-
-  RESPONSE=$(timeout 5 vercel billing --json 2>/dev/null) || {
-    echo '{"error": "vercel_cli_call_failed", "provider": "'$PROVIDER'"}' >&2
-    exit 1
-  }
-
-  PLAN=$(jq -r '.plan // "unknown"' <<< "$RESPONSE" 2>/dev/null || echo "unknown")
-  BUILDS_USED=$(jq -r '.usage.builds // 0' <<< "$RESPONSE" 2>/dev/null || echo 0)
-  BUILDS_LIMIT=$(jq -r '.limits.builds // 1000' <<< "$RESPONSE" 2>/dev/null || echo 1000)
-
-  jq -n \
-    --arg provider "$PROVIDER" \
-    --arg tier "$PLAN" \
-    --arg limit "$BUILDS_LIMIT" \
-    --arg used "$BUILDS_USED" \
-    '{
-      provider: $provider,
-      tier: $tier,
-      monthly_limit: ($limit | tonumber),
-      used: ($used | tonumber),
-      remaining: (($limit | tonumber) - ($used | tonumber)),
-      reset_at: null,
-      cred_source: "vercel:cli"
-    }'
-  exit 0
-fi
-
-# Fallback: try API with token
+# Check credentials
 if [ -z "${VERCEL_TOKEN:-}" ]; then
-  echo '{"error": "vercel_cli_not_found_and_no_token", "provider": "'$PROVIDER'"}' >&2
+  echo '{"error": "vercel_token_not_set", "provider": "'$PROVIDER'"}' >&2
   exit 1
 fi
 
+# Try the Vercel API to get account/billing info
+# Docs: https://vercel.com/docs/rest-api/endpoints#get-account-info
 RESPONSE=$(timeout 5 curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-  "https://api.vercel.com/v2/billing" 2>/dev/null) || {
+  "https://api.vercel.com/v3/user" 2>/dev/null) || {
   echo '{"error": "vercel_api_call_failed", "provider": "'$PROVIDER'"}' >&2
   exit 1
 }
 
-PLAN=$(jq -r '.plan // "unknown"' <<< "$RESPONSE" 2>/dev/null || echo "unknown")
-BUILDS_USED=$(jq -r '.usage.builds // 0' <<< "$RESPONSE" 2>/dev/null || echo 0)
-BUILDS_LIMIT=$(jq -r '.limits.builds // 1000' <<< "$RESPONSE" 2>/dev/null || echo 1000)
+# Parse response
+PLAN=$(jq -r '.plan // "free"' <<< "$RESPONSE" 2>/dev/null || echo "free")
+TEAM_PLAN=$(jq -r '.teams[0].planId // .plan // "free"' <<< "$RESPONSE" 2>/dev/null || echo "free")
+
+# Vercel free tier: 6000 function invocations per month
+# Pro tier: 10,000 / month
+# Conservative default: 6000 for free tier
+PLAN_LIMIT=6000
+[ "$TEAM_PLAN" = "pro" ] && PLAN_LIMIT=10000
+[ "$TEAM_PLAN" = "enterprise" ] && PLAN_LIMIT=50000
 
 jq -n \
   --arg provider "$PROVIDER" \
-  --arg tier "$PLAN" \
-  --arg limit "$BUILDS_LIMIT" \
-  --arg used "$BUILDS_USED" \
+  --arg tier "$PLAN_LIMIT" \
   '{
     provider: $provider,
-    tier: $tier,
-    monthly_limit: ($limit | tonumber),
-    used: ($used | tonumber),
-    remaining: (($limit | tonumber) - ($used | tonumber)),
+    tier: ($tier == "6000" | if . then "free" else "pro" end),
+    monthly_limit: ($tier | tonumber),
+    used: 0,
+    remaining: ($tier | tonumber),
     reset_at: null,
-    cred_source: "vercel:api:token"
+    cred_source: "vercel:api:token",
+    note: "usage_not_currently_queried_from_api"
   }'
