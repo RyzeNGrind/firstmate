@@ -1225,9 +1225,10 @@ fm_firstmate_root_home() {
 # It is anchored in the local root home's state directory; every home on this
 # machine that chains to the same root home derives the identical path.
 # Its identity is the project's resolved origin, so separate clones of one
-# origin share a single lock (each home now has its own per-home pool, so this
-# lock serializes across homes that no longer share pool state - harmless but
-# not required for correctness after the per-home pool change).
+# origin share a single lock. Firstmate no longer directs treehouse to a
+# per-home pool root (treehouse v2.0.1 removed `--root`), so homes on this
+# machine share treehouse's default pool and this cross-home serialization
+# is load-bearing for slot allocation and return, not just a leftover.
 # An origin-less local-only project falls back to its own worktree top instead
 # of failing to resolve.
 fm_treehouse_project_lock_path() {  # <project-dir>
