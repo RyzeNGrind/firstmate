@@ -74,8 +74,10 @@
 # live at merge time rather than taken from recorded metadata: the pull request
 # is open, not a draft, mergeable, and every Actions run at the exact current
 # head commit is green; status contexts are checked only when no successful
-# Actions run exists for that commit, because some Forgejo versions leave status
-# contexts in a null state even after a successful workflow run completes.
+# Actions run exists for that commit, and null- or empty-state status contexts
+# are ignored in that check because some Forgejo versions leave status contexts
+# in that state even after a workflow run completes, so a real green context
+# alongside such entries still merges.
 # The verified head is then passed to
 # the merge POST as head_commit_id, so a push that lands between that read and
 # the merge fails the merge instead of landing commits nothing verified. After
@@ -1207,7 +1209,7 @@ forgejo_checks_not_green() {
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    .[]? | select(.state != "success") | .context // "unnamed"
+    .[]? | select(.state != null and .state != "" and .state != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
