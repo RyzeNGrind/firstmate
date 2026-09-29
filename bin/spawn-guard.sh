@@ -25,7 +25,7 @@ deny() { printf 'spawn-guard: %s\n' "$1" >&2; exit 2; }
 # refuse an unproved merge. Reads of a PR are untouched; only merge actions are refused.
 case "$cmd" in
   *fm-pr-merge.sh*|*fm-merge-local.sh*) ;;                 # guarded paths own their own checks
-  *"pr merge"*|*"pulls/"*"/merge"*|*"pulls/"*"/merge\""*)
+  *"pr merge"*|*"pulls/"*"/merge"*)
       deny "MERGE REFUSED - hard rule 2. Merging a PR needs the captain's explicit word, and it must
   go through bin/fm-pr-merge.sh, which records the authority and refuses an unproved merge.
   A direct forge merge leaves no authority record and cannot be undone by a gate afterwards.
@@ -33,6 +33,7 @@ case "$cmd" in
 esac
 case "$cmd" in
   *"git push"*)
+      # shellcheck disable=SC2221,SC2222
       case "$cmd" in
         *" master"*|*" main"*|*":master"*|*":main"*|*"HEAD:master"*|*"HEAD:main"*)
             deny "PUSH TO A PROTECTED BRANCH REFUSED. master/main are operator-protected: agents
