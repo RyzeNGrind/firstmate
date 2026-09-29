@@ -76,7 +76,10 @@
 # the exact current head commit is green. Skipped workflow runs are treated as
 # green; a workflow that includes a job with `if:` conditions produces a run at
 # the workflow level with status=skipped when the condition is false, which is
-# a legitimate skip, not a failure. The verified head is then passed to
+# a legitimate skip, not a failure. Null- or empty-state status contexts are
+# also treated as green because some Forgejo versions leave status contexts in
+# that state even after a workflow run completes, so a real green context
+# alongside such entries still merges. The verified head is then passed to
 # the merge POST as head_commit_id, so a push that lands between that read and
 # the merge fails the merge instead of landing commits nothing verified. The
 # POST also sends force_merge=true so a branch-protection rule that requires the
