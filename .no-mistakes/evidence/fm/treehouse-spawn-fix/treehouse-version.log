@@ -1,0 +1,6 @@
+v2.0.1
+--- flag --root rejection ---
+A new version of treehouse is available: v2.0.1 → v3.1.0
+Run "treehouse update" to update
+
+cannot determine default branch: try running 'git fetch' or ensure you are on a branch

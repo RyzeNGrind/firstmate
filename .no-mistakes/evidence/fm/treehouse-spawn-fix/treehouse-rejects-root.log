@@ -1,0 +1,4 @@
+A new version of treehouse is available: v2.0.1 → v3.1.0
+Run "treehouse update" to update
+
+not in a git repository: git rev-parse --show-toplevel: fatal: not a git repository (or any of the parent directories): .git
