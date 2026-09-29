@@ -1,0 +1,15 @@
+=== arm (creates check shim + registers) ===
+registered: state/ask-ledger-reconcile.check.sh
+armed: /tmp/tmp.8SF4QiMgXr/state/ask-ledger-reconcile.check.sh
+arm exit=0
+=== shim exists and is executable ===
+-rwx------ 1 nixbuilder nixbuilder 86 Sep 29 14:44 /tmp/tmp.8SF4QiMgXr/state/ask-ledger-reconcile.check.sh
+=== shim contents ===
+#!/usr/bin/env bash
+FM_HOME=/tmp/tmp.8SF4QiMgXr exec bin/fm-ask-ledger-check.sh check
+=== disarm (removes shim, trust binding, record) ===
+disarmed: ask-ledger-reconcile
+disarm exit=0
+=== shim gone ===
+ls: cannot access '/tmp/tmp.8SF4QiMgXr/state/ask-ledger-reconcile.check.sh': No such file or directory
+shim removed

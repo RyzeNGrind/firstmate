@@ -1,0 +1,13 @@
+=== First call (unreconciled ASK) ===
+unreconciled asks: 2026-09-29-abc123
+exit=0
+=== Second call (dedup, silent) ===
+exit=0
+=== Add backlog row and rerun (silent) ===
+
+exit=0
+=== Record file cleared after transition to empty ===
+ls: cannot access '/tmp/tmp.o9lhLY9tRP/state/.ask-ledger-check': No such file or directory
+record cleared
+=== Empty inbox path (rm inbox) ===
+exit=0
