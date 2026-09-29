@@ -33,6 +33,16 @@
             "command": "\"$CLAUDE_PROJECT_DIR\"/bin/fm-subagent-pretool-check.sh --claude"
           }
         ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/bin/quota-fleet-pace-check.sh --warn-at 20 || true",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Stop": [
