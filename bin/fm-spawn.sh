@@ -4608,9 +4608,6 @@ preserve_relaunch_meta() {
     echo "home=$PROJ_ABS"
     echo "projects=$SECONDMATE_PROJECTS"
   fi
-  if [ "$KIND" != secondmate ] && [ "$BACKEND" != orca ] && [ "$RELAUNCH" -eq 0 ]; then
-    echo "treehouse_pool_root=$FM_HOME/state/treehouse"
-  fi
   if [ "$RELAUNCH" -eq 1 ]; then
     preserve_relaunch_meta
   fi
