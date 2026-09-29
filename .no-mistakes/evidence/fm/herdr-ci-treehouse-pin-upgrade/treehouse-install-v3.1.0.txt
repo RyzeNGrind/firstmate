@@ -1,0 +1,30 @@
+Scenario: bin/fm-install-treehouse.sh installs the pinned v3.1.0 archive and its --root flag exists.
+
+Host: Linux aarch64 (matches "Linux-aarch64|Linux-arm64" case in the installer,
+      exercising the new SHA 385061511fef62a3cb4f377ac48f3dc022a54c7e1198c10477f1306454a379dc).
+
+Command:
+  $ mkdir -p /tmp/th-install-test
+  $ bin/fm-install-treehouse.sh /tmp/th-install-test
+
+Actual stderr/stdout:
+  fm-install-treehouse.sh: downloading treehouse-v3.1.0-linux-arm64.tar.gz \
+    from https://github.com/kunchenguid/treehouse/releases/download/v3.1.0/treehouse-v3.1.0-linux-arm64.tar.gz
+  fm-install-treehouse.sh: installed treehouse v3.1.0 to /tmp/th-install-test/treehouse
+  v3.1.0
+
+Interpretation:
+  - The pinned SHA256 for linux-arm64 matches the released archive
+    (no "checksum mismatch" die).
+  - The archive layout still places the treehouse binary at the archive root,
+    matching the "verified for v3.1.0" comment.
+  - The post-install version check (`treehouse --version` -> "v3.1.0")
+    passes the exact-pin case.
+
+Verified --root flag support (the motivation for the pin bump):
+  $ /tmp/th-install-test/treehouse --help | grep -A1 root
+        --root string   Worktree root directory, overriding TREEHOUSE_ROOT
+                        and config; relative paths (e.g. "." for an in-project
+                        pool) resolve from the repo root
+
+This is the public flag v2.0.1 lacks; the CI Herdr scripts depend on it.

@@ -1,0 +1,36 @@
+Scenario: the two real-Herdr tests changed on this branch
+(tests/fm-backend-autodetect-smoke.test.sh, tests/fm-backend-herdr-presentation-e2e.test.sh)
+were driven far enough to reach `bin/fm-herdr-lab.sh provision`, which refused
+with a live-fleet safety guard, not with a defect in the change under test.
+
+Attempt (pinned treehouse v3.1.0 prepended to PATH so the --root path is exercised):
+  $ TH_DIR=$(mktemp -d)
+  $ bin/fm-install-treehouse.sh "$TH_DIR"      # v3.1.0 installed (see treehouse-install-v3.1.0.txt)
+  $ PATH="$TH_DIR:$PATH" bash tests/fm-backend-autodetect-smoke.test.sh
+  fm-herdr-lab: fleet-state tripwire requires exactly one running default session
+  not ok - could not provision isolated Herdr lab session
+
+  $ PATH="$TH_DIR:$PATH" bash tests/fm-backend-herdr-presentation-e2e.test.sh
+  fm-herdr-lab: fleet-state tripwire requires exactly one running default session
+  not ok - could not provision the isolated Herdr lab
+
+Live-fleet state at test time:
+  $ herdr session list --json
+  {"sessions":[{"default":true,"name":"default","running":false,...}]}
+
+Reason it is untested here:
+  - bin/fm-herdr-lab.sh:79 requires `running == true` on the default session as
+    a tripwire before it will provision an isolated lab. On this validation host
+    the default session is `running: false`.
+  - The repository live-validation runbook explicitly forbids touching the live
+    default Herdr session or fleet panes, which is the only way to bring the
+    tripwire green.
+  - The pinned v3.1.0 treehouse (the artifact this branch actually bumps) is
+    proven live in treehouse-install-v3.1.0.txt: the SHA verifies, the archive
+    installs, and the `--root` flag exists in --help output. That is the
+    behavior the two Herdr E2E tests would exercise once past the tripwire.
+
+To re-drive these two tests live, the operator must run them on a host with a
+live default Herdr session (i.e., the standard Firstmate fleet already running)
+so bin/fm-herdr-lab.sh's fleet-state tripwire passes; CI's Herdr lane satisfies
+this by design.

@@ -1,0 +1,31 @@
+Scenario: tests/fm-pr-forgejo-merge-poll.test.sh passes on a host with NO global
+git identity, proving the inline "-c user.name / -c user.email" fix.
+
+Setup:
+  - Isolated HOME (/tmp/no-git-identity-home) with no ambient .gitconfig
+  - GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_SYSTEM=/dev/null
+  This reproduces the base-commit failure mode: git commit --allow-empty -m init
+  used to fail with "Please tell me who you are".
+
+Command:
+  env -u XDG_CONFIG_HOME HOME=/tmp/no-git-identity-home \
+      GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null \
+      bash tests/fm-pr-forgejo-merge-poll.test.sh
+
+Result (all 13 assertions ok):
+  ok - canonical Forgejo URLs parse correctly with provider, host, path, number, owner, repo
+  ok - GitHub (/pull/) and GitLab (/-/merge_requests/) URLs do not become forgejo
+  ok - invalid and ambiguous Forgejo URLs are all rejected
+  ok - a merged Forgejo PR emits 'merged'
+  ok - an open Forgejo PR is silent
+  ok - a closed-unmerged Forgejo PR emits 'forgejo closed'
+  ok - missing creds file emits 'forgejo credentials unavailable'
+  ok - missing FORGEJO_TOKEN line emits 'forgejo credentials unavailable'
+  ok - a curl failure is silent
+  ok - github.com is rejected by the forgejo poll case
+  ok - the reconstructed URL must exactly match the stored url
+  ok - surrounding single quotes are stripped; an all-quotes token is treated as absent
+  ok - fm-pr-check.sh accepts a Forgejo URL, records pr= in meta, and arms the poll
+
+The last assertion covers make_forgejo_check_case which uses `git commit --allow-empty -m init`;
+its pass confirms the inline -c user.name / -c user.email flags override the missing global identity.
