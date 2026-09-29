@@ -402,6 +402,7 @@ write_ship_brief() {  # <home> <id> [description]
 $description
 
 ## Firstmate spec
+Delivery contract: mode=no-mistakes
 Verify projected workspace behavior for $id.
 EOF
 }
