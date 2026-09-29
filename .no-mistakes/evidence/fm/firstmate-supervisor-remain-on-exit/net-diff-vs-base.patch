@@ -1,0 +1,27 @@
+diff --git a/bin/fm-spawn.sh b/bin/fm-spawn.sh
+index 954da95..cd7b1e2 100755
+--- a/bin/fm-spawn.sh
++++ b/bin/fm-spawn.sh
+@@ -3342,6 +3342,9 @@ else
+     # stays $T (the name form), which is safe now that rename is disabled.
+     WID=$(fm_backend_tmux_create_task "$SES" "$W" "$PROJ_ABS") || exit 1
+     WT_TARGET="$WID"
++    if [ "$KIND" = secondmate ]; then
++      tmux set-option -t "$WID" remain-on-exit on
++    fi
+     ;;
+   herdr)
+     # fm_backend_herdr_workspace_label resolves the target workspace from
+diff --git a/tests/secondmate-helpers.sh b/tests/secondmate-helpers.sh
+index 6ab1d95..a90b951 100644
+--- a/tests/secondmate-helpers.sh
++++ b/tests/secondmate-helpers.sh
+@@ -26,7 +26,7 @@ make_fake_tmux() {
+ #!/usr/bin/env bash
+ set -u
+ case "${1:-}" in
+-  has-session|new-session|new-window|kill-window)
++  has-session|new-session|new-window|kill-window|set-option|set-window-option)
+     printf '%s\n' "$*" >> "$FM_FAKE_TMUX_LOG"
+     exit 0
+     ;;

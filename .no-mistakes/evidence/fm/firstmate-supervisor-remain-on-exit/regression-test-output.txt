@@ -1,0 +1,3 @@
+ok - secondmate launch sets remain-on-exit=on on its supervisor window after creating it
+ok - default (ship) launch creates its window without remain-on-exit
+# all fm-spawn-secondmate-remain-on-exit tests passed
