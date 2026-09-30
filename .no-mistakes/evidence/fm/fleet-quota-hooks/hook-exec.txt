@@ -1,0 +1,7 @@
+--- Hook command execution (CLAUDE_PROJECT_DIR=/var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M3QQWTKW0A598GJEQKPE7XKZ) ---
+cmd: "$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+
+real	0m0.509s
+user	0m0.426s
+sys	0m0.102s
+exit=0

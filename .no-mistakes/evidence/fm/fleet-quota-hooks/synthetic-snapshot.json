@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-09-30T06:47:00.203Z",
+  "schemaVersion": 5,
+  "providers": [
+    {
+      "provider": "claude",
+      "plan": "max",
+      "quotaSemantics": {
+        "status": "known",
+        "effectiveAvailability": [
+          { "scope": "all_models", "status": "known", "effectivePercentRemaining": 15 },
+          { "scope": "model:fable", "status": "known", "effectivePercentRemaining": 60 }
+        ]
+      }
+    },
+    {
+      "provider": "codex",
+      "plan": "free",
+      "quotaSemantics": {
+        "status": "known",
+        "effectiveAvailability": [
+          { "scope": "all_models", "status": "known", "effectivePercentRemaining": 5 }
+        ]
+      }
+    },
+    {
+      "provider": "grok",
+      "plan": "paid",
+      "quotaSemantics": {
+        "status": "unknown",
+        "effectiveAvailability": [
+          { "scope": "all_models", "status": "unknown" }
+        ]
+      }
+    },
+    {
+      "provider": "cursor",
+      "plan": "paid",
+      "quotaSemantics": {
+        "status": "known",
+        "effectiveAvailability": [
+          { "scope": "all_models", "status": "known", "effectivePercentRemaining": 80 }
+        ]
+      }
+    }
+  ]
+}

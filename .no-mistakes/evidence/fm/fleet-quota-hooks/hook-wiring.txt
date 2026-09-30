@@ -1,0 +1,4 @@
+SessionStart	5	"$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+PreToolUse	5	"$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+PostToolUse	5	"$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+Stop	5	"$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true

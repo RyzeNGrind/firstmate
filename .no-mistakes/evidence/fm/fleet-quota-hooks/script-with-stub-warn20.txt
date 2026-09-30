@@ -1,0 +1,2 @@
+⚠️  Quota: claude (all_models) at 15% remaining
+⚠️  Quota: codex (all_models) at 5% remaining

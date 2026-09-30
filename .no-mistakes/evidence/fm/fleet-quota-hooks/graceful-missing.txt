@@ -1,0 +1,5 @@
+--- quota-axi missing (only bash+jq on PATH) ---
+/tmp/tmp.xlc8wgIEMZ/bash
+/tmp/tmp.xlc8wgIEMZ/jq
+quota-axi absent
+exit=0
