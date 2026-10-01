@@ -880,6 +880,7 @@ install_cmd() {
     no-mistakes) echo "curl -fsSL https://raw.githubusercontent.com/kunchenguid/no-mistakes/main/docs/install.sh | sh" ;;
     gh-axi|chrome-devtools-axi|lavish-axi) echo "npm install -g $1 && $1 setup hooks" ;;
     tasks-axi|quota-axi) echo "npm install -g $1" ;;
+    fm-skills) echo "$SCRIPT_DIR/fm-install-skills.sh" ;;
     *) return 1 ;;
   esac
 }
@@ -1390,6 +1391,17 @@ if [ "${1:-}" = "install" ]; then
   shift
   [ $# -gt 0 ] || { echo "usage: fm-bootstrap.sh install <tool>..." >&2; exit 1; }
   for t in "$@"; do
+    # Special case: fm-skills is handled by running the install script
+    if [ "$t" = "fm-skills" ]; then
+      if [ -x "$SCRIPT_DIR/fm-install-skills.sh" ]; then
+        echo "installing fm-skills"
+        "$SCRIPT_DIR/fm-install-skills.sh"
+      else
+        echo "error: fm-install-skills.sh not found" >&2
+        exit 1
+      fi
+      continue
+    fi
     if ! cmd=$(install_cmd "$t"); then
       instructions=$(manual_install_url "$t") || { echo "error: unknown tool $t" >&2; exit 1; }
       echo "error: $t requires manual installation (instructions: $instructions)" >&2
@@ -1490,6 +1502,20 @@ detect_local_tools() {
   fi
   if command -v tasks-axi >/dev/null 2>&1 && ! fm_tasks_axi_compatible; then
     echo "MISSING: tasks-axi (install: $(install_cmd tasks-axi))"
+  fi
+  # Check that firstmate operational skills are symlinked to ~/.claude/skills/
+  # Skip this check in test/detect-only environments and when HOME is not set
+  if [ "${FM_BOOTSTRAP_DETECT_ONLY:-0}" != 1 ] && [ -d "$FM_ROOT/.agents/skills" ] && [ -n "${HOME:-}" ]; then
+    local skill_dir skill target
+    for skill_dir in "$FM_ROOT/.agents/skills"/*; do
+      [ -d "$skill_dir" ] || [ -L "$skill_dir" ] || continue
+      skill=$(basename "$skill_dir")
+      target="${HOME}/.claude/skills/$skill"
+      if ! [ -L "$target" ] || [ "$(readlink "$target" 2>/dev/null || true)" != "$skill_dir" ]; then
+        missing_tool_diagnostic fm-skills
+        break
+      fi
+    done
   fi
 }
 
