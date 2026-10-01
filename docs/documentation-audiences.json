@@ -289,6 +289,10 @@
       "audience": "public-product"
     },
     {
+      "path": "audit/README.md",
+      "audience": "operator-current"
+    },
+    {
       "path": "docs/agent-control.md",
       "audience": "maintainer-architecture"
     },
