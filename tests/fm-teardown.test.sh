@@ -795,38 +795,9 @@ SH
   chmod +x "$case_dir/fakebin/treehouse"
 }
 
-test_teardown_threads_per_home_pool_root_to_treehouse_return() {
+test_teardown_leaves_treehouse_root_unset() {
   local case_dir rc log wt_head
-  case_dir=$(make_case pool-root-set)
-  log="$case_dir/treehouse.log"; : > "$log"
-  configure_treehouse_root_recording "$case_dir" "$log"
-  fm_write_meta "$case_dir/state/task-x1.meta" \
-    "window=firstmate:fm-task-x1" \
-    "endpoint_task_id=task-x1" \
-    "worktree=$case_dir/wt" \
-    "project=$case_dir/project" \
-    "kind=local-only" \
-    "mode=ship" \
-    "spawn_gen=teardown-test-task-x1" \
-    "treehouse_pool_root=$case_dir/custom-pool"
-  wt_commit "$case_dir" "merged work"
-  wt_head=$(git -C "$case_dir/wt" rev-parse HEAD)
-  git -C "$case_dir/project" update-ref refs/heads/main "$wt_head"
-
-  set +e
-  run_teardown "$case_dir" > "$case_dir/stdout" 2> "$case_dir/stderr"
-  rc=$?
-  set -e
-
-  expect_code 0 "$rc" "pool-root-set: teardown should succeed when work is merged into local main"
-  assert_grep "ROOT=$case_dir/custom-pool ARGS=return --force $case_dir/wt" "$log" \
-    "teardown must pass the task's recorded treehouse_pool_root as TREEHOUSE_ROOT to treehouse return"
-  pass "teardown threads a recorded treehouse_pool_root through to treehouse return as TREEHOUSE_ROOT"
-}
-
-test_teardown_without_pool_root_meta_leaves_treehouse_root_unset() {
-  local case_dir rc log wt_head
-  case_dir=$(make_case pool-root-absent)
+  case_dir=$(make_case treehouse-root-unset)
   log="$case_dir/treehouse.log"; : > "$log"
   configure_treehouse_root_recording "$case_dir" "$log"
   write_meta "$case_dir" local-only ship
@@ -839,10 +810,10 @@ test_teardown_without_pool_root_meta_leaves_treehouse_root_unset() {
   rc=$?
   set -e
 
-  expect_code 0 "$rc" "pool-root-absent: teardown should succeed when work is merged into local main"
+  expect_code 0 "$rc" "treehouse-root-unset: teardown should succeed when work is merged into local main"
   assert_grep "ROOT=<unset> ARGS=return --force $case_dir/wt" "$log" \
-    "a task record with no treehouse_pool_root (pre-fix / back-compat) must not set TREEHOUSE_ROOT"
-  pass "a task record without treehouse_pool_root leaves TREEHOUSE_ROOT unset (back-compat)"
+    "teardown must invoke treehouse return without TREEHOUSE_ROOT so v2.0.1's default pool discovery applies"
+  pass "teardown invokes treehouse return with TREEHOUSE_ROOT unset (matches v2.0.1 default pool discovery used at spawn)"
 }
 
 test_no_mistakes_origin_remote_allows() {
@@ -3951,8 +3922,7 @@ test_teardown_closes_the_backlog_item_itself
 test_teardown_manual_backend_leaves_the_backlog_to_the_operator
 test_local_only_truly_unpushed_refuses
 test_local_only_merged_to_local_main_allows
-test_teardown_threads_per_home_pool_root_to_treehouse_return
-test_teardown_without_pool_root_meta_leaves_treehouse_root_unset
+test_teardown_leaves_treehouse_root_unset
 test_no_mistakes_origin_remote_allows
 test_no_mistakes_truly_unpushed_refuses
 test_local_only_force_overrides_unpushed
