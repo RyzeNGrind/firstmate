@@ -272,11 +272,13 @@ cp -R "$REMOTE_ROOT" "$RELOCATED_ROOT"
 OLD_WORKER_PID=$NEW_WORKER_PID
 OLD_WORKER_PGID=$(fm_remote_job_process_pgid "$OLD_WORKER_PID") \
   || fail "the worker replacement fixture could not resolve its process group"
+OLD_SUPERVISOR_START=$(fm_remote_job_process_start "$OLD_WORKER_PGID" 2>/dev/null || true)
 fm_remote_job_ensure_worker "$RELOCATED_ROOT" "$ACCOUNT_HOME" \
   || fail "$FM_REMOTE_JOB_ERROR"
 NEW_WORKER_PID=$(cat "$STATE_ROOT/worker.pid")
 [ "$NEW_WORKER_PID" != "$OLD_WORKER_PID" ] || fail "ensure retained a worker bound to a different code root"
-! kill -0 -- "-$OLD_WORKER_PGID" 2>/dev/null \
+_cur_sup_start=$(fm_remote_job_process_start "$OLD_WORKER_PGID" 2>/dev/null || true)
+[ -z "$_cur_sup_start" ] || [ "$_cur_sup_start" != "$OLD_SUPERVISOR_START" ] \
   || fail "ensure left the replaced worker supervisor group alive"
 fm_remote_job_stage "$ACCOUNT_HOME" "$RELOCATED_ROOT" "$REMOTE_HOME" fm-probe-job.sh < /dev/null > /dev/null
 JOB_ID=$FM_REMOTE_JOB_ID
