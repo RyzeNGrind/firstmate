@@ -1182,12 +1182,12 @@ forgejo_checks_not_green() {
     .data[]? | select(.head_sha == $head) | select(.conclusion != "success") | .name // "unnamed"
   ' 2>/dev/null || return 1
 
-  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
+  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/status" 2>/dev/null) \
     || [ -z "$status_json" ]; then
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    .[]? | select((.state // .status) != "success") | .context // "unnamed"
+    .statuses[]? | select(.state != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
