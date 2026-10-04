@@ -3388,6 +3388,54 @@ JSON
   pass "fm-pr-merge refuses a Forgejo merge when only a red status context exists"
 }
 
+# Forgejo commit-statuses API on some instances returns a `status` field
+# instead of `state`. Regression for the .state/.status fallback fix:
+# a green `status` field with no `state` key must allow the merge.
+test_forgejo_merge_status_field_green() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-status-field-green)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"vercel-preview","status":"success"}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-status-field-green: green status field (no state key) must allow merge"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-status-field-green: expected merged verification on stdout"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-status-field-green: merge API was not called"
+  pass "fm-pr-merge merges a Forgejo PR whose status context uses status field (not state)"
+}
+
+# Adversarial companion: same status-field-only shape but a red value must refuse.
+test_forgejo_merge_status_field_red() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-status-field-red)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+[{"context":"vercel-preview","status":"failure"}]
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-status-field-red: red status field (no state key) must refuse merge"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-status-field-red: refusal was not reported"
+  assert_grep "vercel-preview" "$case_dir/stderr" \
+    "forgejo-status-field-red: refusal did not name the failing context"
+  [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-status-field-red: merge API was called despite red status field"
+  pass "fm-pr-merge refuses a Forgejo merge when status field (not state) is red"
+}
+
 test_allow_red_refused_on_forgejo() {
   local case_dir rc
   case_dir=$(make_forgejo_case forgejo-allow-red)
@@ -3537,6 +3585,8 @@ test_forgejo_merge_happy
 test_forgejo_merge_checks_not_green
 test_forgejo_merge_status_context_only
 test_forgejo_merge_status_context_only_red
+test_forgejo_merge_status_field_green
+test_forgejo_merge_status_field_red
 test_forgejo_merge_not_mergeable
 test_forgejo_merge_workflow_runs_success
 test_forgejo_merge_workflow_runs_failure

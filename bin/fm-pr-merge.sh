@@ -1175,6 +1175,23 @@ forgejo_curl_api() {
     "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$path" "$@"
 }
 
+# Like forgejo_curl_api but captures the response body even on 4xx/5xx so the
+# caller can surface the actual API error message.
+forgejo_curl_post_diagnostic() {
+  local forgejo_token=$1 path=$2
+  shift 2
+  local body http_code tmp
+  tmp=$(mktemp) || return 1
+  http_code=$(curl -s --max-time 10 \
+    -H "Authorization: token $forgejo_token" \
+    -o "$tmp" -w '%{http_code}' \
+    "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$path" "$@") || { rm -f "$tmp"; return 1; }
+  body=$(cat "$tmp")
+  rm -f "$tmp"
+  printf '%s' "$body"
+  [ "${http_code:-0}" -ge 200 ] && [ "${http_code:-0}" -lt 300 ]
+}
+
 forgejo_checks_not_green() {
   local runs_json status_json not_green has_success
   if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \
@@ -1202,12 +1219,12 @@ forgejo_checks_not_green() {
   # No successful run — report whatever failed runs exist.
   [ -n "$not_green" ] && printf '%s\n' "$not_green"
 
-  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
+  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/status" 2>/dev/null) \
     || [ -z "$status_json" ]; then
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    .[]? | select(.state != "success") | .context // "unnamed"
+    .statuses[]? | select(.status != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
@@ -1411,12 +1428,13 @@ case "$PROVIDER" in
     [ "$away_status" -eq 0 ] || exit "$away_status"
     merge_status=0
     merge_body="{\"Do\":\"merge\",\"head_commit_id\":\"$FM_PR_MERGE_HEAD\"}"
-    merge_output=$(forgejo_curl_api "$forgejo_token_var" "pulls/$PR_NUMBER/merge" \
-      -X POST -H "Content-Type: application/json" -d "$merge_body" 2>&1) || merge_status=$?
+    merge_output=$(forgejo_curl_post_diagnostic "$forgejo_token_var" "pulls/$PR_NUMBER/merge" \
+      -X POST -H "Content-Type: application/json" -d "$merge_body") || merge_status=$?
     if [ "$merge_status" -ne 0 ]; then
       fm_afk_contract_lock_release || true
       fm_lock_release "$MERGE_CONTROL_LOCK" || true
       MERGE_CONTROL_LOCK=
+      printf 'error: merge POST failed (http body follows)\n' >&2
       printf '%s\n' "$merge_output" >&2
       exit "$merge_status"
     fi
