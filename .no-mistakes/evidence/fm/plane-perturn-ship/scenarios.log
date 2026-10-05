@@ -1,0 +1,38 @@
+=== S1_non_claude_harness_skip ===
+exit=0
+
+=== S2_no_task_id_skip ===
+[Plane] No CLAUDE_TASK_ID (main session), skipping
+exit=0
+
+=== S3_credentials_absent_skip ===
+[Plane] Credentials file /nonexistent-home-xyz/.config/das/plane.env not found
+exit=0
+
+=== S4_meta_absent_skip ===
+[Plane] Metadata file state/TK_NOFILE.meta not found
+exit=0
+
+=== S5_meta_no_plane_id_skip ===
+[Plane] No plane_issue_id in metadata
+exit=0
+
+=== S6_meta_invalid_id_skip ===
+[Plane] Invalid plane_issue_id format: foo-bar
+exit=0
+
+=== S7_api_unreachable_fail_quiet ===
+[Plane] Processing issue DAS-42 (sequence=42)
+[Plane] Fetching states from Plane API
+[Plane] Could not find 'In Progress' state UUID
+exit=0
+
+S7_duration_secs=0
+=== S8a_full_hook_cmd_grok_skip ===
+exit=0
+
+=== S8b_full_hook_cmd_main_session ===
+[Plane] No CLAUDE_TASK_ID (main session), skipping
+exit=0
+
+=== git_status_post_tests ===
