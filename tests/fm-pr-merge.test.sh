@@ -3656,7 +3656,7 @@ test_forgejo_merge_null_state_status_alongside_green_status() {
   case_dir=$(make_forgejo_case forgejo-null-state-status-alongside-green)
   printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"pr-check / build-offload (pull_request)","state":null},{"context":"pr-check / eval-gate (pull_request)","state":""},{"context":"vercel-preview","state":"success"}]
+{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":null},{"context":"pr-check / eval-gate (pull_request)","status":""},{"context":"vercel-preview","status":"success"}]}
 JSON
 
   set +e
