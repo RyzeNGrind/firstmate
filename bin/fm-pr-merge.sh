@@ -1207,7 +1207,7 @@ forgejo_checks_not_green() {
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    .[]? | select(.state != "success") | .context // "unnamed"
+    .[]? | select(.status != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
