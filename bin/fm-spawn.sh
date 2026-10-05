@@ -1463,6 +1463,52 @@ spawn_refuse_if_away_spend_cap() {
     exit 1
   fi
 }
+# Infra-budget gate: when /etc/nixify/infra-budgets.json exists (written by
+# cells/modules/infra-budgets.nix when enabled on the host), enforce:
+#   1. max_concurrent_agents ceiling against live task count
+#   2. 15% disk floor against declared disk_gb
+# Skipped for relaunches and secondmate spawns; skipped silently when the file
+# is absent (hosts without infra-budgets.nix enabled are unaffected).
+spawn_refuse_if_infra_budget_exceeded() {
+  local budget_file max_agents live meta disk_gb disk_avail_kb disk_avail_gb floor_gb
+  [ "$RELAUNCH" -ne 1 ] || return 0
+  [ "$KIND" != secondmate ] || return 0
+  budget_file="${INFRA_BUDGETS_FILE:-/etc/nixify/infra-budgets.json}"
+  [ -f "$budget_file" ] || return 0
+
+  # --- concurrency ceiling ---
+  max_agents=$(jq -r '.max_concurrent_agents // empty' "$budget_file" 2>/dev/null || true)
+  case "$max_agents" in
+  '' | *[!0-9]*) max_agents= ;;
+  esac
+  if [ -n "$max_agents" ] && [ "$max_agents" -gt 0 ]; then
+    live=0
+    for meta in "$STATE"/*.meta; do
+      [ -f "$meta" ] || continue
+      [ "$(grep '^kind=' "$meta" 2>/dev/null | tail -1 | cut -d= -f2-)" != secondmate ] || continue
+      live=$((live + 1))
+    done
+    if [ "$live" -ge "$max_agents" ]; then
+      echo "error: spawn refused — infra budget ceiling [max_concurrent_agents=${max_agents}] at observed [live_tasks=${live}]; wait for a running task to finish or increase max_concurrent_agents in cells/modules/infra-budgets.nix" >&2
+      exit 1
+    fi
+  fi
+
+  # --- disk floor (15% of declared disk_gb) ---
+  disk_gb=$(jq -r '.disk_gb // empty' "$budget_file" 2>/dev/null || true)
+  case "$disk_gb" in
+  '' | *[!0-9.]*) disk_gb= ;;
+  esac
+  if [ -n "$disk_gb" ]; then
+    disk_avail_kb=$(df -k / 2>/dev/null | awk 'NR==2{print $4}' || echo 0)
+    disk_avail_gb=$(awk "BEGIN{printf \"%.1f\", ${disk_avail_kb} / 1048576}")
+    floor_gb=$(awk "BEGIN{printf \"%.1f\", ${disk_gb} * 0.15}")
+    if ! awk "BEGIN{exit (${disk_avail_gb} + 0 >= ${floor_gb} + 0) ? 0 : 1}"; then
+      echo "error: spawn refused — disk headroom [avail=${disk_avail_gb}G] below 15% floor of declared budget [disk_gb=${disk_gb}, floor=${floor_gb}G]; free disk space before spawning" >&2
+      exit 1
+    fi
+  fi
+}
 # Spend cap (bin/fm-afk-contract.sh's spend_max_concurrent_workers): while the
 # away-posture record exists, a fresh ordinary spawn refuses for BOTH actors
 # once this home already holds that many ordinary task records, counted the
@@ -1540,6 +1586,7 @@ if [ "$RELAUNCH" -eq 0 ]; then
   SPAWN_TASK_SET_LOCK_HELD=1
   spawn_refuse_if_away_spend_cap
   spawn_require_relocated_queued_work
+  spawn_refuse_if_infra_budget_exceeded
 fi
 if [ "$KIND" = secondmate ]; then
   if spawn_remote_secondmate "$ID"; then
