@@ -3238,7 +3238,7 @@ JSON
 write_forgejo_statuses_json() {
   local file=$1 state=${2:-success}
   cat > "$file" <<JSON
-[{"context":"status-check","state":"$state"}]
+[{"context":"status-check","status":"$state"}]
 JSON
 }
 
@@ -3346,7 +3346,7 @@ test_forgejo_merge_status_context_only() {
   case_dir=$(make_forgejo_case forgejo-status-only)
   printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"vercel-preview","state":"success"}]
+[{"context":"vercel-preview","status":"success"}]
 JSON
 
   set +e
@@ -3370,7 +3370,7 @@ test_forgejo_merge_status_context_only_red() {
   case_dir=$(make_forgejo_case forgejo-status-only-red)
   printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"vercel-preview","state":"failure"}]
+[{"context":"vercel-preview","status":"failure"}]
 JSON
 
   set +e
@@ -3474,7 +3474,7 @@ test_forgejo_merge_workflow_runs_success_skips_null_statuses() {
   case_dir=$(make_forgejo_case forgejo-workflow-runs-null-statuses)
   write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"pr-check / build-offload (pull_request)","state":null},{"context":"pr-check / eval-gate (pull_request)","state":null}]
+[{"context":"pr-check / build-offload (pull_request)","status":null},{"context":"pr-check / eval-gate (pull_request)","status":null}]
 JSON
 
   set +e
