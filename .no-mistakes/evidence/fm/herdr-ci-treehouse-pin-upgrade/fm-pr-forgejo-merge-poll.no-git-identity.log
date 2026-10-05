@@ -1,0 +1,13 @@
+ok - canonical Forgejo URLs parse correctly with provider, host, path, number, owner, repo
+ok - GitHub (/pull/) and GitLab (/-/merge_requests/) URLs do not become forgejo
+ok - invalid and ambiguous Forgejo URLs are all rejected
+ok - a merged Forgejo PR emits 'merged'
+ok - an open Forgejo PR is silent
+ok - a closed-unmerged Forgejo PR emits 'forgejo closed'
+ok - missing creds file emits 'forgejo credentials unavailable'
+ok - missing FORGEJO_TOKEN line emits 'forgejo credentials unavailable'
+ok - a curl failure is silent
+ok - github.com is rejected by the forgejo poll case
+ok - the reconstructed URL must exactly match the stored url
+ok - surrounding single quotes are stripped; an all-quotes token is treated as absent
+ok - fm-pr-check.sh accepts a Forgejo URL, records pr= in meta, and arms the poll
