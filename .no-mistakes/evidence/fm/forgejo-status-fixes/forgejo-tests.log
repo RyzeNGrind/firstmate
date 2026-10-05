@@ -1,0 +1,9 @@
+ok - fm-pr-merge verifies a Forgejo merge
+ok - fm-pr-merge refuses a Forgejo merge when checks are not green
+ok - fm-pr-merge merges a Forgejo PR whose only checks are green status contexts (dasagency shape)
+ok - fm-pr-merge refuses a Forgejo merge when only a red status context exists
+ok - fm-pr-merge refuses when Forgejo PR is not mergeable
+ok - fm-pr-merge merges when Forgejo returns workflow_runs format with status=success
+ok - fm-pr-merge refuses when Forgejo workflow_runs run has status=failure
+ok - fm-pr-merge merges when successful workflow_runs run exists despite null-state commit statuses
+ok - fm-pr-merge refuses --allow-red on Forgejo

@@ -1,0 +1,6 @@
+--- Case 1: 409 Conflict path (mergeop) ---
+exit=1
+output=[{"message":"Pull request is not ready. Conflicts detected.","url":"https://docs.example/"}]
+--- Case 2: 200 OK path (plain pulls) ---
+exit=0
+output=[{"state":"open","draft":false,"mergeable":true,"head":{"sha":"deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"}}]
