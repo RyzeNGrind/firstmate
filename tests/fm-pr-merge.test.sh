@@ -3238,7 +3238,7 @@ JSON
 write_forgejo_statuses_json() {
   local file=$1 state=${2:-success}
   cat > "$file" <<JSON
-[{"context":"status-check","status":"$state"}]
+{"state":"$state","statuses":[{"context":"status-check","status":"$state"}]}
 JSON
 }
 
@@ -3254,16 +3254,34 @@ add_forgejo_mock() {
 printf '%s\n' "$*" >> "$FM_TEST_FORGEJO_LOG"
 case_dir=$(dirname "$FM_TEST_FORGEJO_DATA_DIR")
 path_part=""
-for arg in "$@"; do
+output_file=""
+write_code=false
+for i in "${!@}"; do
+  arg="${!i}"
   if [[ "$arg" == *"/repos/"* ]]; then
     path_part=$(echo "$arg" | sed 's/.*repos\///')
-    break
+  fi
+  if [ "$arg" = "-o" ] && [ $((i+1)) -lt $# ]; then
+    output_file="${@:$((i+2)):1}"
+  fi
+  if [ "$arg" = "-w" ] && [ $((i+1)) -lt $# ]; then
+    next="${@:$((i+2)):1}"
+    if [ "$next" = "%{http_code}" ]; then
+      write_code=true
+    fi
   fi
 done
 case "$path_part" in
   *"/pulls/"*"/merge")
     touch "$case_dir/forgejo-merged"
-    printf '{"merged":true}\n'
+    if [ -n "$output_file" ]; then
+      printf '{"merged":true}\n' > "$output_file"
+      if [ "$write_code" = true ]; then
+        printf '200'
+      fi
+    else
+      printf '{"merged":true}\n'
+    fi
     exit 0
     ;;
   *"/pulls/"*)
@@ -3275,7 +3293,7 @@ case "$path_part" in
     exit 0
     ;;
   *"/actions/runs"*) cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json"; exit 0 ;;
-  *"/statuses"*) cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
+  *"/commits/"*"/status") cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
 esac
 exit 0
 SH
@@ -3346,7 +3364,7 @@ test_forgejo_merge_status_context_only() {
   case_dir=$(make_forgejo_case forgejo-status-only)
   printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"vercel-preview","status":"success"}]
+{"state":"success","statuses":[{"context":"vercel-preview","status":"success"}]}
 JSON
 
   set +e
@@ -3370,7 +3388,7 @@ test_forgejo_merge_status_context_only_red() {
   case_dir=$(make_forgejo_case forgejo-status-only-red)
   printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"vercel-preview","status":"failure"}]
+{"state":"failure","statuses":[{"context":"vercel-preview","status":"failure"}]}
 JSON
 
   set +e
@@ -3474,7 +3492,7 @@ test_forgejo_merge_workflow_runs_success_skips_null_statuses() {
   case_dir=$(make_forgejo_case forgejo-workflow-runs-null-statuses)
   write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-[{"context":"pr-check / build-offload (pull_request)","status":null},{"context":"pr-check / eval-gate (pull_request)","status":null}]
+{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":"success"},{"context":"pr-check / eval-gate (pull_request)","status":"success"}]}
 JSON
 
   set +e
