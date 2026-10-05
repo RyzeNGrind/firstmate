@@ -3905,6 +3905,7 @@ agy_spawn_fail() {  # <detail>
   rovo_endpoint_cleanup
 }
 
+SPAWN_TREEHOUSE_ROOT=
 if [ "$RELAUNCH" -eq 1 ]; then
   # No worktree is acquired: the recorded one is reused as-is. What must be
   # proven instead is that the adopted endpoint's shell is actually sitting in
@@ -3939,7 +3940,12 @@ if [ "$RELAUNCH" -eq 1 ]; then
   fi
   [ "$KIND" = secondmate ] || validate_spawn_worktree "relaunch" "$T"
 elif [ "$KIND" != secondmate ] && [ "$BACKEND" != orca ]; then
-  spawn_send_text_line "$WT_TARGET" "treehouse --root $(shell_quote "$FM_HOME/state/treehouse") get"
+  if treehouse --help 2>&1 | grep -q -- '--root'; then
+    SPAWN_TREEHOUSE_ROOT="$FM_HOME/state/treehouse"
+    spawn_send_text_line "$WT_TARGET" "treehouse --root $(shell_quote "$FM_HOME/state/treehouse") get"
+  else
+    spawn_send_text_line "$WT_TARGET" "treehouse get"
+  fi
 
   # Wait for the treehouse subshell: the pane's cwd moves from the project to the worktree.
   # Target the stable window id, not the name: if the name is ever lost (e.g. an
@@ -4608,8 +4614,8 @@ preserve_relaunch_meta() {
     echo "home=$PROJ_ABS"
     echo "projects=$SECONDMATE_PROJECTS"
   fi
-  if [ "$KIND" != secondmate ] && [ "$BACKEND" != orca ] && [ "$RELAUNCH" -eq 0 ]; then
-    echo "treehouse_pool_root=$FM_HOME/state/treehouse"
+  if [ "$KIND" != secondmate ] && [ "$BACKEND" != orca ] && [ "$RELAUNCH" -eq 0 ] && [ -n "$SPAWN_TREEHOUSE_ROOT" ]; then
+    echo "treehouse_pool_root=$SPAWN_TREEHOUSE_ROOT"
   fi
   if [ "$RELAUNCH" -eq 1 ]; then
     preserve_relaunch_meta
