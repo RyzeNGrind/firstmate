@@ -72,11 +72,8 @@
 #
 # A Forgejo merge is refused unless every pre-merge condition holds, each read
 # live at merge time rather than taken from recorded metadata: the pull request
-# is open, not a draft, mergeable, and every Actions run at the exact current
-# head commit is green; status contexts are checked only when no successful
-# Actions run exists for that commit, because some Forgejo versions leave status
-# contexts in a null state even after a successful workflow run completes.
-# The verified head is then passed to
+# is open, not a draft, mergeable, and every Actions run and status context at
+# the exact current head commit is green. The verified head is then passed to
 # the merge POST as head_commit_id, so a push that lands between that read and
 # the merge fails the merge instead of landing commits nothing verified. After
 # the merge POST returns success, a read-back must show merged=true; when it
@@ -1175,39 +1172,42 @@ forgejo_curl_api() {
     "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$path" "$@"
 }
 
+# Like forgejo_curl_api but captures the response body even on 4xx/5xx so the
+# caller can surface the actual API error message.
+forgejo_curl_post_diagnostic() {
+  local forgejo_token=$1 path=$2
+  shift 2
+  local body http_code tmp
+  tmp=$(mktemp) || return 1
+  http_code=$(curl -s --max-time 10 \
+    -H "Authorization: token $forgejo_token" \
+    -o "$tmp" -w '%{http_code}' \
+    "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$path" "$@") || { rm -f "$tmp"; return 1; }
+  body=$(cat "$tmp")
+  rm -f "$tmp"
+  printf '%s' "$body"
+  [ "${http_code:-0}" -ge 200 ] && [ "${http_code:-0}" -lt 300 ]
+}
+
 forgejo_checks_not_green() {
-  local runs_json status_json not_green has_success
+  local runs_json status_json
   if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \
     || [ -z "$runs_json" ]; then
     return 1
   fi
-  # Forgejo may return workflow_runs rather than data, may omit head_sha from
-  # each run entry even when the query was filtered to that sha, and may report
-  # success via status rather than conclusion when conclusion is absent.
-  not_green=$(printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
+  printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
     (.data // .workflow_runs)[]?
     | select(.head_sha == $head or .head_sha == null)
     | select((.conclusion // .status) != "success")
     | .name // "unnamed"
-  ' 2>/dev/null) || return 1
-  # When at least one run succeeded, skip commit statuses and suppress any
-  # co-existing failures: some Forgejo versions leave status contexts at null
-  # state and also keep older failed runs in the list even after a later run
-  # succeeded for the same commit.
-  has_success=$(printf '%s' "$runs_json" | jq -r '
-    (.data // .workflow_runs)[]?
-    | select((.conclusion // .status) == "success") | "yes"
-  ' 2>/dev/null | head -n 1)
-  [ -n "$has_success" ] && return 0
-  # No successful run — report whatever failed runs exist.
-  [ -n "$not_green" ] && printf '%s\n' "$not_green"
+  ' 2>/dev/null || return 1
 
-  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/statuses" 2>/dev/null) \
+  if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/status" 2>/dev/null) \
     || [ -z "$status_json" ]; then
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    .[]? | select(.status != "success") | .context // "unnamed"
+    .statuses[]? | select(.status != null and .status != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
@@ -1411,12 +1411,13 @@ case "$PROVIDER" in
     [ "$away_status" -eq 0 ] || exit "$away_status"
     merge_status=0
     merge_body="{\"Do\":\"merge\",\"head_commit_id\":\"$FM_PR_MERGE_HEAD\"}"
-    merge_output=$(forgejo_curl_api "$forgejo_token_var" "pulls/$PR_NUMBER/merge" \
-      -X POST -H "Content-Type: application/json" -d "$merge_body" 2>&1) || merge_status=$?
+    merge_output=$(forgejo_curl_post_diagnostic "$forgejo_token_var" "pulls/$PR_NUMBER/merge" \
+      -X POST -H "Content-Type: application/json" -d "$merge_body") || merge_status=$?
     if [ "$merge_status" -ne 0 ]; then
       fm_afk_contract_lock_release || true
       fm_lock_release "$MERGE_CONTROL_LOCK" || true
       MERGE_CONTROL_LOCK=
+      printf 'error: merge POST failed (http body follows)\n' >&2
       printf '%s\n' "$merge_output" >&2
       exit "$merge_status"
     fi
