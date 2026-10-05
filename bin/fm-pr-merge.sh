@@ -73,7 +73,10 @@
 # A Forgejo merge is refused unless every pre-merge condition holds, each read
 # live at merge time rather than taken from recorded metadata: the pull request
 # is open, not a draft, mergeable, and every Actions run and status context at
-# the exact current head commit is green. The verified head is then passed to
+# the exact current head commit is green. Skipped workflow runs are treated as
+# green; a workflow that includes a job with `if:` conditions produces a run at
+# the workflow level with status=skipped when the condition is false, which is
+# a legitimate skip, not a failure. The verified head is then passed to
 # the merge POST as head_commit_id, so a push that lands between that read and
 # the merge fails the merge instead of landing commits nothing verified. The
 # POST also sends force_merge=true so a branch-protection rule that requires the
@@ -1204,7 +1207,7 @@ forgejo_checks_not_green() {
   printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
     (.data // .workflow_runs)[]?
     | select(.head_sha == $head or .head_sha == null)
-    | select((.conclusion // .status) != "success")
+    | select((.conclusion // .status) != "success" and (.conclusion // .status) != "skipped")
     | .name // "unnamed"
   ' 2>/dev/null || return 1
 
