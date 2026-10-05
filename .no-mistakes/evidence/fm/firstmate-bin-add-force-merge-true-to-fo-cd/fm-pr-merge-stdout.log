@@ -1,0 +1,2 @@
+armed: state/task-x1.check.sh
+verified: https://git.example/demo/repo/pulls/42 is merged

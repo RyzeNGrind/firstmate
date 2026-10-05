@@ -1,0 +1,5 @@
+-sf --max-time 10 -H Authorization: token test-token-12345 https://git.example/api/v1/repos/demo/repo/pulls/42
+-sf --max-time 10 -H Authorization: token test-token-12345 https://git.example/api/v1/repos/demo/repo/actions/runs?head_sha=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef&limit=50
+-sf --max-time 10 -H Authorization: token test-token-12345 https://git.example/api/v1/repos/demo/repo/commits/deadbeefdeadbeefdeadbeefdeadbeefdeadbeef/status
+-s --max-time 10 -H Authorization: token test-token-12345 -o /tmp/tmp.gTY0hrYxVQ -w %{http_code} https://git.example/api/v1/repos/demo/repo/pulls/42/merge -X POST -H Content-Type: application/json -d {"Do":"merge","head_commit_id":"deadbeefdeadbeefdeadbeefdeadbeefdeadbeef","force_merge":true}
+-sf --max-time 10 -H Authorization: token test-token-12345 https://git.example/api/v1/repos/demo/repo/pulls/42
