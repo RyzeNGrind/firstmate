@@ -1,0 +1,21 @@
+=== Scenario: dedup-clear-on-reconcile (regression guard for e9875eb2) ===
+PASS unreconciled ask-a emitted
+PASS reconciled ask-a yields empty output
+PASS record cleared on transition to empty
+PASS ask-a re-emits after regression (dedup record was cleared)
+
+=== Scenario: arm registers a watcher-shaped shim whose stdout becomes a check: wake ===
+arm output: registered: state/ask-ledger-reconcile.check.sh
+armed: /tmp/tmp.g3piGKNtyL/sbx/state/ask-ledger-reconcile.check.sh
+PASS arm created the shim at state/ask-ledger-reconcile.check.sh
+PASS arm created the trust binding
+PASS shim emits unreconciled list that watcher turns into check: wake
+PASS shim dedupes on second invocation (watcher cadence idempotent)
+
+=== Scenario: disarm removes shim, trust, and record ===
+PASS disarm removed the shim
+PASS disarm removed the trust binding
+PASS disarm removed the dedup record
+
+---
+Results: 11/11
