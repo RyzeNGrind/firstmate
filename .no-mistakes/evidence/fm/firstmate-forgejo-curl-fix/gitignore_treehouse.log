@@ -1,0 +1,17 @@
+scenario: /.treehouse is ignored at repo root (semantic test via git check-ignore)
+
+$ git check-ignore -v .treehouse
+.gitignore:17:/.treehouse	.treehouse
+exit=0
+
+$ git check-ignore -v .treehouse/foo
+.gitignore:17:/.treehouse	.treehouse/foo
+exit=0
+
+$ git check-ignore -v sub/.treehouse  # must NOT match the root-anchored rule
+exit=1
+
+assertion:
+ - .treehouse is ignored by .gitignore line 17 (/.treehouse)
+ - .treehouse/foo is ignored (parent dir ignored)
+ - sub/.treehouse is NOT matched by /.treehouse (anchored, as intended)

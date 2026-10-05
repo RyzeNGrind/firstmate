@@ -1,0 +1,4 @@
+regression repro: pre-fix forgejo_curl_api (curl -sf) against same 4xx server
+exit code: 22
+stdout: ''
+assertion: body is empty (demonstrates the bug the fix repairs)

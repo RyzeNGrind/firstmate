@@ -1,0 +1,4 @@
+scenario: drive forgejo_curl_api against local 4xx-with-body server
+function exit code: 22  (expect 22 = curl HTTP error)
+function stdout: {"message": "Pull request not mergeable: has conflicts to be resolved"}
+assertion: body contains 'not mergeable' AND exit != 0
