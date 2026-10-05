@@ -6,8 +6,6 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Skip in non-Claude harnesses
 [ -z "${GROK_AGENT:-}${GROK_HOOK_EVENT:-}" ] || exit 0
 
