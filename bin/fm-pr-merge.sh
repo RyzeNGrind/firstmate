@@ -1172,7 +1172,9 @@ forgejo_token_load() {
 forgejo_curl_api() {
   local forgejo_token=$1 path=$2
   shift 2
-  curl -sf --max-time 10 -H "Authorization: token $forgejo_token" \
+  # --fail-with-body (curl 7.76+): exits 22 on HTTP 4xx/5xx but still outputs
+  # the response body, so error messages reach the caller's merge_output capture.
+  curl -s --fail-with-body --max-time 10 -H "Authorization: token $forgejo_token" \
     "https://$PR_HOST/api/v1/repos/$PR_OWNER/$PR_REPO/$path" "$@"
 }
 
