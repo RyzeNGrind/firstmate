@@ -32,6 +32,7 @@ if [[ ! -f "$PLANE_ENV" ]]; then
 fi
 
 # Load credentials
+# shellcheck source=/dev/null
 source "$PLANE_ENV" || exit 0
 
 PLANE_API_URL="${PLANE_API_URL:-https://plane.dasagency.ca}"
