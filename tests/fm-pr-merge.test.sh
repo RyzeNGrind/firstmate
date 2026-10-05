@@ -3253,47 +3253,51 @@ add_forgejo_mock() {
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> "$FM_TEST_FORGEJO_LOG"
 case_dir=$(dirname "$FM_TEST_FORGEJO_DATA_DIR")
+out_file=""
+want_http_code=0
+prev=""
+for arg in "$@"; do
+  case "$prev" in
+    -o) out_file=$arg; prev=""; continue ;;
+    -w) [ "$arg" = '%{http_code}' ] && want_http_code=1; prev=""; continue ;;
+  esac
+  case "$arg" in
+    -o|-w) prev=$arg ;;
+  esac
+done
 path_part=""
-output_file=""
-write_code=false
-for i in "${!@}"; do
-  arg="${!i}"
+for arg in "$@"; do
   if [[ "$arg" == *"/repos/"* ]]; then
     path_part=$(echo "$arg" | sed 's/.*repos\///')
-  fi
-  if [ "$arg" = "-o" ] && [ $((i+1)) -lt $# ]; then
-    output_file="${@:$((i+2)):1}"
-  fi
-  if [ "$arg" = "-w" ] && [ $((i+1)) -lt $# ]; then
-    next="${@:$((i+2)):1}"
-    if [ "$next" = "%{http_code}" ]; then
-      write_code=true
-    fi
+    break
   fi
 done
+emit() {
+  local body=$1 code=${2:-200}
+  if [ -n "$out_file" ]; then
+    printf '%s' "$body" > "$out_file"
+  else
+    printf '%s' "$body"
+  fi
+  [ "$want_http_code" -eq 1 ] && printf '%s' "$code"
+}
 case "$path_part" in
   *"/pulls/"*"/merge")
     touch "$case_dir/forgejo-merged"
-    if [ -n "$output_file" ]; then
-      printf '{"merged":true}\n' > "$output_file"
-      if [ "$write_code" = true ]; then
-        printf '200'
-      fi
-    else
-      printf '{"merged":true}\n'
-    fi
+    emit '{"merged":true}' 200
     exit 0
     ;;
   *"/pulls/"*)
     if [ -e "$case_dir/forgejo-merged" ]; then
-      jq '. + {state: "closed", merged: true}' "$FM_TEST_FORGEJO_DATA_DIR/pr.json"
+      body=$(jq '. + {state: "closed", merged: true}' "$FM_TEST_FORGEJO_DATA_DIR/pr.json")
     else
-      cat "$FM_TEST_FORGEJO_DATA_DIR/pr.json"
+      body=$(cat "$FM_TEST_FORGEJO_DATA_DIR/pr.json")
     fi
+    emit "$body" 200
     exit 0
     ;;
-  *"/actions/runs"*) cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json"; exit 0 ;;
-  *"/commits/"*"/status") cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json"; exit 0 ;;
+  *"/actions/runs"*) emit "$(cat "$FM_TEST_FORGEJO_DATA_DIR/runs.json")" 200; exit 0 ;;
+  *"/commits/"*"/status") emit "$(cat "$FM_TEST_FORGEJO_DATA_DIR/statuses.json")" 200; exit 0 ;;
 esac
 exit 0
 SH
@@ -3492,7 +3496,7 @@ test_forgejo_merge_workflow_runs_success_skips_null_statuses() {
   case_dir=$(make_forgejo_case forgejo-workflow-runs-null-statuses)
   write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":"success"},{"context":"pr-check / eval-gate (pull_request)","status":"success"}]}
+{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":"success"},{"context":"pr-check / eval-gate (pull_request)","status":null}]}
 JSON
 
   set +e

@@ -1196,7 +1196,10 @@ forgejo_checks_not_green() {
     return 1
   fi
   printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
-    .data[]? | select(.head_sha == $head) | select(.conclusion != "success") | .name // "unnamed"
+    (.data // .workflow_runs)[]?
+    | select(.head_sha == $head or .head_sha == null)
+    | select((.conclusion // .status) != "success")
+    | .name // "unnamed"
   ' 2>/dev/null || return 1
 
   if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/status" 2>/dev/null) \
@@ -1204,7 +1207,7 @@ forgejo_checks_not_green() {
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    .statuses[]? | select(.status != "success") | .context // "unnamed"
+    .statuses[]? | select(.status != null and .status != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
