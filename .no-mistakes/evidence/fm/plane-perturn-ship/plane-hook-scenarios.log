@@ -1,0 +1,28 @@
+=== Scenario 1: no CLAUDE_TASK_ID (main session) — skip silent ===
+  exit=0
+
+=== Scenario 2: GROK_AGENT set — skip silent (grok guard) ===
+  exit=0 (should be 0, no debug output since grok guard trips first)
+
+=== Scenario 3: GROK_HOOK_EVENT set — skip silent (grok guard) ===
+  exit=0
+
+=== Scenario 4: CLAUDE_TASK_ID set, no plane.env — skip silent ===
+  exit=0
+
+=== Scenario 5: creds present, no meta file — skip silent ===
+  exit=0
+
+=== Scenario 6: meta present, no plane_issue_id — skip silent ===
+  exit=0
+
+=== Scenario 7: invalid plane_issue_id format — skip silent ===
+  exit=0
+=== Scenario 8: valid DAS-N format, mocked Plane API returns success ===
+  exit=0 (should be 0, 'Upsert complete for DAS-42')
+
+=== Scenario 9: Plane API unreachable (curl exits non-zero) — fail-quiet ===
+  exit=0 (should be 0 even on API failure)
+
+=== Scenario 10: Pagination — issue found on second page ===
+  exit=0 (should paginate and find DAS-77 on next page)
