@@ -1,0 +1,7 @@
+ok - gate is silent when budget file is absent
+ok - concurrency ceiling enforced when max_concurrent_agents is reached
+ok - spawn allowed when live task count is below ceiling
+ok - malformed max_concurrent_agents is ignored
+ok - disk floor checked when disk_gb is declared
+ok - budget gate is skipped for relaunch spawns
+ok - budget gate is skipped for secondmate spawns

@@ -1,0 +1,8 @@
+=== EVIDENCE: Ceiling breached — refused with budget + observed ===
+error: spawn refused — infra budget ceiling [max_concurrent_agents=3] at observed [live_tasks=3]; wait for a running task to finish or increase max_concurrent_agents in cells/modules/infra-budgets.nix
+
+=== EVIDENCE: Disk floor breached — refused with budget + observed ===
+error: spawn refused — disk headroom [avail=11.2G] below 15% floor of declared budget [disk_gb=50000, floor=7500.0G]; free disk space before spawning
+
+=== EVIDENCE: Budget file absent — silent passthrough ===
+error: could not resolve the shared Treehouse project lock for /tmp/infra-budget-evidence.OwlKxB/evidence-absent/projects/none
