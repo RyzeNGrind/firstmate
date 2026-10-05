@@ -1410,7 +1410,7 @@ case "$PROVIDER" in
     require_current_away_authority || away_status=$?
     [ "$away_status" -eq 0 ] || exit "$away_status"
     merge_status=0
-    merge_body="{\"Do\":\"merge\",\"head_commit_id\":\"$FM_PR_MERGE_HEAD\"}"
+    merge_body="{\"Do\":\"merge\",\"head_commit_id\":\"$FM_PR_MERGE_HEAD\",\"force_merge\":true}"
     merge_output=$(forgejo_curl_post_diagnostic "$forgejo_token_var" "pulls/$PR_NUMBER/merge" \
       -X POST -H "Content-Type: application/json" -d "$merge_body") || merge_status=$?
     if [ "$merge_status" -ne 0 ]; then
