@@ -3488,6 +3488,79 @@ test_forgejo_merge_workflow_runs_failure() {
   pass "fm-pr-merge refuses when Forgejo workflow_runs run has status=failure"
 }
 
+# Regression: a Forgejo workflow run reported with conclusion=skipped (the data
+# format a job whose only workflow condition evaluated false lands as) must be
+# treated as green by forgejo_checks_not_green, so the PR merges rather than
+# refusing on a legitimate conditional skip.
+test_forgejo_merge_skipped_run_alone_merges() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-skipped-run-alone)
+  cat > "$case_dir/forgejo-data/runs.json" <<JSON
+{"data":[{"head_sha":"$FORGEJO_HEAD","name":"conditional-job","conclusion":"skipped"}]}
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-skipped-run-alone: a skipped-only run must not refuse the merge"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-skipped-run-alone: success was not reported as verified"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-skipped-run-alone: merge API was not called"
+  pass "fm-pr-merge merges a Forgejo PR whose only workflow run has conclusion=skipped"
+}
+
+# Companion to the above but using the workflow_runs envelope newer Forgejo
+# versions emit with status=skipped at the workflow level (an entire workflow
+# whose `on:` conditions evaluated false). This must also be treated as green.
+test_forgejo_merge_workflow_runs_status_skipped_merges() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-workflow-runs-skipped)
+  write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" skipped
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-workflow-runs-skipped: a workflow_runs status=skipped must not refuse"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-workflow-runs-skipped: success was not reported as verified"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-workflow-runs-skipped: merge API was not called"
+  pass "fm-pr-merge merges when Forgejo workflow_runs run has status=skipped"
+}
+
+# Adversarial companion: a skipped conditional run beside a genuinely failed
+# run must still refuse the merge. Confirms the skipped-as-green rule did not
+# accidentally mask a real failure sharing the same head.
+test_forgejo_merge_skipped_beside_failure_still_refuses() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-skipped-beside-failure)
+  cat > "$case_dir/forgejo-data/runs.json" <<JSON
+{"data":[
+  {"head_sha":"$FORGEJO_HEAD","name":"conditional-job","conclusion":"skipped"},
+  {"head_sha":"$FORGEJO_HEAD","name":"ci","conclusion":"failure"}
+]}
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-skipped-beside-failure: a failed run must still refuse the merge"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-skipped-beside-failure: refusal was not reported"
+  assert_grep "ci" "$case_dir/stderr" \
+    "forgejo-skipped-beside-failure: refusal did not name the failing run"
+  [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-skipped-beside-failure: merge API was called despite failure"
+  pass "fm-pr-merge still refuses when a failed Forgejo run coexists with a skipped one"
+}
+
 # Regression: a successful workflow_runs run must not be blocked by null-state
 # commit statuses, which some Forgejo versions leave unupdated after a run
 # completes successfully.
@@ -3563,4 +3636,7 @@ test_forgejo_merge_not_mergeable
 test_forgejo_merge_workflow_runs_success
 test_forgejo_merge_workflow_runs_failure
 test_forgejo_merge_workflow_runs_success_skips_null_statuses
+test_forgejo_merge_skipped_run_alone_merges
+test_forgejo_merge_workflow_runs_status_skipped_merges
+test_forgejo_merge_skipped_beside_failure_still_refuses
 test_allow_red_refused_on_forgejo
