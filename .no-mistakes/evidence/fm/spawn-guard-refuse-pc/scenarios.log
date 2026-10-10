@@ -1,0 +1,40 @@
+=== pc_refused ===
+FAKE_HOSTNAME=pc cmd=bin/fm-spawn.sh --model sonnet task-id
+exit=2
+stderr=spawn-guard: worker spawns are refused on pc — all crew must run on alpha
+
+=== p3520_refused ===
+FAKE_HOSTNAME=p3520 cmd=bin/fm-spawn.sh --model sonnet task-id
+exit=2
+stderr=spawn-guard: worker spawns are refused on p3520 — all crew must run on alpha
+
+=== surfacebook_refused ===
+FAKE_HOSTNAME=SurfaceBook3 cmd=bin/fm-spawn.sh --model sonnet task-id
+exit=2
+stderr=spawn-guard: worker spawns are refused on SurfaceBook3 — all crew must run on alpha
+
+=== sb3_refused ===
+FAKE_HOSTNAME=my-sb3-wsl cmd=bin/fm-spawn.sh --model sonnet task-id
+exit=2
+stderr=spawn-guard: worker spawns are refused on my-sb3-wsl — all crew must run on alpha
+
+=== PC_uppercase_refused ===
+FAKE_HOSTNAME=PC cmd=bin/fm-spawn.sh --model sonnet task-id
+exit=2
+stderr=spawn-guard: worker spawns are refused on PC — all crew must run on alpha
+
+=== alpha_passes_host_gate ===
+FAKE_HOSTNAME=alpha cmd=bin/fm-spawn.sh --model sonnet task-id
+exit=0
+stderr=spawn-guard: warn: no backlog row resolved from this spawn; finish condition unverified
+
+=== non_fm_spawn_on_pc ===
+FAKE_HOSTNAME=pc cmd=ls -la
+exit=0
+stderr=
+
+=== pc_without_fm_spawn ===
+FAKE_HOSTNAME=pc cmd=echo hello
+exit=0
+stderr=
+

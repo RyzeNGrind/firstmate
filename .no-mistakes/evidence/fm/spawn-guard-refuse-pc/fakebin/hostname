@@ -1,0 +1,3 @@
+#!/bin/sh
+# Fake hostname shim for spawn-guard testing
+printf '%s\n' "${FAKE_HOSTNAME:-$(/usr/bin/hostname "$@" 2>/dev/null || /bin/hostname "$@" 2>/dev/null)}"
