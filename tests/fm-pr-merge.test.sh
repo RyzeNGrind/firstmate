@@ -3646,6 +3646,27 @@ JSON
   pass "fm-pr-merge merges when successful workflow_runs run exists despite null-state commit statuses"
 }
 
+test_forgejo_merge_workflow_runs_success_skips_empty_statuses() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-workflow-runs-empty-statuses)
+  write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":"success"},{"context":"pr-check / eval-gate (pull_request)","status":""}]}
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-workflow-runs-empty-statuses: empty-state statuses must not block a successful workflow run"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-workflow-runs-empty-statuses: success was not reported"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-workflow-runs-empty-statuses: merge API was not called"
+  pass "fm-pr-merge merges when successful workflow_runs run exists despite empty-state commit statuses"
+}
+
 test_gitlab_head_override_args_refuse_before_recording
 test_secondmate_merge_reports_upward_once
 test_secondmate_merge_reports_on_the_local_route
@@ -3699,6 +3720,7 @@ test_forgejo_merge_not_mergeable
 test_forgejo_merge_workflow_runs_success
 test_forgejo_merge_workflow_runs_failure
 test_forgejo_merge_workflow_runs_success_skips_null_statuses
+test_forgejo_merge_workflow_runs_success_skips_empty_statuses
 test_forgejo_merge_skipped_run_alone_merges
 test_forgejo_merge_workflow_runs_status_skipped_merges
 test_forgejo_merge_skipped_beside_failure_still_refuses

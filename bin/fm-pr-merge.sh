@@ -76,7 +76,10 @@
 # the exact current head commit is green. Skipped workflow runs are treated as
 # green; a workflow that includes a job with `if:` conditions produces a run at
 # the workflow level with status=skipped when the condition is false, which is
-# a legitimate skip, not a failure. The verified head is then passed to
+# a legitimate skip, not a failure. Null- or empty-state status contexts are
+# also treated as green because some Forgejo versions leave status contexts in
+# that state even after a workflow run completes, so a real green context
+# alongside such entries still merges. The verified head is then passed to
 # the merge POST as head_commit_id, so a push that lands between that read and
 # the merge fails the merge instead of landing commits nothing verified. The
 # POST also sends force_merge=true so a branch-protection rule that requires the
@@ -1198,6 +1201,8 @@ forgejo_curl_post_diagnostic() {
   [ "${http_code:-0}" -ge 200 ] && [ "${http_code:-0}" -lt 300 ]
 }
 
+# Print the names of workflow runs and status checks that are not green.
+# Filters out null-state AND empty-state status entries, keeping only success contexts.
 forgejo_checks_not_green() {
   local runs_json status_json
   if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \
@@ -1216,7 +1221,7 @@ forgejo_checks_not_green() {
     return 1
   fi
   printf '%s' "$status_json" | jq -r '
-    [.statuses[]? | select(.context) | {context, id: (.id // 0), status: .status}] | sort_by(-.id) | unique_by(.context) | .[] | select(.status != null and .status != "success") | .context // "unnamed"
+    [.statuses[]? | select(.context) | {context, id: (.id // 0), status: .status}] | sort_by(-.id) | unique_by(.context) | .[] | select(.status != null and .status != "" and .status != "success") | .context // "unnamed"
   ' 2>/dev/null || return 1
 
   return 0
