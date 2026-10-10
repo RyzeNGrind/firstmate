@@ -1,0 +1,5 @@
+ok - fm-pr-merge merges when successful workflow_runs run exists despite null-state commit statuses
+ok - fm-pr-merge merges when successful workflow_runs run exists despite empty-state commit statuses
+ok - fm-pr-merge refuses a Forgejo merge when only a red status context exists
+ok - fm-pr-merge still refuses when a context's latest status row is a failure
+ok - fm-pr-merge still refuses when a failed Forgejo run coexists with a skipped one
