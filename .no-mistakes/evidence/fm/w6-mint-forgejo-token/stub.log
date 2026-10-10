@@ -1,0 +1,6 @@
+[stub] POST /api/v1/user/tokens auth='token GOODADMIN' body={'name': 'ping', 'scopes': ['read:user']}
+[stub-http] "POST /api/v1/user/tokens HTTP/1.1" 201 -
+[stub] POST /api/v1/user/tokens auth='token GOODADMIN' body={'name': 'ci-pat', 'scopes': ['read:repository', 'write:issue'], 'token_expiration_days': 30}
+[stub-http] "POST /api/v1/user/tokens HTTP/1.1" 201 -
+[stub] POST /api/v1/user/tokens auth='token BADADMIN' body={'name': 'failing-pat', 'scopes': ['read:repository']}
+[stub-http] "POST /api/v1/user/tokens HTTP/1.1" 401 -

@@ -1,0 +1,2 @@
+Error: API returned HTTP 401
+{"message": "token is invalid or missing admin scope", "url": "https://forgejo.example/api/swagger"}

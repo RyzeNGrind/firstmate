@@ -1,0 +1,10 @@
+Usage: fm-mint-forgejo-token.sh --user <forgejo-user> --name <token-label> \
+         --scope <scope-csv> [--ttl-days <N>]
+
+Arguments:
+  --user <forgejo-user>    Target Forgejo user for the token
+  --name <token-label>     Label for the new token
+  --scope <scope-csv>      Comma-separated list of scopes (e.g., "read:repository,write:repository")
+  --ttl-days <N>           Optional: token expiration in days
+
+Requires ~/.config/das/forgejo.env with FORGEJO_URL and FORGEJO_TOKEN.
