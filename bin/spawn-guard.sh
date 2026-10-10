@@ -4,6 +4,7 @@
 # violates it is blocked (exit 2, reason on stderr) before it runs.
 #
 # Enforced (limits live in config/crew-dispatch.json `limits`):
+#   * hostname check: all workers must run on alpha (refuse pc, p3520, SurfaceBook)
 #   * every spawn names an explicit --model; never `default`, `opus` or `fable`
 #   * crewmates/scouts: claude models must be haiku or sonnet
 #   * secondmate agents: sonnet
@@ -32,6 +33,18 @@ case "$cmd" in
   If the captain has given the word for this exact PR, use fm-pr-merge.sh so it is recorded." ;;
 esac
 case "$cmd" in *fm-spawn.sh*) ;; *) exit 0 ;; esac
+
+# ---- gate: HOSTNAME CHECK (no transient hosts) -------------------------------------------
+# pc (NixOS-WSL on SurfaceBook3) and p3520 (NixOS-WSL on DELL Precision) can vanish at any
+# time. All workers must run on alpha. This gate prevents accidental crew spawns that would
+# be lost immediately.
+hostname=$(hostname -s 2>/dev/null) || hostname=$(cat /proc/sys/kernel/hostname 2>/dev/null) || hostname=""
+if [ -n "$hostname" ]; then
+  case "$(printf '%s' "$hostname" | tr '[:upper:]' '[:lower:]')" in
+    pc|p3520|*surfacebook*|*sb3*)
+      deny "worker spawns are refused on $hostname — all crew must run on alpha" ;;
+  esac
+fi
 
 if printf '%s' "$cmd" | grep -qE '(^|;[[:space:]]*|&&[[:space:]]*|\|\|[[:space:]]*)git[[:space:]]+push[[:space:]]'; then
   case "$cmd" in
