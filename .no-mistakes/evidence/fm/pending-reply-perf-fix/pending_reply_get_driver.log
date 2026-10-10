@@ -1,0 +1,25 @@
+ok  missing-file empty output
+ok  missing-key empty output
+ok  simple-get
+ok  last-value-wins
+ok  value-contains-equals
+ok  prefix-safety: 'phase' does not pick up 'phase_v2'
+ok  prefix-safety: 'phase_v2' resolves distinctly
+ok  empty-value
+ok  value-after-empty-value
+ok  spaces-and-equals-in-value
+ok  shell-metachars-preserved
+ok  key-anchored-at-line-start
+ok  unterminated-last-line
+ok  crlf-trailing-cr-preserved
+ok  old-vs-new agreement across typical record keys
+ok  old-vs-new agreement after duplicate 'phase' lines
+
+--- SEMANTICS: pass=16 fail=0 ---
+
+--- PERFORMANCE: timed scan over 261 records x 7 fields ---
+Timing OLD pipeline (grep|tail|cut):
+  elapsed: 11.710s
+Timing NEW awk form:
+  elapsed: 8.139s
+  speedup: 1.44x
