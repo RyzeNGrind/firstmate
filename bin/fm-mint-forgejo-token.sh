@@ -109,12 +109,11 @@ json_body+="}"
 # Call Forgejo API
 api_url="${FORGEJO_URL}/api/v1/user/tokens"
 response_file=$(mktemp)
-http_code_file=$(mktemp)
 
-trap 'rm -f "$response_file" "$http_code_file"' EXIT
+trap 'rm -f "$response_file"' EXIT
 
 # Use curl to POST and capture response + HTTP code
-if ! http_code=$(curl -sf \
+if ! http_code=$(curl -s \
 	-X POST \
 	-H "Authorization: token $FORGEJO_TOKEN" \
 	-H "Content-Type: application/json" \
