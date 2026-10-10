@@ -1,0 +1,18 @@
+=== Case 1: dup context, latest success, older failure ===
+OLD filter output (buggy — treats PR as red):
+no-mistakes-pr-gate
+NEW filter output (fixed — nothing emitted → green):
+
+=== Case 2: dup context, latest failure — must still refuse ===
+NEW filter output (expected: emits "vercel-preview"):
+vercel-preview
+
+=== Case 3: dup resolved to green on ctxA; ctxB still red ===
+OLD filter (lists both as red, including superseded ctxA):
+ctxA
+ctxB
+NEW filter (lists only ctxB):
+ctxB
+
+=== Case 4: all green duplicates ===
+NEW filter output (expected: empty):
