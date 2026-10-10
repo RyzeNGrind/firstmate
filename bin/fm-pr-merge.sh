@@ -1201,6 +1201,8 @@ forgejo_curl_post_diagnostic() {
   [ "${http_code:-0}" -ge 200 ] && [ "${http_code:-0}" -lt 300 ]
 }
 
+# Print the names of workflow runs and status checks that are not green.
+# Filters out null-state AND empty-state status entries, keeping only success contexts.
 forgejo_checks_not_green() {
   local runs_json status_json
   if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \

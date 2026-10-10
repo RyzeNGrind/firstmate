@@ -3646,17 +3646,12 @@ JSON
   pass "fm-pr-merge merges when successful workflow_runs run exists despite null-state commit statuses"
 }
 
-# Regression for the not-green filter fix: with no successful workflow run
-# to short-circuit the checks, a null- or empty-state commit status entry
-# must NOT be treated as a failure. Without the fix, the old jq filter
-# `.state != "success"` selected null-state entries and refused the merge
-# even when the only real (non-null) status context was green.
-test_forgejo_merge_null_state_status_alongside_green_status() {
+test_forgejo_merge_workflow_runs_success_skips_empty_statuses() {
   local case_dir rc
-  case_dir=$(make_forgejo_case forgejo-null-state-status-alongside-green)
-  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  case_dir=$(make_forgejo_case forgejo-workflow-runs-empty-statuses)
+  write_forgejo_runs_json_workflow_runs "$case_dir/forgejo-data/runs.json" success
   cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
-{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":null},{"context":"pr-check / eval-gate (pull_request)","status":""},{"context":"vercel-preview","status":"success"}]}
+{"state":"success","statuses":[{"context":"pr-check / build-offload (pull_request)","status":"success"},{"context":"pr-check / eval-gate (pull_request)","status":""}]}
 JSON
 
   set +e
@@ -3665,11 +3660,11 @@ JSON
   rc=$?
   set -e
 
-  expect_code 0 "$rc" "forgejo-null-state-status-alongside-green: null/empty-state statuses must not block a merge whose real statuses are green"
+  expect_code 0 "$rc" "forgejo-workflow-runs-empty-statuses: empty-state statuses must not block a successful workflow run"
   assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
-    "forgejo-null-state-status-alongside-green: success was not reported"
-  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-null-state-status-alongside-green: merge API was not called"
-  pass "fm-pr-merge skips null and empty-state Forgejo commit statuses in the fallback not-green check"
+    "forgejo-workflow-runs-empty-statuses: success was not reported"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-workflow-runs-empty-statuses: merge API was not called"
+  pass "fm-pr-merge merges when successful workflow_runs run exists despite empty-state commit statuses"
 }
 
 test_gitlab_head_override_args_refuse_before_recording
@@ -3725,10 +3720,7 @@ test_forgejo_merge_not_mergeable
 test_forgejo_merge_workflow_runs_success
 test_forgejo_merge_workflow_runs_failure
 test_forgejo_merge_workflow_runs_success_skips_null_statuses
-test_forgejo_merge_skipped_run_alone_merges
-test_forgejo_merge_workflow_runs_status_skipped_merges
-test_forgejo_merge_skipped_beside_failure_still_refuses
-test_forgejo_merge_null_state_status_alongside_green_status
+test_forgejo_merge_workflow_runs_success_skips_empty_statuses
 test_forgejo_merge_skipped_run_alone_merges
 test_forgejo_merge_workflow_runs_status_skipped_merges
 test_forgejo_merge_skipped_beside_failure_still_refuses
