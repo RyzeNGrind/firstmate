@@ -3410,6 +3410,67 @@ JSON
   pass "fm-pr-merge refuses a Forgejo merge when only a red status context exists"
 }
 
+# Regression: Forgejo sometimes reports multiple commit-status entries for the
+# same context (e.g. a required-check context observed first as `failure` from
+# an earlier CI run and later rerun to `success` under the same context). The
+# naive filter reported the stale `failure` row as red and refused the merge
+# even though the latest row for that context was green. The dedup must keep
+# the latest entry per context (highest status id) and merge when that one is
+# green.
+test_forgejo_merge_duplicate_status_latest_success_merges() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-dup-latest-success)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+{"state":"success","statuses":[
+  {"id":1,"context":"no-mistakes-pr-gate","status":"failure"},
+  {"id":2,"context":"no-mistakes-pr-gate","status":"success"}
+]}
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 0 "$rc" "forgejo-dup-latest-success: stale failure superseded by later success must merge"
+  assert_grep "verified: $FORGEJO_URL is merged" "$case_dir/stdout" \
+    "forgejo-dup-latest-success: success was not reported as verified"
+  [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-dup-latest-success: merge API was not called"
+  pass "fm-pr-merge merges when a context's latest status is success despite a stale failure row"
+}
+
+# Adversarial: inverse of the regression above. If duplicate rows exist for a
+# context and the LATEST one is a failure, the merge must still refuse — the
+# dedup must honor the newest entry, not pick any green row that happens to
+# exist for the context.
+test_forgejo_merge_duplicate_status_latest_failure_refuses() {
+  local case_dir rc
+  case_dir=$(make_forgejo_case forgejo-dup-latest-failure)
+  printf '{"data":[]}\n' > "$case_dir/forgejo-data/runs.json"
+  cat > "$case_dir/forgejo-data/statuses.json" <<'JSON'
+{"state":"failure","statuses":[
+  {"id":1,"context":"no-mistakes-pr-gate","status":"success"},
+  {"id":2,"context":"no-mistakes-pr-gate","status":"failure"}
+]}
+JSON
+
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
+    > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+
+  expect_code 1 "$rc" "forgejo-dup-latest-failure: a context whose latest row is failure must refuse"
+  assert_grep "refusing to merge" "$case_dir/stderr" \
+    "forgejo-dup-latest-failure: refusal was not reported"
+  assert_grep "no-mistakes-pr-gate" "$case_dir/stderr" \
+    "forgejo-dup-latest-failure: refusal did not name the failing context"
+  [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-dup-latest-failure: merge API was called despite latest row being failure"
+  pass "fm-pr-merge still refuses when a context's latest status row is a failure"
+}
+
 test_allow_red_refused_on_forgejo() {
   local case_dir rc
   case_dir=$(make_forgejo_case forgejo-allow-red)
@@ -3632,6 +3693,8 @@ test_forgejo_merge_happy
 test_forgejo_merge_checks_not_green
 test_forgejo_merge_status_context_only
 test_forgejo_merge_status_context_only_red
+test_forgejo_merge_duplicate_status_latest_success_merges
+test_forgejo_merge_duplicate_status_latest_failure_refuses
 test_forgejo_merge_not_mergeable
 test_forgejo_merge_workflow_runs_success
 test_forgejo_merge_workflow_runs_failure
