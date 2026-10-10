@@ -200,7 +200,7 @@ fm_pending_reply_summarize() {  # <text>
 fm_pending_reply_get() {  # <record-path> <key>
   local rec=$1 key=$2
   [ -f "$rec" ] || return 0
-  grep "^${key}=" "$rec" 2>/dev/null | tail -1 | cut -d= -f2- || true
+  awk -v k="${key}" 'substr($0,1,length(k)+1)==k"=" {v=substr($0,length(k)+2); found=1} END{if(found)print v}' "$rec" || true
 }
 
 fm_pending_reply_sighting_encode() {  # <path> <line-number>
