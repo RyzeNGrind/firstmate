@@ -1,0 +1,4 @@
+SessionStart timeout=5 cmd="$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+PreToolUse timeout=5 cmd="$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+PostToolUse timeout=5 cmd="$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true
+Stop timeout=5 cmd="$CLAUDE_PROJECT_DIR"/bin/quota-fleet-pace-check.sh --warn-at 20 || true

@@ -1,0 +1,37 @@
+=== PR#26 quota-fleet-pace-check.sh live validation ===
+
+1. Updated tracked-entries test case
+   File: tests/fm-turnend-guard.test.sh:892 (test_tracked_claude_entries_inert_under_grok)
+   Driven at tracked-entries-test.log => ok (inventory shape guarded=6,
+   unguarded_subagent=1, unguarded_quota=4 against current .claude/settings.json).
+
+2. Regression: base-commit test function + current settings.json
+   => "not ok - tracked entry for quota-fleet-pace-check.sh did not run under a
+       native Claude environment"
+   File: regression-base-fn-vs-current.log
+   Confirms the test update is load-bearing (the fix the author claimed is real:
+   base-commit test would have broken against the new settings.json).
+
+3. Script behavior under real quota-axi conditions
+   A. quota-axi missing          => exit 0, no output
+   B. jq missing                 => exit 0, no output
+   C. provider below threshold   => prints "⚠️  Quota: claude-max (weekly) at 12% remaining", exit 0
+   D. --warn-at 5 (all above)    => no output, exit 0
+   E. --warn-at 100              => prints all 3 known-status entries, exit 0
+   F. hanging quota-axi          => wrapper's internal `timeout 3` fires, exit 0 in ~3s
+                                    (well under the 5s hook timeout)
+   G. unknown-status provider    => filtered by jq select, exit 0 no output
+   H. empty payload              => exit 0 no output
+   I. non-zero quota-axi         => exit 0 no output
+
+4. Hook wiring in .claude/settings.json
+   4 quota-fleet-pace-check.sh entries wired to SessionStart, PreToolUse,
+   PostToolUse, Stop, each with timeout=5 and `|| true` suffix (always exits 0
+   from the hook host's perspective). bin/quota-fleet-pace-check.sh is executable
+   (-rwxr-xr-x). settings.json parses as JSON cleanly.
+
+5. Documentation (docs/subagent-guard.md, docs/turnend-guard.md,
+   docs/sessionstart-nudge.md): updates re-classify the inventory ("supervision-
+   affecting tracked entries" distinct from "print-only quota entry"). Not
+   independently driveable as a product behavior — covered by the test's
+   assertion of the pinned inventory shape.

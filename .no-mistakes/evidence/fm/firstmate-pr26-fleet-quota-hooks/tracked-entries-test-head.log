@@ -1,0 +1,2 @@
+/tmp/tmp.K9A9ECDO5O: line 65: syntax error: unexpected end of file from `{' command on line 64
+ok - tracked .claude/settings.json entries: 6 inert under grok, the documented subagent and print-only quota exceptions still armed, all live under Claude

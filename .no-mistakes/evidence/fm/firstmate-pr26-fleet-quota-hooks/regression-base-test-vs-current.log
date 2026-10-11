@@ -1,0 +1,20 @@
+_: line 1: /tmp/tmp.WzAFHKuIQH/bin/fm-wake-lib.sh: No such file or directory
+_: line 1: fm_pid_identity: command not found
+/var/lib/nixbuilder/.no-mistakes/evidence/01M4M4ZED3CKVGD22Z3VWZS97T/run-base-test-vs-current-settings.sh: line 7: fm_test_tmproot: command not found
+/var/lib/nixbuilder/.no-mistakes/evidence/01M4M4ZED3CKVGD22Z3VWZS97T/run-base-test-vs-current-settings.sh: line 8: fm_git_identity: command not found
+mkdir: cannot create directory ‘/claude-entries-grok-inert’: Permission denied
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-turnend-guard.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-turnend-guard.sh': No such file or directory
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-claude-stop-autoarm.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-claude-stop-autoarm.sh': No such file or directory
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-sessionstart-run.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-sessionstart-run.sh': No such file or directory
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-arm-pretool-check.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-arm-pretool-check.sh': No such file or directory
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-cd-pretool-check.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-cd-pretool-check.sh': No such file or directory
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-subagent-pretool-check.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-subagent-pretool-check.sh': No such file or directory
+/tmp/tmp.uXGj8Q4rTb: line 9: /claude-entries-grok-inert/bin/fm-plane-perturn-hook.sh: No such file or directory
+chmod: cannot access '/claude-entries-grok-inert/bin/fm-plane-perturn-hook.sh': No such file or directory
+not ok - tracked entry for fm-sessionstart-run.sh did not run under a native Claude environment
