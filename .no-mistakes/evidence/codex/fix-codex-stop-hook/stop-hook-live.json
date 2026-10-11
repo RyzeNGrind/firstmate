@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Idle primary emits one JSON object despite noisy login profile",
+    "exit": 0,
+    "stdout": "{}\n",
+    "stderr": "",
+    "result": "pass"
+  },
+  {
+    "name": "Unsupservised in-flight work preserves exit 2 and repair diagnostic",
+    "exit": 2,
+    "stdout": "",
+    "stderr": "\u25cf\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u25cf  TURN WOULD END BLIND - SUPERVISION IS OFF\n\u25cf  1 task(s) in flight, but no live watcher holds this home lock (last beat: never).\n\u25cf  repair missing watcher supervision according to the session-start block for this harness; do not use shell &.\n\u25cf\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n",
+    "result": "pass"
+  },
+  {
+    "name": "Retry after blocked Stop ends without an infinite continuation",
+    "exit": 0,
+    "stdout": "{}\n",
+    "stderr": "",
+    "result": "pass"
+  },
+  {
+    "name": "Malformed payload safely allows with JSON",
+    "exit": 0,
+    "stdout": "{}\n",
+    "stderr": "",
+    "result": "pass"
+  },
+  {
+    "name": "Empty stdin safely allows with JSON",
+    "exit": 0,
+    "stdout": "{}\n",
+    "stderr": "",
+    "result": "pass"
+  },
+  {
+    "name": "Non-Firstmate directory safely allows with JSON",
+    "exit": 0,
+    "stdout": "{}\n",
+    "stderr": "",
+    "result": "pass"
+  },
+  {
+    "name": "Base revision allowed Stop protocol reproduction",
+    "exit": 0,
+    "stdout": "LOGIN STARTUP NOISE\n",
+    "stderr": "",
+    "valid_json": false
+  }
+]
