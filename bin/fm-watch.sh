@@ -423,39 +423,32 @@ window_key() {  # <window>
   printf '%s' "${key//./_}"
 }
 
-inbox_steer_escalate_unavailable() {  # <window> <task> <record>
-  local w=$1 task=$2 rec=$3 reason
-  reason="stale: $w (unread firstmate instruction: $rec is unhandled and the worker's agent has exited or its endpoint is missing, so the doorbell was not typed; recover the worker)"
-  if [ ! -d "${rec%/*}" ] || [ ! -f "$rec" ]; then
-    fm_task_inbox_due_action "$STATE" "$task" >/dev/null || true
-    return 0
-  fi
-  fm_wake_append stale "$w" "$reason" || exit 1
-  if ! fm_task_inbox_record_escalated "$STATE" "$task" "$rec"; then
-    echo "error: stale wake was queued for $task but its inbox escalation marker could not be written" >&2
-    exit 1
-  fi
-  wake "$reason"
-}
-
 # Steering-inbox loss detection, one cheap check per recorded window per poll.
 # Quiet when healthy: an absent, empty, or handled inbox costs one directory
 # glob and produces nothing. When the ladder (fm_task_inbox_due_action, the
 # policy owner) reports a due action, a busy pane just waits - the record is
 # durable and the worker will reach a turn boundary - an idle pane gets one
 # delivery attempt, and a spent attempt budget surfaces as an ordinary stale
-# wake for stuck-crewmate-recovery, and a pane whose agent is positively dead
-# or missing skips the ladder altogether: it is never typed into and surfaces
-# as that same stale wake exactly once. If the attempt's ladder write fails while
-# its record remains unhandled, that unwritable state surfaces through the same
-# stale path instead of silently re-ringing forever; acknowledgement or teardown
-# still makes the race quiet. The attempt is data-plane typing or a
+# wake for stuck-crewmate-recovery. A pane whose agent is dead or missing on
+# a ring attempt consumes budget rather than escalating immediately: a
+# transient false-dead verdict produced when an agent subprocess temporarily
+# holds the foreground process group must not permanently strand the steer
+# after one poll. Escalation happens only after FM_TASK_INBOX_RING_MAX
+# dead-endpoint attempts are consumed, using the same ladder path as a
+# normally-spent ring budget. The dead check runs before the busy guard so
+# stale busy state cannot hide a dead pane; the endpoint_dead flag also
+# bypasses the busy guard for the escalate verb so escalation is not
+# indefinitely deferred against a pane that is both dead and carrying a stale
+# busy capture. If the attempt's ladder write fails while its record remains
+# unhandled, that unwritable state surfaces through the same stale path
+# instead of silently re-ringing forever; acknowledgement or teardown still
+# makes the race quiet. The attempt is data-plane typing or a
 # composer-protected skip, never a wake, so normal retries keep the watcher
-# blocking. Runs for secondmates
-# too: their pane-staleness exemption is about quiet panes being healthy,
-# while an unacknowledged instruction past the ladder is a stuck steer.
+# blocking. Runs for secondmates too: their pane-staleness exemption is about
+# quiet panes being healthy, while an unacknowledged instruction past the
+# ladder is a stuck steer.
 inbox_steer_check() {  # <window> <task>
-  local w=$1 task=$2 action verb rec count tail40 reason ring_rc backend agent_state
+  local w=$1 task=$2 action verb rec count tail40 reason ring_rc backend endpoint_dead
   action=$(fm_task_inbox_due_action "$STATE" "$task") || return 0
   verb=${action%% *}
   [ "$verb" != quiet ] || return 0
@@ -468,25 +461,44 @@ inbox_steer_check() {  # <window> <task>
       ;;
   esac
   backend=$(window_backend "$w")
-  agent_state=$(fm_backend_agent_state "$backend" "$w" 2>/dev/null || true)
-  case "$agent_state" in
-    dead|missing)
-      inbox_steer_escalate_unavailable "$w" "$task" "$rec"
-      return 0
-      ;;
+  # Check endpoint state before the busy guard so a stale busy capture cannot
+  # hide a dead or missing pane. The flag is reused to bypass the busy guard
+  # for the escalate verb as well.
+  endpoint_dead=0
+  case "$(fm_backend_agent_state "$backend" "$w" 2>/dev/null || true)" in
+    dead|missing) endpoint_dead=1 ;;
   esac
-  tail40=$(fm_backend_capture "$backend" "$w" 40 "$(window_label "$w")" 2>/dev/null) || tail40=
-  if window_is_busy "$w" "$tail40"; then
-    return 0
+  if [ "$endpoint_dead" -eq 0 ]; then
+    tail40=$(fm_backend_capture "$backend" "$w" 40 "$(window_label "$w")" 2>/dev/null) || tail40=
+    if window_is_busy "$w" "$tail40"; then
+      return 0
+    fi
   fi
   case "$verb" in
     ring)
-      ring_rc=0
-      fm_task_inbox_ring "$backend" "$w" "$rec" "$(window_label "$w")" || ring_rc=$?
-      if [ "$ring_rc" -eq 3 ]; then
-        inbox_steer_escalate_unavailable "$w" "$task" "$rec"
+      if [ "$endpoint_dead" -eq 1 ]; then
+        # Consume ring budget rather than escalating immediately. A transient
+        # false-dead verdict must not permanently strand the steer by writing
+        # .escalated on the first poll.
+        if ! fm_task_inbox_record_ring "$STATE" "$task" "$rec"; then
+          if [ ! -f "$rec" ]; then
+            fm_task_inbox_due_action "$STATE" "$task" >/dev/null || true
+            return 0
+          fi
+          if [ -d "${rec%/*}" ]; then
+            reason="stale: $w (steering-inbox ladder bookkeeping unwritable: ${rec%/*}/.ring-state cannot be written while $rec stays unhandled; the doorbell cannot advance toward escalation - inspect the inbox directory)"
+            fm_wake_append stale "$w" "$reason" || exit 1
+            wake "$reason"
+          fi
+        fi
+        triage_log "steer-inbox dead-endpoint skipped: $task ${rec##*/}"
         return 0
       fi
+      ring_rc=0
+      fm_task_inbox_ring "$backend" "$w" "$rec" "$(window_label "$w")" || ring_rc=$?
+      # rc=3 (dead at ring time, race since the endpoint check above) falls
+      # through: budget is consumed like any other ring result; no direct
+      # escalation.
       if ! fm_task_inbox_record_ring "$STATE" "$task" "$rec"; then
         if [ ! -f "$rec" ]; then
           fm_task_inbox_due_action "$STATE" "$task" >/dev/null || true
@@ -501,7 +513,11 @@ inbox_steer_check() {  # <window> <task>
       triage_log "steer-inbox delivery attempt: $task ${rec##*/} result=$ring_rc"
       ;;
     escalate)
-      reason="stale: $w (unread firstmate instruction: $rec still unhandled after $count doorbell delivery attempts with an idle pane; inspect the worker)"
+      if [ "$endpoint_dead" -eq 1 ]; then
+        reason="stale: $w (unread firstmate instruction: $rec still unhandled after $count attempts against a dead or missing endpoint; the worker's agent has exited so the doorbell was not typed - recover the worker)"
+      else
+        reason="stale: $w (unread firstmate instruction: $rec still unhandled after $count doorbell delivery attempts with an idle pane; inspect the worker)"
+      fi
       if [ ! -d "${rec%/*}" ] || [ ! -f "$rec" ]; then
         fm_task_inbox_due_action "$STATE" "$task" >/dev/null || true
         return 0
