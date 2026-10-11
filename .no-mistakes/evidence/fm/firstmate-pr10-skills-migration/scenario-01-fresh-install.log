@@ -1,0 +1,13 @@
+=== scenario 1: fresh install ===
+created: alpha
+created: beta
+---
+total 8
+drwxr-xr-x 2 nixbuilder nixbuilder 4096 Oct 10 20:50 .
+drwxr-xr-x 3 nixbuilder nixbuilder 4096 Oct 10 20:50 ..
+lrwxrwxrwx 1 nixbuilder nixbuilder   57 Oct 10 20:50 alpha -> /tmp/fm-skills-test-G0xjES/fake-root/.agents/skills/alpha
+lrwxrwxrwx 1 nixbuilder nixbuilder   56 Oct 10 20:50 beta -> /tmp/fm-skills-test-G0xjES/fake-root/.agents/skills/beta
+---
+OK: alpha -> /tmp/fm-skills-test-G0xjES/fake-root/.agents/skills/alpha
+OK: beta -> /tmp/fm-skills-test-G0xjES/fake-root/.agents/skills/beta
+alpha

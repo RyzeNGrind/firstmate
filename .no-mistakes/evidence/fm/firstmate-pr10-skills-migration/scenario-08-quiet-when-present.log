@@ -1,0 +1,5 @@
+=== scenario 8: bootstrap quiet when skills present ===
+MISSING: quota-axi (install: npm install -g quota-axi)
+MISSING: tasks-axi (install: npm install -g tasks-axi)
+exit=0
+OK: bootstrap did not emit fm-skills diagnostic

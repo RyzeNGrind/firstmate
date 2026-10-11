@@ -1,0 +1,11 @@
+=== scenario 4: existing non-symlink file not clobbered ===
+Before:
+-rw-r--r-- 1 nixbuilder nixbuilder 20 Oct 10 20:50 /tmp/fm-skills-test-G0xjES/fake-home/.claude/skills/alpha
+important user data
+Run:
+skipped: alpha (existing file/directory, not overwriting)
+skipped: beta (already correct)
+After:
+-rw-r--r-- 1 nixbuilder nixbuilder 20 Oct 10 20:50 /tmp/fm-skills-test-G0xjES/fake-home/.claude/skills/alpha
+important user data
+OK: real file preserved

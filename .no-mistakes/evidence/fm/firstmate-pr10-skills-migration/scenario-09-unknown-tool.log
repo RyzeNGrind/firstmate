@@ -1,0 +1,4 @@
+=== scenario 9: unknown tool rejected / fm-skills accepted ===
+bogus-nope: error: unknown tool bogus-nope
+exit=1
+OK: unknown tool rejected

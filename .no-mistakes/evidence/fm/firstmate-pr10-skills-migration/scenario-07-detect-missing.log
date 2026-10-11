@@ -1,0 +1,6 @@
+=== scenario 7 (retry): bootstrap reports MISSING: fm-skills ===
+MISSING: quota-axi (install: npm install -g quota-axi)
+MISSING: tasks-axi (install: npm install -g tasks-axi)
+MISSING: fm-skills (install: /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/bin/fm-install-skills.sh)
+exit=0
+OK: fm-skills reported as missing

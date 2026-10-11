@@ -1,0 +1,4 @@
+=== scenario 10: fm-bootstrap errors cleanly when install script missing ===
+error: fm-install-skills.sh not found
+exit=1
+OK: clean error reported when install script missing

@@ -1,0 +1,51 @@
+=== scenario 5: fm-bootstrap.sh install fm-skills ===
+installing fm-skills
+created: afk
+created: ahoy
+created: ask-user-authority
+created: bearings
+created: bootstrap-diagnostics
+created: captain-hold-lifecycle
+created: decision-hold-lifecycle
+created: diagnostic-reasoning
+created: firstmate-calm
+created: firstmate-codexapp
+created: firstmate-coding-guidelines
+created: firstmate-orca
+created: fmx-respond
+created: harness-adapters
+created: process-event-sources
+created: project-management
+created: quiet
+created: quota-array-dispatch
+created: secondmate-provisioning
+created: stow
+created: stuck-crewmate-recovery
+created: updatefirstmate
+--- EXIT=0 ---
+Target dir contents (first 30):
+total 96
+drwxr-xr-x 2 nixbuilder nixbuilder 4096 Oct 10 20:50 .
+drwxr-xr-x 3 nixbuilder nixbuilder 4096 Oct 10 20:50 ..
+lrwxrwxrwx 1 nixbuilder nixbuilder  101 Oct 10 20:50 afk -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/afk
+lrwxrwxrwx 1 nixbuilder nixbuilder  102 Oct 10 20:50 ahoy -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/ahoy
+lrwxrwxrwx 1 nixbuilder nixbuilder  116 Oct 10 20:50 ask-user-authority -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/ask-user-authority
+lrwxrwxrwx 1 nixbuilder nixbuilder  106 Oct 10 20:50 bearings -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/bearings
+lrwxrwxrwx 1 nixbuilder nixbuilder  119 Oct 10 20:50 bootstrap-diagnostics -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/bootstrap-diagnostics
+lrwxrwxrwx 1 nixbuilder nixbuilder  120 Oct 10 20:50 captain-hold-lifecycle -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/captain-hold-lifecycle
+lrwxrwxrwx 1 nixbuilder nixbuilder  121 Oct 10 20:50 decision-hold-lifecycle -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/decision-hold-lifecycle
+lrwxrwxrwx 1 nixbuilder nixbuilder  118 Oct 10 20:50 diagnostic-reasoning -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/diagnostic-reasoning
+lrwxrwxrwx 1 nixbuilder nixbuilder  112 Oct 10 20:50 firstmate-calm -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/firstmate-calm
+lrwxrwxrwx 1 nixbuilder nixbuilder  116 Oct 10 20:50 firstmate-codexapp -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/firstmate-codexapp
+lrwxrwxrwx 1 nixbuilder nixbuilder  125 Oct 10 20:50 firstmate-coding-guidelines -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/firstmate-coding-guidelines
+lrwxrwxrwx 1 nixbuilder nixbuilder  112 Oct 10 20:50 firstmate-orca -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/firstmate-orca
+lrwxrwxrwx 1 nixbuilder nixbuilder  109 Oct 10 20:50 fmx-respond -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/fmx-respond
+lrwxrwxrwx 1 nixbuilder nixbuilder  114 Oct 10 20:50 harness-adapters -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/harness-adapters
+lrwxrwxrwx 1 nixbuilder nixbuilder  119 Oct 10 20:50 process-event-sources -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/process-event-sources
+lrwxrwxrwx 1 nixbuilder nixbuilder  116 Oct 10 20:50 project-management -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/project-management
+lrwxrwxrwx 1 nixbuilder nixbuilder  103 Oct 10 20:50 quiet -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/quiet
+lrwxrwxrwx 1 nixbuilder nixbuilder  118 Oct 10 20:50 quota-array-dispatch -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/quota-array-dispatch
+lrwxrwxrwx 1 nixbuilder nixbuilder  121 Oct 10 20:50 secondmate-provisioning -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/secondmate-provisioning
+lrwxrwxrwx 1 nixbuilder nixbuilder  102 Oct 10 20:50 stow -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/stow
+lrwxrwxrwx 1 nixbuilder nixbuilder  121 Oct 10 20:50 stuck-crewmate-recovery -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/stuck-crewmate-recovery
+lrwxrwxrwx 1 nixbuilder nixbuilder  113 Oct 10 20:50 updatefirstmate -> /var/lib/nixbuilder/.no-mistakes/worktrees/7ac55c2c8968/01M4M6NN2YZRYTW0NMDN6VJBQW/.agents/skills/updatefirstmate

@@ -1,0 +1,6 @@
+=== scenario 12 (retry): fm-install-skills.sh early-returns when .agents/skills absent ===
+install exit=0
+FAKE_HOME/.claude/skills/ (empty expected):
+total 8
+drwxr-xr-x 2 nixbuilder nixbuilder 4096 Oct 10 20:53 .
+drwxr-xr-x 3 nixbuilder nixbuilder 4096 Oct 10 20:53 ..

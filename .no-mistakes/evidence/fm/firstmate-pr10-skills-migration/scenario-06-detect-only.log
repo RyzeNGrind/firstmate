@@ -1,0 +1,5 @@
+=== scenario 6: detect-only mode skips skills check ===
+-- WITH FM_BOOTSTRAP_DETECT_ONLY=1 --
+NEEDS_GH_AUTH
+exit=0
+OK: no fm-skills reference in detect-only mode

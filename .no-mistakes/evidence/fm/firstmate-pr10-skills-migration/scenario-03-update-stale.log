@@ -1,0 +1,9 @@
+=== scenario 3: stale symlink updated ===
+Before:
+lrwxrwxrwx 1 nixbuilder nixbuilder 17 Oct 10 20:50 /tmp/fm-skills-test-G0xjES/fake-home/.claude/skills/alpha -> /nonexistent/path
+Run:
+updated: alpha
+skipped: beta (already correct)
+After:
+lrwxrwxrwx 1 nixbuilder nixbuilder 57 Oct 10 20:50 /tmp/fm-skills-test-G0xjES/fake-home/.claude/skills/alpha -> /tmp/fm-skills-test-G0xjES/fake-root/.agents/skills/alpha
+OK: updated to /tmp/fm-skills-test-G0xjES/fake-root/.agents/skills/alpha
