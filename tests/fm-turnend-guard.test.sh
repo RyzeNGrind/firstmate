@@ -883,15 +883,20 @@ test_grok_adapter_missing_jq_and_no_supervision_allow() {
 # bin/fm-subagent-pretool-check.sh is the deliberate exception: Grok has no
 # counterpart registration, so guarding it would REMOVE the guard from Grok
 # rather than deduplicate it (docs/subagent-guard.md "Known residual gap").
-# It is asserted to stay unguarded so the exception cannot be closed silently.
+# bin/quota-fleet-pace-check.sh is a separate print-only exception, wired
+# unmatched to SessionStart, PreToolUse, PostToolUse, and Stop as a bounded
+# quota warning that always exits 0 within a 5s timeout and creates no
+# continuation path, so it is deliberately unguarded on every harness.
+# Both exceptions are asserted to stay unguarded so they cannot be closed
+# silently, and their inventory shape is pinned so a new hook cannot slip past.
 test_tracked_claude_entries_inert_under_grok() {
-  local dir cmd script target guarded=0 unguarded=0
+  local dir cmd script target guarded=0 unguarded_subagent=0 unguarded_quota=0
   command -v jq >/dev/null 2>&1 || fail "test host must provide jq"
   dir="$TMP_ROOT/claude-entries-grok-inert"
   mkdir -p "$dir/bin"
   for script in fm-turnend-guard.sh fm-claude-stop-autoarm.sh fm-sessionstart-run.sh \
     fm-arm-pretool-check.sh fm-cd-pretool-check.sh fm-subagent-pretool-check.sh \
-    fm-plane-perturn-hook.sh; do
+    fm-plane-perturn-hook.sh quota-fleet-pace-check.sh; do
     printf '#!/usr/bin/env bash\nprintf ran >> %q\n' "$dir/invoked" > "$dir/bin/$script"
     chmod +x "$dir/bin/$script"
   done
@@ -915,9 +920,18 @@ test_tracked_claude_entries_inert_under_grok() {
       || fail "tracked entry for $target did not run under a native Claude environment"
 
     if [ "$target" = fm-subagent-pretool-check.sh ]; then
-      unguarded=$((unguarded + 1))
+      unguarded_subagent=$((unguarded_subagent + 1))
       ran_under -u GROK_AGENT GROK_HOOK_EVENT=pre_tool_use GROK_SESSION_ID=grok-test-session \
         || fail "the documented $target exception must stay unguarded; Grok has no counterpart to fall back to"
+      continue
+    fi
+
+    if [ "$target" = quota-fleet-pace-check.sh ]; then
+      unguarded_quota=$((unguarded_quota + 1))
+      ran_under -u GROK_AGENT GROK_HOOK_EVENT=stop \
+        GROK_HOOK_NAME='project/settings:stop[0].hooks[0]' \
+        GROK_SESSION_ID=grok-test-session GROK_WORKSPACE_ROOT="$dir" \
+        || fail "the documented $target print-only exception must stay unguarded; it creates no continuation path"
       continue
     fi
 
@@ -933,8 +947,9 @@ test_tracked_claude_entries_inert_under_grok() {
   done < <(jq -r '.hooks[][].hooks[].command' "$ROOT/.claude/settings.json")
 
   [ "$guarded" -eq 6 ] || fail "expected 6 grok-guarded tracked entries, saw $guarded"
-  [ "$unguarded" -eq 1 ] || fail "expected 1 documented unguarded tracked entry, saw $unguarded"
-  pass "tracked .claude/settings.json entries: $guarded inert under grok, the documented subagent exception still armed, all live under Claude"
+  [ "$unguarded_subagent" -eq 1 ] || fail "expected 1 documented unguarded subagent-pretool exception, saw $unguarded_subagent"
+  [ "$unguarded_quota" -eq 4 ] || fail "expected 4 documented unguarded print-only quota entries (SessionStart/PreToolUse/PostToolUse/Stop), saw $unguarded_quota"
+  pass "tracked .claude/settings.json entries: $guarded inert under grok, the documented subagent and print-only quota exceptions still armed, all live under Claude"
 }
 
 test_codex_hook_uses_process_pwd_when_payload_cwd_is_outside_root() {

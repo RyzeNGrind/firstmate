@@ -7,6 +7,11 @@
             "type": "command",
             "command": "[ -z \"${GROK_AGENT:-}${GROK_HOOK_EVENT:-}\" ] || exit 0; exec \"$CLAUDE_PROJECT_DIR\"/bin/fm-sessionstart-run.sh",
             "timeout": 180
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/bin/quota-fleet-pace-check.sh --warn-at 20 || true",
+            "timeout": 5
           }
         ]
       }
@@ -33,6 +38,28 @@
             "command": "\"$CLAUDE_PROJECT_DIR\"/bin/fm-subagent-pretool-check.sh --claude"
           }
         ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/bin/quota-fleet-pace-check.sh --warn-at 20 || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/bin/quota-fleet-pace-check.sh --warn-at 20 || true",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Stop": [
@@ -52,6 +79,11 @@
             "type": "command",
             "command": "[ -z \"${GROK_AGENT:-}${GROK_HOOK_EVENT:-}\" ] || exit 0; exec \"$CLAUDE_PROJECT_DIR\"/bin/fm-plane-perturn-hook.sh",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/bin/quota-fleet-pace-check.sh --warn-at 20 || true",
+            "timeout": 5
           }
         ]
       }

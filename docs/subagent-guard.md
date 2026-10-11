@@ -366,8 +366,9 @@ tests/fm-subagent-pretool-check.test.sh
 
 ## Known residual gap
 
-The other tracked Claude hook entries in `.claude/settings.json` refuse to run under Grok's Claude-compatible settings loading (docs/turnend-guard.md "Harness integrations"), because Grok already covers each of those events through its own `.grok/hooks/` registration and running both creates a duplicate path.
-This entry is the deliberate exception and stays unguarded: Grok is "inspected but not wired" above, so no `.grok/hooks/` registration covers the subagent-spawn event at all, and guarding it would remove the guard from Grok entirely rather than deduplicate it.
+The other supervision-affecting tracked Claude hook entries in `.claude/settings.json` refuse to run under Grok's Claude-compatible settings loading (docs/turnend-guard.md "Harness integrations"), because Grok already covers each of those events through its own `.grok/hooks/` registration and running both creates a duplicate continuation path.
+This entry is the deliberate supervision-affecting exception and stays unguarded: Grok is "inspected but not wired" above, so no `.grok/hooks/` registration covers the subagent-spawn event at all, and guarding it would remove the guard from Grok entirely rather than deduplicate it.
+`bin/quota-fleet-pace-check.sh` is a separate print-only quota warning that always exits 0 within a 5s timeout and creates no continuation path, so it is deliberately unguarded on every harness for its own reason.
 The coverage it leaves is partial rather than correct - the tracked entry passes `--claude`, which suppresses exactly the stdout decision object Grok consumes - so treat this as incidental reach, not as Grok being wired.
 Wiring Grok properly still requires the matcher-token verification described above, and that is what closes this exception.
 The same exception now also covers Cursor, which loads the tracked Claude settings as well: `.cursor/hooks.json` registers no subagent-spawn matcher, so this entry stays unguarded there for the same reason, and its `--claude` rendering leaves Cursor the exit-2 and stderr path rather than Cursor's own decision object.
