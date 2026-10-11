@@ -953,7 +953,7 @@ test_tracked_claude_entries_inert_under_grok() {
 }
 
 test_codex_hook_uses_process_pwd_when_payload_cwd_is_outside_root() {
-  local settings command dir expected_root outside payload out status
+  local settings command dir expected_root outside payload out_file err_file status noisy_home
   settings="$ROOT/.codex/hooks.json"
   [ -f "$settings" ] || fail "tracked .codex/hooks.json is missing"
   command=$(jq -r '.hooks.Stop[0].hooks[0].command // empty' "$settings")
@@ -962,23 +962,44 @@ test_codex_hook_uses_process_pwd_when_payload_cwd_is_outside_root() {
   mark_codex_hook_root "$dir"
   expected_root=$(cd "$dir" && pwd -P)
   outside="$TMP_ROOT/codex-hook-outside"
-  mkdir -p "$outside"
+  noisy_home="$TMP_ROOT/codex-hook-noisy-home"
+  mkdir -p "$outside" "$noisy_home"
+  printf 'printf "login-shell-noise\\n"\n' > "$noisy_home/.bash_profile"
   cat > "$dir/bin/fm-turnend-guard.sh" <<'EOF'
 #!/usr/bin/env bash
-printf 'guard=%s\n' "$0"
-cat
+cat >/dev/null
 EOF
   chmod +x "$dir/bin/fm-turnend-guard.sh"
   payload=$(jq -cn --arg cwd "$outside" '{cwd:$cwd,stop_hook_active:false}')
-  out=$(printf '%s' "$payload" | (cd "$dir" && bash -c "$command") 2>&1); status=$?
-  expect_code 0 "$status" "codex hook must execute successfully when payload cwd is outside the firstmate root"
-  assert_contains "$out" "guard=$expected_root/bin/fm-turnend-guard.sh" "codex hook must use the hook process root"
-  assert_contains "$out" "$payload" "codex hook must pass the original payload to the guard"
-  pass ".codex/hooks.json: Stop hook uses hook process root when payload cwd is outside"
+  out_file="$TMP_ROOT/codex-stop-allow.stdout"
+  err_file="$TMP_ROOT/codex-stop-allow.stderr"
+  printf '%s' "$payload" | (cd "$dir" && HOME="$noisy_home" bash -c "$command") >"$out_file" 2>"$err_file"
+  status=$?
+  expect_code 0 "$status" "codex Stop hook must allow with valid JSON despite login-shell startup output"
+  printf '{}\n' > "$TMP_ROOT/codex-stop-expected.json"
+  cmp -s "$TMP_ROOT/codex-stop-expected.json" "$out_file" || fail "allowed Stop hook stdout was not exactly a JSON object: $(od -An -tx1 -N80 "$out_file")"
+  [ ! -s "$err_file" ] || fail "allowed Stop hook wrote stderr: $(cat "$err_file")"
+  jq -e 'type == "object"' "$out_file" >/dev/null || fail "allowed Stop hook stdout is not valid JSON"
+
+  cat > "$dir/bin/fm-turnend-guard.sh" <<'EOF'
+#!/usr/bin/env bash
+cat >/dev/null
+printf 'continue because supervision needs repair\\n' >&2
+exit 2
+EOF
+  chmod +x "$dir/bin/fm-turnend-guard.sh"
+  out_file="$TMP_ROOT/codex-stop-block.stdout"
+  err_file="$TMP_ROOT/codex-stop-block.stderr"
+  printf '%s' "$payload" | (cd "$dir" && HOME="$noisy_home" bash -c "$command") >"$out_file" 2>"$err_file"
+  status=$?
+  expect_code 2 "$status" "codex Stop hook must preserve its supported exit-2 continuation path"
+  [ ! -s "$out_file" ] || fail "blocked Stop hook must leave stdout empty, got: $(od -An -tx1 -N80 "$out_file")"
+  assert_contains "$(cat "$err_file")" "continue because supervision needs repair" "blocked Stop hook must preserve the stderr continuation reason"
+  pass ".codex/hooks.json: Stop hook isolates login startup noise and returns Codex-valid allow/block results"
 }
 
 test_codex_hook_ignores_nested_git_root_guard() {
-  local settings command dir nested subdir expected_root payload out status
+  local settings command dir nested subdir expected_root payload out status guard_log
   settings="$ROOT/.codex/hooks.json"
   [ -f "$settings" ] || fail "tracked .codex/hooks.json is missing"
   command=$(jq -r '.hooks.Stop[0].hooks[0].command // empty' "$settings")
@@ -987,6 +1008,7 @@ test_codex_hook_ignores_nested_git_root_guard() {
   mark_codex_hook_root "$dir"
   expected_root=$(cd "$dir" && pwd -P)
   nested="$dir/projects/other"
+  guard_log="$TMP_ROOT/codex-nested-guard.log"
   mkdir -p "$nested"
   git init -q "$nested"
   git -C "$nested" commit -q --allow-empty -m init
@@ -995,23 +1017,24 @@ test_codex_hook_ignores_nested_git_root_guard() {
   printf '{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"fm-turnend-guard.sh"}]}]}}\n' > "$nested/.codex/hooks.json"
   cat > "$nested/bin/fm-turnend-guard.sh" <<'EOF'
 #!/usr/bin/env bash
-printf 'nested guard executed\n'
+printf 'nested guard executed\n' >> "${FM_TEST_GUARD_LOG:?}"
 exit 99
 EOF
   chmod +x "$nested/bin/fm-turnend-guard.sh"
   cat > "$dir/bin/fm-turnend-guard.sh" <<'EOF'
 #!/usr/bin/env bash
-printf 'guard=%s\n' "$0"
-cat
+printf 'guard=%s\n' "$0" >> "${FM_TEST_GUARD_LOG:?}"
+cat >/dev/null
 EOF
   chmod +x "$dir/bin/fm-turnend-guard.sh"
   subdir="$nested/deep/path"
   mkdir -p "$subdir"
   payload=$(jq -cn --arg cwd "$subdir" '{cwd:$cwd,stop_hook_active:false}')
-  out=$(printf '%s' "$payload" | (cd "$dir" && bash -c "$command") 2>&1); status=$?
+  out=$(printf '%s' "$payload" | (cd "$dir" && FM_TEST_GUARD_LOG="$guard_log" bash -c "$command") 2>&1); status=$?
   expect_code 0 "$status" "codex hook must not execute a nested project guard"
-  assert_contains "$out" "guard=$expected_root/bin/fm-turnend-guard.sh" "codex hook must keep using the outer firstmate guard"
-  assert_not_contains "$out" "nested guard executed" "codex hook must not execute nested project code"
+  assert_contains "$(cat "$guard_log")" "guard=$expected_root/bin/fm-turnend-guard.sh" "codex hook must keep using the outer firstmate guard"
+  assert_not_contains "$(cat "$guard_log")" "nested guard executed" "codex hook must not execute nested project code"
+  [ "$out" = '{}' ] || fail "allowed Stop hook must return JSON while suppressing guard stdout, got: $out"
   pass ".codex/hooks.json: Stop hook ignores nested git root guard scripts"
 }
 
