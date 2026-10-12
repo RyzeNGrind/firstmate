@@ -142,6 +142,19 @@ The worktree and the task's records are unaffected either way.
 - If the launch owner already published the new record but no running agent can be confirmed, the new record is kept: the task is recorded on the new harness with no agent confirmed, which is exactly what recovery reconciles.
   Rewriting it back to the old harness would be a second, worse inaccuracy.
 
+## Context rotation
+
+Context rotation replaces an agent's chat with a fresh one once its context reaches the threshold, so long-running work keeps a bounded context.
+The threshold is 150,000 tokens of context for every firstmate-managed agent: primary, secondmate, crewmate, and scout.
+Rotation hands off durable state only, never conversation memory, so the new chat resumes from the brief, the status log, the metadata record, the backlog, and the local copy.
+
+The mechanism differs by role.
+A crewmate, scout, or secondmate rotates through `bin/fm-control.sh <id> relaunch`, which keeps the worktree and any surviving endpoint; a ship or scout relaunch must carry `--note`, as described above.
+The primary cannot relaunch itself, so its rotation is a new session started from outside, which the SessionStart `clear` re-emit in [`sessionstart-nudge.md`](sessionstart-nudge.md) turns into a rebuilt digest from disk.
+
+The meter that observes context size and fires the relaunch automatically is not shipped yet.
+Until it is, a supervisor that sees an agent at or above the threshold rotates it by hand with the verb above, and the missing automatic trigger stays open as follow-up work.
+
 ## Fail-closed boundaries
 
 - Targeting is exact.
