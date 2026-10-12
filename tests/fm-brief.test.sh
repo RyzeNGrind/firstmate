@@ -647,6 +647,10 @@ test_secondmate_no_projects_charter() {
   if grep -nE '^-[[:space:]]*$' "$brief" >/dev/null; then
     fail "project-less charter left a stray empty project bullet"
   fi
+  assert_grep 'Before dispatching any backlog item after startup or restart' "$brief" \
+    "secondmate charter did not require inbox drain before backlog dispatch on restart"
+  assert_grep 'before touching anything from the backlog' "$brief" \
+    "secondmate charter lost the inbox-first ordering anchor for restart recovery"
 
   # Accidental omission (no projects, no signal) still fails loudly, writing nothing.
   FM_HOME="$home" FM_SECONDMATE_CHARTER='x' "$ROOT/bin/fm-brief.sh" oops --secondmate >/dev/null 2>&1; status=$?
