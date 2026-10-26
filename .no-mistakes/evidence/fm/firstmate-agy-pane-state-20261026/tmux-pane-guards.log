@@ -1,0 +1,49 @@
+Isolated terminal grid: 120x40
+Actual foreground command: bash
+Recovery state of bare shell: dead
+Agy turn state of bare shell with no footer: unknown agy-regex
+Shell visible capture:
+bash-5.3$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Recovery state of missing recorded window: missing
+Agy turn state of missing recorded window: unknown capture-failed
+Remaining windows: shell
+Isolated terminal server removed.

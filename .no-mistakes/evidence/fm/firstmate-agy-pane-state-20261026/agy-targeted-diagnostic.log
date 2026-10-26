@@ -1,0 +1,1165 @@
++ set -u
+++ dirname tests/fm-agy-harness.test.sh
++ . tests/lib.sh
+++ '[' -n '' ']'
+++ FM_TEST_LIB_SOURCED=1
+++ umask 022
++++ dirname tests/lib.sh
+++ . tests/git-config-helpers.sh
++++ export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
++++ GIT_CONFIG_GLOBAL=/dev/null
++++ GIT_CONFIG_NOSYSTEM=1
+++ export FM_GATE_REFUSE_BYPASS=1
+++ FM_GATE_REFUSE_BYPASS=1
+++ unset FM_TASK_ID
+++ unset TASKS_AXI_FILE TASKS_AXI_BACKEND
+++++ dirname tests/lib.sh
++++ cd tests/..
++++ pwd
+++ ROOT=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
+++ FM_TEST_CLEANUP_DIRS=()
++++ mktemp /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-cleanup.1702830.XXXXXX
+++ FM_TEST_CLEANUP_REGISTRY=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-cleanup.1702830.eostoQ
++++ fm_test_pid_identity 1702830
++++ local pid=1702830
++++ FM_STATE_OVERRIDE=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp
++++ bash -c '. "$1"; fm_pid_identity "$2"' _ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-wake-lib.sh 1702830
+++ FM_TEST_OWNER_IDENTITY='linux-starttime=9123948 cmdline-hex=62617368002d780074657374732f666d2d6167792d6861726e6573732e746573742e736800'
++++ mktemp /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-procevent.1702830.XXXXXX
+++ FM_TEST_PROCEVENT_REGISTRY=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-procevent.1702830.46Tj7T
+++ FM_TEST_STUB_MAX_BLOCK_SECONDS=120
+++ export FM_TEST_STUB_MAX_BLOCK_SECONDS
+++ trap fm_test_cleanup EXIT
+++ trap 'fm_test_cleanup; exit 130' INT
+++ trap 'fm_test_cleanup; exit 143' TERM
+++ trap 'fm_test_cleanup; exit 129' HUP
+++ trap 'fm_test_cleanup; exit 131' QUIT
+++ FM_TEST_ORPHAN_MAX_AGE_SECONDS=3600
+++ '[' 0 '!=' 1 ']'
+++ fm_test_reap_orphans
+++ local marker dir mtime now owner_pid owner_identity current_identity
++++ date +%s
+++ now=1792981596
+++ for marker in "${TMPDIR:-/tmp}"/fm-*/.fm-test-fixture
+++ '[' -e '/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-*/.fm-test-fixture' ']'
+++ continue
++ unset CLAUDECODE PI_CODING_AGENT FM_PI_HARNESS GROK_AGENT CURSOR_AGENT CURSOR_INVOKED_AS ATLASSIAN_AGENT_TYPE ROVODEV_CLI GEMINI_CLI AGENT FM_OMP_HARNESS
++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-control-lib.sh
++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-busy-lib.sh
+++ FM_BUSY_LIB_VERSION=v1
+++ FM_BUSY_KIMI_VERIFIED_VERSIONS=
++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-composer-lib.sh
+++ FM_COMPOSER_UNICODE_SPACES=()
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0302\0205'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0302\0240'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0341\0232\0200'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0200'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0201'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0202'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0203'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0204'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0205'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0206'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0207'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0210'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0211'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0212'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0250'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0251'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0257'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0342\0201\0237'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++ printf -v _fm_composer_space_utf8 %b '\0343\0200\0200'
+++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++ unset -v _fm_composer_space_octal _fm_composer_space_utf8
+++ FM_DELIVERY_BUSY_REGEX_DEFAULT='esc (to )?interrupt|Working(\.\.\.|…)|Ctrl\+c:cancel|ctrl\+c to stop|esc[[:space:]]+to[[:space:]]+cancel|esc twice to interrupt|^[[:space:]]*❭ Guide Devin while it works$'
+++ FM_DELIVERY_CLAUDE_BUSY_REGEX_DEFAULT='esc to interrupt|…[[:space:]]+\([0-9]+[smh]'
+++ FM_DELIVERY_DEVIN_BUSY_REGEX_DEFAULT='esc twice to interrupt|^[[:space:]]*❭ Guide Devin while it works$'
+++ FM_DELIVERY_CODEX_BUSY_REGEX_DEFAULT='esc to interrupt'
+++ FM_DELIVERY_OPENCODE_BUSY_REGEX_DEFAULT='esc interrupt'
+++ FM_DELIVERY_PI_BUSY_REGEX_DEFAULT='Working\.\.\.'
+++ FM_OMP_SPINNER_FRAMES_RE='(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏|⣾|⣽|⣻|⢿|⡿|⣟|⣯|⣷)'
+++ FM_DELIVERY_OMP_BUSY_REGEX_DEFAULT='Working…|^[[:space:]]*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏|⣾|⣽|⣻|⢿|⡿|⣟|⣯|⣷)[[:space:]]+[0-9]+[smh]'
+++ FM_DELIVERY_GROK_BUSY_REGEX_DEFAULT='Ctrl\+c:cancel'
+++ FM_DELIVERY_CURSOR_BUSY_REGEX_DEFAULT='ctrl\+c to stop'
+++ FM_DELIVERY_AGY_BUSY_REGEX_DEFAULT='esc[[:space:]]+to[[:space:]]+cancel'
+++ FM_DELIVERY_KIMI_BUSY_REGEX_DEFAULT='^[[:space:]]*(🌑|🌒|🌓|🌔|🌕|🌖|🌗|🌘)[[:space:]]+·[[:space:]]+'
++++ printf '%s\n' ❯ › ⟩ → ❭
+++ FM_COMPOSER_AGENT_PROMPT_GLYPHS=$'❯\n›\n⟩\n→\n❭'
++++ printf '%s\n' '>' '$' % '#'
+++ FM_COMPOSER_SHELL_PROMPT_GLYPHS=$'>\n$\n%\n#'
+++ FM_COMPOSER_IDLE_RE_DEFAULT='^Type a message\.\.\.$|^Ask anything(\.\.\.|…)|^Plan, search, build anything$|^Add a follow-up$|^Ask Devin to build features, fix bugs, or work on your code$'
+++ FM_COMPOSER_LEFTBAR_FOOTER_RE_DEFAULT='^(Build|Plan)[[:space:]]+·[[:space:]]+'
+++ FM_COMPOSER_MODE_HINT_RE_DEFAULT='^[[:space:]]*(⏵|⏸)'
+++ FM_COMPOSER_OMP_STATUS_RE_DEFAULT='^[[:space:]]*(π|󰵗)[[:space:]]+·[[:space:]]|^[[:space:]]*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏|⣾|⣽|⣻|⢿|⡿|⣟|⣯|⣷)[[:space:]]+[0-9]+[smh]([[:space:]]|$)|[[:space:]]·[[:space:]].*[0-9]+(\.[0-9]+)?%/[0-9]+K'
+++ FM_COMPOSER_CAPTURE_LINES=20
+++ FM_COMPOSER_PI_MAX_LINES=8
+++ FM_COMPOSER_GROK_TITLE_OVERHANG=3
++ HARNESS=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-harness.sh
++ SPAWN=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-spawn.sh
++ TRUST=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-agy-trust.sh
+++ fm_test_tmproot fm-agy-harness
+++ local prefix=fm-agy-harness root tmp_base
+++ tmp_base=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp
+++ tmp_base=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp
++++ mktemp -d /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.XXXXXX
+++ root=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
++++ cd -P -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
++++ pwd -P
+++ root=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
+++ printf '%s\n%s\n' 1702830 'linux-starttime=9123948 cmdline-hex=62617368002d780074657374732f666d2d6167792d6861726e6573732e746573742e736800'
+++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
+++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
++ TMP_ROOT=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
+++ command -v node
++ NODE_BIN=/home/ryzengrind/.nix-profile/bin/node
+++ dirname /home/ryzengrind/.nix-profile/bin/node
++ NODE_BIN_DIR=/home/ryzengrind/.nix-profile/bin
++ BASE_PATH=/home/ryzengrind/.nix-profile/bin:/usr/bin:/bin:/usr/sbin:/sbin
++ test_agy_ancestry_detects_the_native_command_name
++ local fakebin out
+++ fm_fakebin /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native/fakebin
+++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native/fakebin
+++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native/fakebin
++ fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native/fakebin
++ cat
++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native/fakebin/ps
+++ PATH=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-native/fakebin:/home/ryzengrind/.codex/tmp/arg0-linux/codex-arg0feSUEp:/run/wrappers/bin:/home/ryzengrind/.local/bin:/home/ryzengrind/go/bin:/home/ryzengrind/.cargo/bin:/home/ryzengrind/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/home/ryzengrind/.nix-profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/etc/profiles/per-user/ryzengrind/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+++ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-harness.sh
++ out=agy
++ '[' agy = agy ']'
++ pass 'fm-harness.sh: ancestry detects a natively-named agy command'
++ printf 'ok - %s\n' 'fm-harness.sh: ancestry detects a natively-named agy command'
+ok - fm-harness.sh: ancestry detects a natively-named agy command
++ test_agy_ancestry_rejects_unrelated_mentions
++ local fakebin out
+++ fm_fakebin /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin
+++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin
+++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin
++ fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin
++ cat
++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin/ps
+++ FAKE_PS_COMM=magyk
+++ FAKE_PS_ARGS='magyk --serve'
+++ PATH=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin:/home/ryzengrind/.codex/tmp/arg0-linux/codex-arg0feSUEp:/run/wrappers/bin:/home/ryzengrind/.local/bin:/home/ryzengrind/go/bin:/home/ryzengrind/.cargo/bin:/home/ryzengrind/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/home/ryzengrind/.nix-profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/etc/profiles/per-user/ryzengrind/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+++ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-harness.sh
++ out=unknown
++ '[' unknown '!=' agy ']'
+++ FAKE_PS_COMM=bash
+++ FAKE_PS_ARGS='bash -c "echo agy --help"'
+++ PATH=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-negatives/fakebin:/home/ryzengrind/.codex/tmp/arg0-linux/codex-arg0feSUEp:/run/wrappers/bin:/home/ryzengrind/.local/bin:/home/ryzengrind/go/bin:/home/ryzengrind/.cargo/bin:/home/ryzengrind/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/home/ryzengrind/.nix-profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/etc/profiles/per-user/ryzengrind/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+++ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-harness.sh
++ out=unknown
++ '[' unknown '!=' agy ']'
++ pass 'fm-harness.sh: ancestry rejects unrelated agy mentions'
++ printf 'ok - %s\n' 'fm-harness.sh: ancestry rejects unrelated agy mentions'
+ok - fm-harness.sh: ancestry rejects unrelated agy mentions
++ test_agy_claims_no_inherited_launcher_marker
++ local fakebin out
+++ AGENT=1
+++ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-harness.sh
++ out=codex
++ '[' codex '!=' agy ']'
+++ fm_fakebin /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude/fakebin
+++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude/fakebin
+++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude/fakebin
++ fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude/fakebin
++ cat
++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude/fakebin/ps
+++ CLAUDECODE=1
+++ PATH=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/anc-claude/fakebin:/home/ryzengrind/.codex/tmp/arg0-linux/codex-arg0feSUEp:/run/wrappers/bin:/home/ryzengrind/.local/bin:/home/ryzengrind/go/bin:/home/ryzengrind/.cargo/bin:/home/ryzengrind/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/home/ryzengrind/.nix-profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/home/ryzengrind/.local/state/nix/profile/bin:/etc/profiles/per-user/ryzengrind/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+++ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-harness.sh
++ out=agy
++ '[' agy = agy ']'
++ pass 'fm-harness.sh: no inherited launcher marker claims the agy identity'
++ printf 'ok - %s\n' 'fm-harness.sh: no inherited launcher marker claims the agy identity'
+ok - fm-harness.sh: no inherited launcher marker claims the agy identity
++ test_agy_control_mechanics_are_the_verified_ones
++ fm_control_harness_supported agy
++ local harness found=1
++ read -r harness
+++ fm_control_harnesses
+++ printf '%s\n' claude codex opencode pi pi-signed grok kimi cursor gemini muse rovo omp agy devin
++ '[' claude = agy ']'
++ read -r harness
++ '[' codex = agy ']'
++ read -r harness
++ '[' opencode = agy ']'
++ read -r harness
++ '[' pi = agy ']'
++ read -r harness
++ '[' pi-signed = agy ']'
++ read -r harness
++ '[' grok = agy ']'
++ read -r harness
++ '[' kimi = agy ']'
++ read -r harness
++ '[' cursor = agy ']'
++ read -r harness
++ '[' gemini = agy ']'
++ read -r harness
++ '[' muse = agy ']'
++ read -r harness
++ '[' rovo = agy ']'
++ read -r harness
++ '[' omp = agy ']'
++ read -r harness
++ '[' agy = agy ']'
++ found=0
++ read -r harness
++ '[' devin = agy ']'
++ read -r harness
++ return 0
+++ fm_control_harness_family agy
+++ case "${1-}" in
+++ printf agy
++ '[' agy = agy ']'
++ fm_control_harness_supports_kind agy scout
++ local harness=agy kind=scout
++ fm_control_harness_supported agy
++ local harness found=1
++ read -r harness
+++ fm_control_harnesses
+++ printf '%s\n' claude codex opencode pi pi-signed grok kimi cursor gemini muse rovo omp agy devin
++ '[' claude = agy ']'
++ read -r harness
++ '[' codex = agy ']'
++ read -r harness
++ '[' opencode = agy ']'
++ read -r harness
++ '[' pi = agy ']'
++ read -r harness
++ '[' pi-signed = agy ']'
++ read -r harness
++ '[' grok = agy ']'
++ read -r harness
++ '[' kimi = agy ']'
++ read -r harness
++ '[' cursor = agy ']'
++ read -r harness
++ '[' gemini = agy ']'
++ read -r harness
++ '[' muse = agy ']'
++ read -r harness
++ '[' rovo = agy ']'
++ read -r harness
++ '[' omp = agy ']'
++ read -r harness
++ '[' agy = agy ']'
++ found=0
++ read -r harness
++ '[' devin = agy ']'
++ read -r harness
++ return 0
++ case "$harness" in
++ '[' scout '!=' secondmate ']'
++ return 0
++ fm_control_harness_supports_kind agy ship
++ local harness=agy kind=ship
++ fm_control_harness_supported agy
++ local harness found=1
++ read -r harness
+++ fm_control_harnesses
+++ printf '%s\n' claude codex opencode pi pi-signed grok kimi cursor gemini muse rovo omp agy devin
++ '[' claude = agy ']'
++ read -r harness
++ '[' codex = agy ']'
++ read -r harness
++ '[' opencode = agy ']'
++ read -r harness
++ '[' pi = agy ']'
++ read -r harness
++ '[' pi-signed = agy ']'
++ read -r harness
++ '[' grok = agy ']'
++ read -r harness
++ '[' kimi = agy ']'
++ read -r harness
++ '[' cursor = agy ']'
++ read -r harness
++ '[' gemini = agy ']'
++ read -r harness
++ '[' muse = agy ']'
++ read -r harness
++ '[' rovo = agy ']'
++ read -r harness
++ '[' omp = agy ']'
++ read -r harness
++ '[' agy = agy ']'
++ found=0
++ read -r harness
++ '[' devin = agy ']'
++ read -r harness
++ return 0
++ case "$harness" in
++ '[' ship '!=' secondmate ']'
++ return 0
++ fm_control_harness_supports_kind agy secondmate
++ local harness=agy kind=secondmate
++ fm_control_harness_supported agy
++ local harness found=1
++ read -r harness
+++ fm_control_harnesses
+++ printf '%s\n' claude codex opencode pi pi-signed grok kimi cursor gemini muse rovo omp agy devin
++ '[' claude = agy ']'
++ read -r harness
++ '[' codex = agy ']'
++ read -r harness
++ '[' opencode = agy ']'
++ read -r harness
++ '[' pi = agy ']'
++ read -r harness
++ '[' pi-signed = agy ']'
++ read -r harness
++ '[' grok = agy ']'
++ read -r harness
++ '[' kimi = agy ']'
++ read -r harness
++ '[' cursor = agy ']'
++ read -r harness
++ '[' gemini = agy ']'
++ read -r harness
++ '[' muse = agy ']'
++ read -r harness
++ '[' rovo = agy ']'
++ read -r harness
++ '[' omp = agy ']'
++ read -r harness
++ '[' agy = agy ']'
++ found=0
++ read -r harness
++ '[' devin = agy ']'
++ read -r harness
++ return 0
++ case "$harness" in
++ '[' secondmate '!=' secondmate ']'
++ return 1
++ true
+++ fm_control_interrupt_key agy
+++ case "${1-}" in
+++ printf Escape
++ '[' Escape = Escape ']'
+++ fm_control_interrupt_repeat agy
+++ case "${1-}" in
+++ printf 1
++ '[' 1 = 1 ']'
+++ fm_control_interrupt_clear_key agy
+++ case "${1-}" in
++ '[' -z '' ']'
+++ fm_control_interrupt_ack_source agy
+++ case "${1-}" in
+++ printf none
++ '[' none = none ']'
+++ fm_control_exit_command agy
+++ case "${1-}" in
+++ printf /quit
++ '[' /quit = /quit ']'
++ pass 'fm-control-lib: agy mechanics are Escape once, no clear key, and /quit'
++ printf 'ok - %s\n' 'fm-control-lib: agy mechanics are Escape once, no clear key, and /quit'
+ok - fm-control-lib: agy mechanics are Escape once, no clear key, and /quit
++ test_agy_busy_tail_needs_the_pinned_status_row
++ printf 'working\nesc to cancel\n'
++ fm_busy_agy_tail_busy
++ grep -v '^[[:space:]]*$'
++ tail -12
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ printf 'working\n  Generating...\n'
++ fm_busy_agy_tail_busy
++ grep -v '^[[:space:]]*$'
++ tail -12
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ true
++ printf 'Generating report...\ndone\n? for shortcuts\n>\n'
++ fm_busy_agy_tail_busy
++ grep -v '^[[:space:]]*$'
++ tail -12
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ true
++ fm_busy_agy_tail_busy
++ printf 'idle\n? for shortcuts\n>\n'
++ grep -v '^[[:space:]]*$'
++ tail -12
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ true
++ printf 'Generating report...\ndone\n? for shortcuts\n>\n'
++ fm_busy_lines_match agy
++ local harness=agy lines regex
++ IFS=
++ read -r -d '' lines
++ true
++ '[' -n '' ']'
++ case "$harness" in
++ regex='esc[[:space:]]+to[[:space:]]+cancel'
++ '[' -n 'esc[[:space:]]+to[[:space:]]+cancel' ']'
++ printf %s $'Generating report...\ndone\n? for shortcuts\n>\n'
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ true
++ FM_BUSY_AGY_REGEX=idle
++ bash -c '. "$0/bin/fm-busy-lib.sh"; printf "idle\n" | fm_busy_agy_tail_busy' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ true
++ pass 'fm-busy-lib: only the pinned esc-to-cancel row carries the agy busy verdict'
++ printf 'ok - %s\n' 'fm-busy-lib: only the pinned esc-to-cancel row carries the agy busy verdict'
+ok - fm-busy-lib: only the pinned esc-to-cancel row carries the agy busy verdict
++ test_agy_busy_signatures_are_harness_scoped
++ printf 'esc to cancel\n'
++ fm_busy_lines_match agy
++ local harness=agy lines regex
++ IFS=
++ read -r -d '' lines
++ true
++ '[' -n '' ']'
++ case "$harness" in
++ regex='esc[[:space:]]+to[[:space:]]+cancel'
++ '[' -n 'esc[[:space:]]+to[[:space:]]+cancel' ']'
++ printf %s $'esc to cancel\n'
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ printf 'esc to cancel\n'
++ fm_busy_lines_match grok
++ local harness=grok lines regex
++ IFS=
++ read -r -d '' lines
++ true
++ '[' -n '' ']'
++ case "$harness" in
++ regex='Ctrl\+c:cancel'
++ '[' -n 'Ctrl\+c:cancel' ']'
++ printf %s $'esc to cancel\n'
++ grep -qiE 'Ctrl\+c:cancel'
++ true
++ printf 'Ctrl+c:cancel\n'
++ fm_busy_lines_match agy
++ local harness=agy lines regex
++ IFS=
++ read -r -d '' lines
++ true
++ '[' -n '' ']'
++ case "$harness" in
++ regex='esc[[:space:]]+to[[:space:]]+cancel'
++ '[' -n 'esc[[:space:]]+to[[:space:]]+cancel' ']'
++ printf %s $'Ctrl+c:cancel\n'
++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
++ true
++ printf 'esc to cancel\n'
++ fm_busy_lines_match kimi
++ local harness=kimi lines regex
++ IFS=
++ read -r -d '' lines
++ true
++ '[' -n '' ']'
++ case "$harness" in
++ regex='^[[:space:]]*(🌑|🌒|🌓|🌔|🌕|🌖|🌗|🌘)[[:space:]]+·[[:space:]]+'
++ '[' -n '^[[:space:]]*(🌑|🌒|🌓|🌔|🌕|🌖|🌗|🌘)[[:space:]]+·[[:space:]]+' ']'
++ printf %s $'esc to cancel\n'
++ grep -qiE '^[[:space:]]*(🌑|🌒|🌓|🌔|🌕|🌖|🌗|🌘)[[:space:]]+·[[:space:]]+'
++ true
++ printf 'esc to cancel\n'
++ fm_busy_lines_match spaceship
++ local harness=spaceship lines regex
++ IFS=
++ read -r -d '' lines
++ true
++ '[' -n '' ']'
++ case "$harness" in
++ regex=
++ '[' -n '' ']'
++ true
++ pass 'fm-composer-lib: agy delivery signatures never cross harnesses'
++ printf 'ok - %s\n' 'fm-composer-lib: agy delivery signatures never cross harnesses'
+ok - fm-composer-lib: agy delivery signatures never cross harnesses
++ test_agy_classify_uses_only_current_bottom_status_rows
++ local statedir busy idle malformed
++ statedir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify
+++ fm_busy_classify tmux fake:win agy agy-case-1 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'turn running\nesc to cancel                                                           Gemini 3.8 Flash · low'
+++ local backend=tmux target=fake:win harness=agy id=agy-case-1 state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'tail40=turn running\nesc to cancel                                                           Gemini 3.8 Flash · low'
+++ local out rc r_state r_source native log
+++ case "$harness" in
++++ fm_busy_record_read /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-1
++++ local state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify id=agy-case-1 rec gen line extra ver f
++++ local r_gen= r_seq= r_state= r_source= r_event= r_ts=
+++++ fm_busy_record_path /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-1
+++++ printf %s/%s.busy-state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-1
++++ rec=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-1.busy-state
++++ '[' '!' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-1.busy-state ']'
++++ printf missing
++++ return 1
+++ out=missing
+++ rc=1
+++ '[' 1 = 0 ']'
+++ case "$out" in
+++ '[' tmux = herdr ']'
+++ case "$harness" in
+++ '[' -z $'turn running\nesc to cancel                                                           Gemini 3.8 Flash · low' ']'
+++ printf %s $'turn running\nesc to cancel                                                           Gemini 3.8 Flash · low'
+++ fm_busy_agy_tail_busy
+++ grep -v '^[[:space:]]*$'
+++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
+++ tail -12
+++ printf 'busy agy-regex'
+++ return 0
++ busy='busy agy-regex'
++ '[' 'busy agy-regex' = 'busy agy-regex' ']'
+++ fm_busy_classify tmux fake:win agy agy-case-2 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'reply landed\n>\n? for shortcuts                                                         Gemini 4 Argon · low'
+++ local backend=tmux target=fake:win harness=agy id=agy-case-2 state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'tail40=reply landed\n>\n? for shortcuts                                                         Gemini 4 Argon · low'
+++ local out rc r_state r_source native log
+++ case "$harness" in
++++ fm_busy_record_read /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-2
++++ local state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify id=agy-case-2 rec gen line extra ver f
++++ local r_gen= r_seq= r_state= r_source= r_event= r_ts=
+++++ fm_busy_record_path /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-2
+++++ printf %s/%s.busy-state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-2
++++ rec=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-2.busy-state
++++ '[' '!' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-2.busy-state ']'
++++ printf missing
++++ return 1
+++ out=missing
+++ rc=1
+++ '[' 1 = 0 ']'
+++ case "$out" in
+++ '[' tmux = herdr ']'
+++ case "$harness" in
+++ '[' -z $'reply landed\n>\n? for shortcuts                                                         Gemini 4 Argon · low' ']'
+++ printf %s $'reply landed\n>\n? for shortcuts                                                         Gemini 4 Argon · low'
+++ fm_busy_agy_tail_busy
+++ grep -v '^[[:space:]]*$'
+++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
+++ tail -12
+++ printf %s $'reply landed\n>\n? for shortcuts                                                         Gemini 4 Argon · low'
+++ fm_busy_agy_tail_idle
+++ grep -v '^[[:space:]]*$'
+++ tail -1
+++ grep -qE '^\?[[:space:]]+for shortcuts[[:space:]]+Gemini[[:space:]]+.+[[:space:]]·[[:space:]]+(low|medium|high)[[:space:]]*$'
+++ printf 'idle agy-regex'
+++ return 0
++ idle='idle agy-regex'
++ '[' 'idle agy-regex' = 'idle agy-regex' ']'
+++ fm_busy_classify tmux fake:win agy agy-case-3 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'turn running\nesc to cancel                                                           Gemini 4 Argon · low'
+++ local backend=tmux target=fake:win harness=agy id=agy-case-3 state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'tail40=turn running\nesc to cancel                                                           Gemini 4 Argon · low'
+++ local out rc r_state r_source native log
+++ case "$harness" in
++++ fm_busy_record_read /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-3
++++ local state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify id=agy-case-3 rec gen line extra ver f
++++ local r_gen= r_seq= r_state= r_source= r_event= r_ts=
+++++ fm_busy_record_path /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-3
+++++ printf %s/%s.busy-state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-3
++++ rec=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-3.busy-state
++++ '[' '!' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-3.busy-state ']'
++++ printf missing
++++ return 1
+++ out=missing
+++ rc=1
+++ '[' 1 = 0 ']'
+++ case "$out" in
+++ '[' tmux = herdr ']'
+++ case "$harness" in
+++ '[' -z $'turn running\nesc to cancel                                                           Gemini 4 Argon · low' ']'
+++ printf %s $'turn running\nesc to cancel                                                           Gemini 4 Argon · low'
+++ fm_busy_agy_tail_busy
+++ grep -v '^[[:space:]]*$'
+++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
+++ tail -12
+++ printf 'busy agy-regex'
+++ return 0
++ busy='busy agy-regex'
++ '[' 'busy agy-regex' = 'busy agy-regex' ']'
+++ fm_busy_classify tmux fake:win agy agy-case-4 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'reply landed\n? for shortcuts'
+++ local backend=tmux target=fake:win harness=agy id=agy-case-4 state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'tail40=reply landed\n? for shortcuts'
+++ local out rc r_state r_source native log
+++ case "$harness" in
++++ fm_busy_record_read /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-4
++++ local state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify id=agy-case-4 rec gen line extra ver f
++++ local r_gen= r_seq= r_state= r_source= r_event= r_ts=
+++++ fm_busy_record_path /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-4
+++++ printf %s/%s.busy-state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-4
++++ rec=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-4.busy-state
++++ '[' '!' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-4.busy-state ']'
++++ printf missing
++++ return 1
+++ out=missing
+++ rc=1
+++ '[' 1 = 0 ']'
+++ case "$out" in
+++ '[' tmux = herdr ']'
+++ case "$harness" in
+++ '[' -z $'reply landed\n? for shortcuts' ']'
+++ printf %s $'reply landed\n? for shortcuts'
+++ fm_busy_agy_tail_busy
+++ grep -v '^[[:space:]]*$'
+++ tail -12
+++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
+++ fm_busy_agy_tail_idle
+++ tail -1
+++ printf %s $'reply landed\n? for shortcuts'
+++ grep -v '^[[:space:]]*$'
+++ grep -qE '^\?[[:space:]]+for shortcuts[[:space:]]+Gemini[[:space:]]+.+[[:space:]]·[[:space:]]+(low|medium|high)[[:space:]]*$'
+++ printf 'unknown agy-regex'
+++ return 0
++ malformed='unknown agy-regex'
++ '[' 'unknown agy-regex' = 'unknown agy-regex' ']'
+++ fm_busy_classify tmux fake:win agy agy-case-5 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'? for shortcuts Gemini 4 Argon · low\nreply landed'
+++ local backend=tmux target=fake:win harness=agy id=agy-case-5 state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify $'tail40=? for shortcuts Gemini 4 Argon · low\nreply landed'
+++ local out rc r_state r_source native log
+++ case "$harness" in
++++ fm_busy_record_read /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-5
++++ local state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify id=agy-case-5 rec gen line extra ver f
++++ local r_gen= r_seq= r_state= r_source= r_event= r_ts=
+++++ fm_busy_record_path /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-5
+++++ printf %s/%s.busy-state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-5
++++ rec=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-5.busy-state
++++ '[' '!' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-5.busy-state ']'
++++ printf missing
++++ return 1
+++ out=missing
+++ rc=1
+++ '[' 1 = 0 ']'
+++ case "$out" in
+++ '[' tmux = herdr ']'
+++ case "$harness" in
+++ '[' -z $'? for shortcuts Gemini 4 Argon · low\nreply landed' ']'
+++ printf %s $'? for shortcuts Gemini 4 Argon · low\nreply landed'
+++ fm_busy_agy_tail_busy
+++ grep -v '^[[:space:]]*$'
+++ tail -12
+++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
+++ printf %s $'? for shortcuts Gemini 4 Argon · low\nreply landed'
+++ fm_busy_agy_tail_idle
+++ grep -v '^[[:space:]]*$'
+++ tail -1
+++ grep -qE '^\?[[:space:]]+for shortcuts[[:space:]]+Gemini[[:space:]]+.+[[:space:]]·[[:space:]]+(low|medium|high)[[:space:]]*$'
+++ printf 'unknown agy-regex'
+++ return 0
++ malformed='unknown agy-regex'
++ '[' 'unknown agy-regex' = 'unknown agy-regex' ']'
+++ fm_busy_classify tmux fake:win agy agy-case-6 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify 'ordinary output: ? for shortcuts Gemini 4 Argon · low'
+++ local backend=tmux target=fake:win harness=agy id=agy-case-6 state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify 'tail40=ordinary output: ? for shortcuts Gemini 4 Argon · low'
+++ local out rc r_state r_source native log
+++ case "$harness" in
++++ fm_busy_record_read /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-6
++++ local state=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify id=agy-case-6 rec gen line extra ver f
++++ local r_gen= r_seq= r_state= r_source= r_event= r_ts=
+++++ fm_busy_record_path /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-6
+++++ printf %s/%s.busy-state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify agy-case-6
++++ rec=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-6.busy-state
++++ '[' '!' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/classify/agy-case-6.busy-state ']'
++++ printf missing
++++ return 1
+++ out=missing
+++ rc=1
+++ '[' 1 = 0 ']'
+++ case "$out" in
+++ '[' tmux = herdr ']'
+++ case "$harness" in
+++ '[' -z 'ordinary output: ? for shortcuts Gemini 4 Argon · low' ']'
+++ printf %s 'ordinary output: ? for shortcuts Gemini 4 Argon · low'
+++ fm_busy_agy_tail_busy
+++ grep -v '^[[:space:]]*$'
+++ tail -12
+++ grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
+++ printf %s 'ordinary output: ? for shortcuts Gemini 4 Argon · low'
+++ fm_busy_agy_tail_idle
+++ grep -v '^[[:space:]]*$'
+++ tail -1
+++ grep -qE '^\?[[:space:]]+for shortcuts[[:space:]]+Gemini[[:space:]]+.+[[:space:]]·[[:space:]]+(low|medium|high)[[:space:]]*$'
+++ printf 'unknown agy-regex'
+++ return 0
++ malformed='unknown agy-regex'
++ '[' 'unknown agy-regex' = 'unknown agy-regex' ']'
++ pass 'fm-busy-lib: Agy classifies busy or idle only from current bottom status rows'
++ printf 'ok - %s\n' 'fm-busy-lib: Agy classifies busy or idle only from current bottom status rows'
+ok - fm-busy-lib: Agy classifies busy or idle only from current bottom status rows
++ test_agy_tmux_names_the_native_binary_an_agent
++ local got
++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-backend.sh
+++ FM_BACKEND_SCRIPT=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-backend.sh
+++++ dirname /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-backend.sh
++++ cd /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin
++++ pwd
+++ FM_BACKEND_LIB_DIR=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin
+++ unset FM_BACKEND_SCRIPT
++++ cd /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/..
++++ pwd
+++ FM_BACKEND_DEFAULT_ROOT=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
+++ FM_ROOT=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
+++ FM_HOME=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
+++ FM_BACKEND_CONFIG_DIR=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/config
+++ FM_BACKEND_KNOWN='tmux herdr zellij orca cmux'
+++ FM_BACKEND_SPAWN='tmux herdr zellij orca cmux'
+++ FM_BACKEND_CMUX_BUNDLE_ID=com.cmuxterm.app
+++ FM_BACKEND_VISIBLE_CAPTURE='tmux herdr zellij'
++ fm_backend_source tmux
++ local name=tmux adapter
++ fm_backend_validate tmux
++ local name=tmux
++ fm_backend_is_known tmux
++ fm_backend_list_contains 'tmux herdr zellij orca cmux' tmux
++ local 'list=tmux herdr zellij orca cmux' name=tmux
++ case "$name" in
++ case " $list " in
++ return 0
++ return 0
++ adapter=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/backends/tmux.sh
++ '[' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/backends/tmux.sh ']'
++ '[' -r /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/backends/tmux.sh ']'
++ case "$name" in
++ '[' -z '' ']'
++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/backends/tmux.sh
+++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-tmux-lib.sh
+++++ dirname -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-tmux-lib.sh
++++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-composer-lib.sh
+++++ FM_COMPOSER_UNICODE_SPACES=()
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0302\0205'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0302\0240'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0341\0232\0200'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0200'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0201'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0202'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0203'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0204'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0205'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0206'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0207'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0210'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0211'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0212'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0250'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0251'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0200\0257'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0342\0201\0237'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ for _fm_composer_space_octal in '\0302\0205' '\0302\0240' '\0341\0232\0200' '\0342\0200\0200' '\0342\0200\0201' '\0342\0200\0202' '\0342\0200\0203' '\0342\0200\0204' '\0342\0200\0205' '\0342\0200\0206' '\0342\0200\0207' '\0342\0200\0210' '\0342\0200\0211' '\0342\0200\0212' '\0342\0200\0250' '\0342\0200\0251' '\0342\0200\0257' '\0342\0201\0237' '\0343\0200\0200'
+++++ printf -v _fm_composer_space_utf8 %b '\0343\0200\0200'
+++++ FM_COMPOSER_UNICODE_SPACES+=("$_fm_composer_space_utf8")
+++++ unset -v _fm_composer_space_octal _fm_composer_space_utf8
+++++ FM_DELIVERY_BUSY_REGEX_DEFAULT='esc (to )?interrupt|Working(\.\.\.|…)|Ctrl\+c:cancel|ctrl\+c to stop|esc[[:space:]]+to[[:space:]]+cancel|esc twice to interrupt|^[[:space:]]*❭ Guide Devin while it works$'
+++++ FM_DELIVERY_CLAUDE_BUSY_REGEX_DEFAULT='esc to interrupt|…[[:space:]]+\([0-9]+[smh]'
+++++ FM_DELIVERY_DEVIN_BUSY_REGEX_DEFAULT='esc twice to interrupt|^[[:space:]]*❭ Guide Devin while it works$'
+++++ FM_DELIVERY_CODEX_BUSY_REGEX_DEFAULT='esc to interrupt'
+++++ FM_DELIVERY_OPENCODE_BUSY_REGEX_DEFAULT='esc interrupt'
+++++ FM_DELIVERY_PI_BUSY_REGEX_DEFAULT='Working\.\.\.'
+++++ FM_OMP_SPINNER_FRAMES_RE='(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏|⣾|⣽|⣻|⢿|⡿|⣟|⣯|⣷)'
+++++ FM_DELIVERY_OMP_BUSY_REGEX_DEFAULT='Working…|^[[:space:]]*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏|⣾|⣽|⣻|⢿|⡿|⣟|⣯|⣷)[[:space:]]+[0-9]+[smh]'
+++++ FM_DELIVERY_GROK_BUSY_REGEX_DEFAULT='Ctrl\+c:cancel'
+++++ FM_DELIVERY_CURSOR_BUSY_REGEX_DEFAULT='ctrl\+c to stop'
+++++ FM_DELIVERY_AGY_BUSY_REGEX_DEFAULT='esc[[:space:]]+to[[:space:]]+cancel'
+++++ FM_DELIVERY_KIMI_BUSY_REGEX_DEFAULT='^[[:space:]]*(🌑|🌒|🌓|🌔|🌕|🌖|🌗|🌘)[[:space:]]+·[[:space:]]+'
++++++ printf '%s\n' ❯ › ⟩ → ❭
+++++ FM_COMPOSER_AGENT_PROMPT_GLYPHS=$'❯\n›\n⟩\n→\n❭'
++++++ printf '%s\n' '>' '$' % '#'
+++++ FM_COMPOSER_SHELL_PROMPT_GLYPHS=$'>\n$\n%\n#'
+++++ FM_COMPOSER_IDLE_RE_DEFAULT='^Type a message\.\.\.$|^Ask anything(\.\.\.|…)|^Plan, search, build anything$|^Add a follow-up$|^Ask Devin to build features, fix bugs, or work on your code$'
+++++ FM_COMPOSER_LEFTBAR_FOOTER_RE_DEFAULT='^(Build|Plan)[[:space:]]+·[[:space:]]+'
+++++ FM_COMPOSER_MODE_HINT_RE_DEFAULT='^[[:space:]]*(⏵|⏸)'
+++++ FM_COMPOSER_OMP_STATUS_RE_DEFAULT='^[[:space:]]*(π|󰵗)[[:space:]]+·[[:space:]]|^[[:space:]]*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏|⣾|⣽|⣻|⢿|⡿|⣟|⣯|⣷)[[:space:]]+[0-9]+[smh]([[:space:]]|$)|[[:space:]]·[[:space:]].*[0-9]+(\.[0-9]+)?%/[0-9]+K'
+++++ FM_COMPOSER_CAPTURE_LINES=20
+++++ FM_COMPOSER_PI_MAX_LINES=8
+++++ FM_COMPOSER_GROK_TITLE_OVERHANG=3
+++++ dirname -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-tmux-lib.sh
++++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-cursor-lib.sh
+++++ FM_CURSOR_PROBE_TIMEOUT=10
+++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-session-lock-lib.sh
+++++ dirname -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-session-lock-lib.sh
++++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-cursor-lib.sh
+++++ FM_CURSOR_PROBE_TIMEOUT=10
++++ FM_HARNESS_RE='claude|codex|opencode|grok|kimi|^pi$|^pi-signed$|^omp$'
++++ FM_HARNESS_NAMES=(claude codex opencode grok kimi pi-signed pi omp)
++++ FM_HARNESS_IS_CLAUDE=0
++++ FM_SESSION_LOCK_FOREIGN_OWNER_PID=
++++ FM_LOCK_INSPECT_STATE=unknown
++++ FM_LOCK_INSPECT_PID=
++++ FM_LOCK_INSPECT_LIVE_HARNESS=unknown
+++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-agent-process-lib.sh
+++++ dirname -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-agent-process-lib.sh
++++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-session-lock-lib.sh
++++++ dirname -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-session-lock-lib.sh
+++++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-cursor-lib.sh
++++++ FM_CURSOR_PROBE_TIMEOUT=10
+++++ FM_HARNESS_RE='claude|codex|opencode|grok|kimi|^pi$|^pi-signed$|^omp$'
+++++ FM_HARNESS_NAMES=(claude codex opencode grok kimi pi-signed pi omp)
+++++ FM_HARNESS_IS_CLAUDE=0
+++++ FM_SESSION_LOCK_FOREIGN_OWNER_PID=
+++++ FM_LOCK_INSPECT_STATE=unknown
+++++ FM_LOCK_INSPECT_PID=
+++++ FM_LOCK_INSPECT_LIVE_HARNESS=unknown
+++++ dirname -- /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-agent-process-lib.sh
++++ . /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-gemini-lib.sh
++ _FM_BACKEND_TMUX_SOURCED=1
+++ fm_agent_process_classify_name agy
+++ local path=agy argv0= base
+++ base=agy
+++ base=agy
+++ case "$base" in
+++ printf agent
++ got=agent
++ '[' agent = agent ']'
+++ fm_agent_process_classify_name magyk
+++ local path=magyk argv0= base
+++ base=magyk
+++ base=magyk
+++ case "$base" in
+++ fm_harness_path_name magyk
+++ local path=magyk name
+++ '[' -n magyk ']'
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ for name in "${FM_HARNESS_NAMES[@]}"
+++ case "/$path/" in
+++ return 1
+++ fm_harness_path_name ''
+++ local path= name
+++ '[' -n '' ']'
+++ return 1
+++ fm_cursor_process_matches magyk '' ''
+++ local comm=magyk argv0= base
+++ '[' -n magyk ']'
+++ argv0=magyk
++++ basename -- magyk
+++ base=magyk
+++ base=magyk
+++ case "$base" in
+++ case "$comm" in
+++ return 1
+++ printf other
++ got=other
++ '[' other = other ']'
+++ fm_agent_process_classify_name bash
+++ local path=bash argv0= base
+++ base=bash
+++ base=bash
+++ case "$base" in
+++ printf shell
++ got=shell
++ '[' shell = shell ']'
++ pass 'bin/fm-agent-process-lib.sh: agy is an agent, fragments are not'
++ printf 'ok - %s\n' 'bin/fm-agent-process-lib.sh: agy is an agent, fragments are not'
+ok - bin/fm-agent-process-lib.sh: agy is an agent, fragments are not
++ test_herdr_done_with_live_registry_stays_live
++ local dir out
++ dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done
++ printf '%s\n' '{"result":{"agent":{"agent":"agy","agent_status":"done","pane_id":"w9:p1"}}}'
++ agy_herdr_process_info_body 424242 agy
++ printf '%s\n' '{"result":{"type":"pane_process_info","process_info":{"pane_id":"w9:p1","shell_pid":424242,"foreground_processes":[{"pid":424243,"name":"agy","argv":["agy","--prompt-interactive"],"argv0":"agy","cmdline":"agy --prompt-interactive"}]}}}'
+++ agy_herdr_agent_state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done
+++ :
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      printf "%s\\n" "$*" >> "$AGY_FIX_LOG"\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_pane_agent_state testsession w9:p1' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=live
++ '[' live = live ']'
++ grep -q process-info /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/calls.log
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-done/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_tab_is_husk testsession w9:p1 && printf husk || printf refused' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=refused
++ '[' refused = refused ']'
++ pass 'herdr exit detection: done with a live registry and an agy process view stays live and refuses replacement'
++ printf 'ok - %s\n' 'herdr exit detection: done with a live registry and an agy process view stays live and refuses replacement'
+ok - herdr exit detection: done with a live registry and an agy process view stays live and refuses replacement
++ test_herdr_registered_status_over_a_shell_only_pane_is_stale_not_live
++ local dir out shell_pid
++ dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale
++ shell_pid=1703812
++ sleep 30
++ printf '%s\n' '{"result":{"agent":{"agent":"agy","agent_status":"done","pane_id":"w9:p1"}}}'
++ agy_herdr_process_info_body 1703812 bash
++ printf '%s\n' '{"result":{"type":"pane_process_info","process_info":{"pane_id":"w9:p1","shell_pid":1703812,"foreground_processes":[{"pid":1703813,"name":"bash","argv":["bash","--prompt-interactive"],"argv0":"bash","cmdline":"bash --prompt-interactive"}]}}}'
+++ agy_herdr_agent_state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale
+++ :
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      printf "%s\\n" "$*" >> "$AGY_FIX_LOG"\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_pane_agent_state testsession w9:p1' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=stale-agent
++ kill 1703812
++ '[' stale-agent = stale-agent ']'
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-stale/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_tab_is_husk testsession w9:p1 && printf husk || printf refused' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=refused
++ '[' refused = refused ']'
++ pass 'herdr exit detection: a registered status over a shell-only pane is stale-agent and still refuses closing'
++ printf 'ok - %s\n' 'herdr exit detection: a registered status over a shell-only pane is stale-agent and still refuses closing'
+ok - herdr exit detection: a registered status over a shell-only pane is stale-agent and still refuses closing
++ test_herdr_shell_first_with_live_registry_stays_live
++ local dir out
++ dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle
++ printf '%s\n' '{"result":{"agent":{"agent":"agy","agent_status":"idle","pane_id":"w9:p1"}}}'
++ agy_herdr_process_info_body 424242 agy
++ printf '%s\n' '{"result":{"type":"pane_process_info","process_info":{"pane_id":"w9:p1","shell_pid":424242,"foreground_processes":[{"pid":424243,"name":"agy","argv":["agy","--prompt-interactive"],"argv0":"agy","cmdline":"agy --prompt-interactive"}]}}}'
+++ agy_herdr_agent_state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle
+++ :
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      printf "%s\\n" "$*" >> "$AGY_FIX_LOG"\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_pane_agent_state testsession w9:p1' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=live
++ '[' live = live ']'
++ grep -q process-info /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-idle/calls.log
++ pass 'herdr exit detection: a registered pane with an agy foreground stays live however its shell ranks'
++ printf 'ok - %s\n' 'herdr exit detection: a registered pane with an agy foreground stays live however its shell ranks'
+ok - herdr exit detection: a registered pane with an agy foreground stays live however its shell ranks
++ test_herdr_lone_unregistered_pane_is_agent_free
++ local dir out
++ dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone
++ printf '%s\n' '{"error":{"code":"agent_not_found","message":"agent target w9:p1 not found"}}'
+++ agy_herdr_agent_state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone
+++ :
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      printf "%s\\n" "$*" >> "$AGY_FIX_LOG"\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_pane_agent_state testsession w9:p1' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=no-agent
++ '[' no-agent = no-agent ']'
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone/agent-get.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-gone/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      case "$*" in *"agent get"*) cat "$AGY_FIX_RESP" ;; *) exit 0 ;; esac\n    }\n    fm_backend_herdr_tab_is_husk testsession w9:p1 && printf husk || printf refused' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=husk
++ '[' husk = husk ']'
++ pass 'herdr exit detection: only a positively unregistered pane is agent-free'
++ printf 'ok - %s\n' 'herdr exit detection: only a positively unregistered pane is agent-free'
+ok - herdr exit detection: only a positively unregistered pane is agent-free
++ test_herdr_malformed_and_failed_reads_stay_unknown
++ local dir out
++ dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed
++ printf '%s\n' '{not json at all'
+++ agy_herdr_agent_state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed
+++ :
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed/agent-get.json
+++ AGY_FIX_PROC=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed/process-info.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-malformed/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      printf "%s\\n" "$*" >> "$AGY_FIX_LOG"\n      case "$*" in\n        *"agent get"*) cat "$AGY_FIX_RESP" ;;\n        *"pane process-info"*) cat "$AGY_FIX_PROC" ;;\n        *) exit 0 ;;\n      esac\n    }\n    fm_backend_herdr_pane_agent_state testsession w9:p1' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=unknown
++ '[' unknown = unknown ']'
++ dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-failed
++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-failed
++ printf '%s\n' '{"result":{}}'
++ export AGY_FIX_FAIL=1
++ AGY_FIX_FAIL=1
+++ AGY_FIX_RESP=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-failed/agent-get.json
+++ AGY_FIX_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/herdr-failed/calls.log
+++ bash -c $'\n    . "$0/bin/backends/herdr.sh"\n    fm_backend_herdr_pane_presence_state() { printf "present"; }\n    fm_backend_herdr_cli() {\n      printf "%s\\n" "$*" >> "$AGY_FIX_LOG"\n      case "$*" in *"agent get"*) [ "${AGY_FIX_FAIL:-0}" = 1 ] && exit 3; cat "$AGY_FIX_RESP" ;; *) exit 0 ;; esac\n    }\n    fm_backend_herdr_pane_agent_state testsession w9:p1' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW
++ out=unknown
++ unset AGY_FIX_FAIL
++ '[' unknown = unknown ']'
++ pass 'herdr exit detection: malformed and failed reads stay unknown'
++ printf 'ok - %s\n' 'herdr exit detection: malformed and failed reads stay unknown'
+ok - herdr exit detection: malformed and failed reads stay unknown
++ test_agy_launch_carries_the_brief_with_model_effort_and_autonomy
++ local id rec out rc launch meta
++ id=agy-launch-z1-1702830
+++ make_agy_spawn_case launch agy-launch-z1-1702830
+++ local name=launch id=agy-launch-z1-1702830 case_dir home proj wt fakebin
+++ case_dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch
+++ home=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home
+++ proj=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project
+++ wt=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt
++++ make_agy_fakebin /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake
++++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake fakebin
+++++ fm_fakebin /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake
+++++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin
+++++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin
+++++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin
++++ fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin
++++ cat
++++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin/tmux
++++ cat
++++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin/agy
++++ fm_fake_exit0 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin treehouse gh-axi gh
++++ local fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin tool
++++ shift
++++ for tool in "$@"
++++ cat
++++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin/treehouse
++++ for tool in "$@"
++++ cat
++++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin/gh-axi
++++ for tool in "$@"
++++ cat
++++ chmod +x /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin/gh
++++ printf '%s\n' /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin
+++ fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin
+++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/data/agy-launch-z1-1702830 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/projects /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/state /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/config
+++ cat
+++ printf 'agy\n'
+++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/.gemini/antigravity-cli
+++ printf '%s\n' '{"model":"Gemini 3.8 Flash (High)","trustedWorkspaces":["/home/someone/elsewhere"]}'
+++ fm_git_worktree /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt wt-launch
+++ local repo=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project worktree=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt branch=wt-launch
+++ fm_git_init_commit /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project
+++ local dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project
+++ mkdir -p /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project
+++ git -C /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project init -q -b main
++++ basename /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project
+++ printf '# %s\n' project
+++ git -C /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project add README.md
+++ git -C /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project -c 'user.name=Firstmate Tests' -c user.email=tests@example.invalid commit -qm initial
+++ fm_git_add_origin /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project.origin.git
+++ local repo=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project remote=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project.origin.git remote_abs
+++ git clone --quiet --bare /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project.origin.git
++++ cd /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project.origin.git
++++ pwd
+++ remote_abs=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project.origin.git
+++ git -C /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project remote add origin file:///home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project.origin.git
+++ git -C /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project worktree add --quiet -b wt-launch /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt
+++ touch /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/state/.last-watcher-beat
+++ :
+++ :
+++ :
+++ printf '%s\n' '/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin'
++ rec='/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin'
++ read_agy_spawn_record '/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt|/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin'
++ IFS='|'
++ read -r CASE_DIR HOME_DIR PROJ_DIR WT_DIR FAKEBIN_DIR
+++ run_agy_spawn /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin agy-launch-z1-1702830 --model gemini-3.8-flash-low --effort low
+++ local case_dir=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch home=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home proj=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project wt=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt fakebin=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin id=agy-launch-z1-1702830
+++ shift 6
+++ HOME=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home
+++ FM_ROOT_OVERRIDE=
+++ FM_HOME=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home
+++ FM_STATE_OVERRIDE=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/state
+++ FM_DATA_OVERRIDE=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/data
+++ FM_PROJECTS_OVERRIDE=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/projects
+++ FM_CONFIG_OVERRIDE=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/config
+++ FM_SPAWN_NO_GUARD=1
+++ FM_FAKE_PANE_PATH=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/wt
+++ TMUX=fake,1,0
+++ FM_FAKE_LAUNCH_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/launch.log
+++ FM_FAKE_TMUX_CALL_LOG=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/tmux-calls.log
+++ FM_FAKE_AGY_STATE=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/agy.state
+++ FM_FAKE_AGY_SETTINGS=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/home/.gemini/antigravity-cli/settings.json
+++ FM_FAKE_AGY_MODELS_FAIL=0
+++ FM_FAKE_AGY_MODELS_HANG=0
+++ FM_FAKE_AGY_IGNORE_TRUST=0
+++ FM_FAKE_AGY_ASSUME_TRUSTED=0
+++ FM_FAKE_AGY_RACE=0
+++ FM_FAKE_AGY_ANSWER=works
+++ FM_AGY_READY_POLLS=4
+++ FM_AGY_POLL_INTERVAL=0
+++ FM_AGY_MODELS_TIMEOUT=1
+++ PATH=/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/fake/fakebin:/home/ryzengrind/.nix-profile/bin:/usr/bin:/bin:/usr/sbin:/sbin
+++ /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-spawn.sh agy-launch-z1-1702830 /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR/launch/project --harness agy --mode no-mistakes --yolo off --model gemini-3.8-flash-low --effort low
++ out='/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/bin/fm-backlog-transition-lib.sh: line 94: perl: command not found'
++ rc=1
++ expect_code 0 1 'agy spawn with a listed model should succeed'
++ local expected=0 actual=1 'label=agy spawn with a listed model should succeed'
++ '[' 1 = 0 ']'
++ fail 'agy spawn with a listed model should succeed: expected exit 0, got 1'
++ printf 'not ok - %s\n' 'agy spawn with a listed model should succeed: expected exit 0, got 1'
+not ok - agy spawn with a listed model should succeed: expected exit 0, got 1
++ exit 1
++ fm_test_cleanup
++ local d
++ fm_test_reap_procevent_homes
++ local home claim_root $'seen=\n'
++ '[' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-procevent.1702830.46Tj7T ']'
++ IFS=$'\t'
++ read -r home claim_root
++ rm -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-procevent.1702830.46Tj7T
++ for d in "${FM_TEST_CLEANUP_DIRS[@]:-}"
++ '[' -n '' ']'
++ '[' -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-cleanup.1702830.eostoQ ']'
++ IFS=
++ read -r d
++ '[' -n /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR ']'
++ rm -rf /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/fm-agy-harness.oSdCFR
++ IFS=
++ read -r d
++ rm -f /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M5V0ADDW9GK5ZWVJ3TJNNRKW/.test-phase/tmp/.fm-test-cleanup.1702830.eostoQ
