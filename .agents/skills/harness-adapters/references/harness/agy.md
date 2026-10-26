@@ -10,8 +10,7 @@ Verified as a CREWMATE and SCOUT adapter only; `../../../../../bin/fm-spawn.sh` 
 |---|---|
 | Binary | Absolute `agy` from `PATH`, refused if absent; a Go-compiled single binary, so the live process name is exactly `agy` with `argv[0]=agy`. |
 | Launch | `agy --prompt-interactive "<brief>" --model <id> --effort <level> --dangerously-skip-permissions`, with the resolved absolute binary; the brief auto-submits with no extra Enter. The spawn pre-registers the worktree in agy's trust store first, then waits for a busy turn (answering the folder-trust dialog if it renders anyway) before reporting success. |
-| Busy state | No hook or plugin writer, so nothing is armed and no record is seeded; on Herdr the native `working` status classifies busy, and everywhere else the Agy-specific rendered-tail fallback in `../../../../../bin/fm-busy-lib.sh` recognizes the pinned busy row or exact bottom idle footer. |
-| Rendered tail | Busy status row carries `esc to cancel` on the left; the idle row ends with `? for shortcuts Gemini <model> · <effort>` and proves idle only as the bottom nonblank row. The `Generating...` word beside the braille spinner is free-floating output and is not a signal. |
+| Busy state | See [Worker busy state and turn end](#worker-busy-state-and-turn-end) for native and rendered-tail classification. |
 | Turn end | No turn-end hook or notification touch exists; completion arrives through the worker status protocol and, on Herdr, the native return to `idle`. |
 | Exit | `/quit`, one Enter; the process exits. |
 | Interrupt | Single `Escape`, which prints the Interrupted row and leaves an idle composer with no repollution, so no clear key follows. |
@@ -45,8 +44,11 @@ agy is deliberately absent from the session-lock name vocabulary in `../../../..
 ## Worker busy state and turn end
 
 `../../../../../bin/fm-spawn.sh` arms no busy generation for agy and writes no sidecar, exactly because no writer could ever clear a seeded record.
+On Herdr, native `working` status proves busy; every backend, including Herdr when native status does not prove busy, can use the Agy-specific rendered-tail fallback in `../../../../../bin/fm-busy-lib.sh`.
 `fm_busy_agy_tail_busy` matches the pinned `esc to cancel` status row alone, hardcoded with no environment override.
-`fm_busy_classify` reports idle only when the exact `? for shortcuts Gemini <model> · <effort>` row is the bottom nonblank row; a missing, incomplete, or displaced footer remains unknown.
+Busy evidence takes precedence over an idle-looking footer in the same capture.
+Otherwise, `fm_busy_classify` reports idle only when the bottom nonblank row is exactly `? for shortcuts Gemini <model> · <effort>`, allowing whitespace between cells and at the end, with effort exactly `low`, `medium`, or `high`; a missing, incomplete, prefixed, or displaced footer remains unknown.
+The `Generating...` word beside the braille spinner is free-floating output and is not a signal.
 Teardown removes nothing agy-specific because the spawn leaves nothing behind.
 
 ## Primary integration

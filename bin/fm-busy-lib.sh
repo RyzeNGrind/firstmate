@@ -1162,8 +1162,8 @@ fm_busy_classify() {  # <backend> <target> <harness> <id> <state-dir> [tail40]
           return 0
         fi
       fi
-      # Best-effort like rovo: a long turn can scroll the busy marker out of
-      # the captured tail, so its absence means "can't tell," never idle.
+      # Busy evidence wins over an idle-looking footer in the same capture;
+      # absence of the busy marker alone never proves idle.
       if printf '%s' "$tail40" | fm_busy_agy_tail_busy; then
         printf 'busy agy-regex'
       elif printf '%s' "$tail40" | fm_busy_agy_tail_idle; then
