@@ -87,7 +87,7 @@ The bare `gemini-3.8-flash` id from this home's previous config is not listed; o
 The listing is a remote fetch (`Fetching available models...`), so the probe runs with stdin detached under the shared hard bound from `bin/fm-timeout-lib.sh` (15 seconds by default, `FM_AGY_MODELS_TIMEOUT`; a non-positive or non-numeric value clamps back to that default, because a non-positive bound is not a bound); a stalled fetch or a sign-in prompt is cut off and falls through to the unvalidated launch instead of blocking the spawn before any pane exists.
 Print mode (`agy -p "Reply with exactly: AGY_PRINT_PROBE_OK" --model gemini-3.8-flash-low`) returned the exact reply with exit 0 in about 8 seconds, proving the credential path without a pane.
 
-## Busy state: the pinned status row, unknown on absence
+## Busy state: pinned busy row and bottom idle footer
 
 Mid-turn the pane rendered the status row and a spinner line at once:
 
@@ -109,9 +109,13 @@ The completed turn showed the reply, then the idle composer:
 `fm_busy_agy_tail_busy` and the delivery guard in `bin/fm-composer-lib.sh` match the `esc to cancel` token alone: the TUI pins that status row to the bottom of the pane for the whole turn, and the idle row replaces it with `? for shortcuts`.
 The `Generating...` spinner word is deliberately not a signal: it is a free-floating output line, so ordinary worker output such as `Generating report...` would otherwise classify an idle worker as busy or acknowledge a submit that did not land.
 No busy phase without the status row was observed live; every captured mid-turn frame carried it.
-`fm_busy_classify` reports `unknown agy-regex` when the token is absent, because a long turn can scroll the marker out of the captured tail.
+The [adapter's busy-state reference](../../.agents/skills/harness-adapters/references/harness/agy.md#worker-busy-state-and-turn-end) owns the current classification rules.
 The signature is hardcoded with no environment override, so a stray variable can never change worker-state classification.
 Herdr's own registry agreed throughout: `agent get` reported `agent_status=working` mid-turn and `idle` after, so on Herdr the native verdict carries busy with no new code.
+
+On 2026-10-26, the captain supplied current pane evidence from Herdr 0.8.2 with Agy 1.4.2: live Agy panes in native `idle` and `done` state showed the exact bottom idle row, while a shell-only pane had no Agy footer.
+`tests/fm-agy-harness.test.sh` exercises the classifier's busy, idle, malformed, displaced, and footer-like ordinary-output cases through `fm_busy_classify`.
+The live guard was requested with `FM_AGY_SIGNALS_LIVE=1 bin/fm-test-run.sh tests/fm-agy-signals-live-e2e.test.sh` on 2026-10-26 and failed with `agy is not installed`; the local Agy 1.4.2 executable was absent from `PATH`, and no new live-version verification is claimed.
 
 ## Interrupt and exit
 
@@ -131,7 +135,7 @@ $ herdr agent get w2:p1 --session fm-lab-firstmate-agy-ad-1599574-8823
 {"result":{"agent":{"agent":"agy","agent_status":"idle",...,"agent_session":{"agent":"agy","kind":"id","source":"herdr:antigravity_cli",...}}}}
 ```
 
-Herdr tracks agy natively (`antigravity-cli` integration, detected as `agent=agy`), so `fm_backend_herdr_pane_agent_state` returns `live` for every registered agy status and no exit-detection hardening was needed.
+Herdr identified the observed live worker through its `antigravity-cli` integration as `agent=agy`; registration alone is subject to the [shared process-level liveness proof](../herdr-backend.md), covered for Agy by `tests/fm-agy-harness.test.sh`.
 The tmux adapter classifies the anchored process name `agy` as `agent` through the shared name vocabulary in `bin/fm-agent-process-lib.sh`, the muse/omp precedent for short bare-word names.
 agy stays out of the session-lock name vocabulary in `bin/fm-session-lock-lib.sh`, where the other crewmate-only adapters are also absent.
 
@@ -162,7 +166,7 @@ No primary or secondmate behavior was built or tested, and none is claimed.
 
 ## Refreshing this record
 
-Run the portable suite and the live guard after any agy upgrade, because the process name, marker set, trust dialog text, and rendered busy/interrupt text are all vendor-controlled surfaces that the spawn gate and the busy fallback match verbatim:
+Run the portable suite and the live guard after any agy upgrade, because the process name, marker set, trust dialog text, and rendered busy/idle/interrupt text are all vendor-controlled surfaces that the spawn gate and the busy fallback match verbatim:
 
 ```
 bin/fm-test-run.sh tests/fm-agy-harness.test.sh
