@@ -109,9 +109,13 @@ The completed turn showed the reply, then the idle composer:
 `fm_busy_agy_tail_busy` and the delivery guard in `bin/fm-composer-lib.sh` match the `esc to cancel` token alone: the TUI pins that status row to the bottom of the pane for the whole turn, and the idle row replaces it with `? for shortcuts`.
 The `Generating...` spinner word is deliberately not a signal: it is a free-floating output line, so ordinary worker output such as `Generating report...` would otherwise classify an idle worker as busy or acknowledge a submit that did not land.
 No busy phase without the status row was observed live; every captured mid-turn frame carried it.
-`fm_busy_classify` reports `unknown agy-regex` when the token is absent, because a long turn can scroll the marker out of the captured tail.
+`fm_busy_classify` reports busy from the pinned `esc to cancel` row and idle only from the exact bottom nonblank `? for shortcuts Gemini <model> · <effort>` row; otherwise the Agy rendered-tail result remains unknown.
 The signature is hardcoded with no environment override, so a stray variable can never change worker-state classification.
 Herdr's own registry agreed throughout: `agent get` reported `agent_status=working` mid-turn and `idle` after, so on Herdr the native verdict carries busy with no new code.
+
+On 2026-10-26, the captain supplied current pane evidence from Herdr 0.8.2 with Agy 1.4.2: live Agy panes in native `idle` and `done` state showed the exact bottom idle row, while a shell-only pane had no Agy footer.
+`tests/fm-agy-harness.test.sh` exercises the classifier's busy, idle, malformed, displaced, and footer-like ordinary-output cases through `fm_busy_classify`.
+The live guard was requested with `FM_AGY_SIGNALS_LIVE=1 bin/fm-test-run.sh tests/fm-agy-signals-live-e2e.test.sh` on 2026-10-26 and failed with `agy is not installed`; the local Agy 1.4.2 executable was absent from `PATH`, and no new live-version verification is claimed.
 
 ## Interrupt and exit
 
