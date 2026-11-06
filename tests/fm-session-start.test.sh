@@ -2739,8 +2739,8 @@ test_backlog_exact_overlap_references_preserve_sources() {
     assert_contains "$out" $'held (captain- or time-gated) (group 2):\ncount: 0\ntasks[0]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:' \
       "the populated group's schema changed"
     assert_contains "$out" 'same record as 1:1' "empty last group lost the populated overlap reference"
-    middle=empty-held
-    [ "$empty" != empty-table ] || middle=empty-table
+    middle='empty-held'
+    [ "$empty" != empty-table ] || middle='empty-table'
     out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/$middle" "$dir/populated") \
       || fail "empty middle group disabled populated overlap deduplication"
     assert_contains "$out" $'blocked queued (group 3):\ncount: 1\ntasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:' \
