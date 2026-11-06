@@ -1000,6 +1000,8 @@ select_lane() {
 }
 
 run_coverage_guard() {
+  # Every sorted inventory and comm comparison must use the same collation.
+  local -x LC_ALL=C
   local tmp missing extra a b shard unhinted serial_total
   local p1_ms p1_unhinted p2_ms p2_unhinted parallel_max_ms parallel_imbalance_ms
   local -a saved_scripts=()

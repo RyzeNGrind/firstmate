@@ -1049,6 +1049,37 @@ test_list_scheduled_non_lane_selections_use_serial_weights() {
   pass "family, all, changed, and script selections ignore parallel hints"
 }
 
+
+test_coverage_guard_is_locale_independent() {
+  local locale_name tmp
+  locale_name=$(locale -a 2>/dev/null | LC_ALL=C awk '
+    $0 !~ /^(C|C\.(utf8|UTF-8)|POSIX)$/ { print; exit }
+  ')
+  if [ -z "$locale_name" ]; then
+    printf '%s\n' 'skip - coverage collation regression needs an installed non-C locale'
+    return 0
+  fi
+  tmp=$(mktemp -d "${TMPDIR:-/tmp}/fm-coverage-locale.XXXXXX")
+  if ! LC_ALL=C "$RUNNER" --check-coverage >"$tmp/c.out" 2>"$tmp/c.err"; then
+    cat "$tmp/c.err" >&2
+    rm -rf "$tmp"
+    fail "coverage guard failed under C collation"
+  fi
+  if ! LC_ALL="$locale_name" "$RUNNER" --check-coverage >"$tmp/localized.out" 2>"$tmp/localized.err"; then
+    cat "$tmp/localized.err" >&2
+    rm -rf "$tmp"
+    fail "coverage guard failed under $locale_name collation"
+  fi
+  if ! cmp -s "$tmp/c.out" "$tmp/localized.out" || [ -s "$tmp/c.err" ] || [ -s "$tmp/localized.err" ]; then
+    cat "$tmp/c.err" "$tmp/localized.err" >&2
+    rm -rf "$tmp"
+    fail "coverage guard output or diagnostics depend on the caller locale"
+  fi
+  assert_contains "$(cat "$tmp/c.out")" 'FM_TEST_COVERAGE ok' "locale regression did not exercise coverage"
+  rm -rf "$tmp"
+  pass "coverage guard is identical and diagnostic-free under C and $locale_name"
+}
+
 test_portable_shard_union_and_coverage_guard() {
   local s1 s2 proven serial herdr all_count union_count overlap out lane
   s1=$("$RUNNER" --list --lane portable-parallel-1)
@@ -1760,6 +1791,7 @@ test_fail_on_gate_skip_token
 test_exclude_family
 test_list_scheduled_proven_isolated_uses_serial_weights
 test_list_scheduled_non_lane_selections_use_serial_weights
+test_coverage_guard_is_locale_independent
 test_portable_shard_union_and_coverage_guard
 test_portable_parallel_lanes_stay_duration_balanced
 test_portable_serial_shards_partition_the_serial_lane
