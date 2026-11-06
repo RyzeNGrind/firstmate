@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Render three tasks-axi list responses without repeating identical records.
 # Usage: fm-startup-backlog-dedup.sh <in-flight-file> <held-file> <blocked-file>
-# Inputs are read-only snapshots, including tasks[N]{fields} and count headers.
+# Inputs are read-only snapshots with count headers and tasks[N]{fields} tables
+# or tasks-axi's count-zero scalar responses for empty recovery groups.
 # Each group keeps its membership through references to the first full record.
 # Only byte-identical rows with identical schemas are shared; differing fields
 # remain separate records. Invalid tables emit nothing and exit nonzero so the
