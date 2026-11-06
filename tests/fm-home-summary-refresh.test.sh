@@ -162,6 +162,66 @@ cmp -s "$TMP_ROOT/published-normalized.json" "$TMP_ROOT/fresh-normalized.json" \
   || fail "the status-triggered ledger differed from the real fresh producer"
 pass "watcher-carried status append publishes the real home summary"
 
+# Startup summary refresh must not fan out into local endpoint reads.
+# Record any Herdr client use across 31 local secondmate records and require the
+# writer to publish a fresh summary with endpoint evidence left unknown.
+BOUNDED_HOME="$TMP_ROOT/bounded-herdr-home"
+HERDR_BIN="$TMP_ROOT/bounded-herdr-bin"
+HERDR_CALLS="$TMP_ROOT/bounded-herdr.calls"
+mkdir -p "$BOUNDED_HOME/state" "$BOUNDED_HOME/data" "$BOUNDED_HOME/config" \
+  "$BOUNDED_HOME/projects" "$HERDR_BIN"
+printf '# Seeded Firstmate home\n' > "$BOUNDED_HOME/AGENTS.md"
+printf 'bounded\n' > "$BOUNDED_HOME/.fm-secondmate-home"
+printf '%s\n' '## In flight' '' '## Queued' '' '## Done' \
+  > "$BOUNDED_HOME/data/backlog.md"
+i=1
+while [ "$i" -le 31 ]; do
+  id=$(printf 'herdr-mate-%02d' "$i")
+  fm_write_meta "$BOUNDED_HOME/state/$id.meta" \
+    "backend=herdr" \
+    "window=summary-session:ft-pane-$i" \
+    "worktree=$BOUNDED_HOME/missing-worktree-$i" \
+    "project=firstmate" \
+    "harness=claude" \
+    "kind=secondmate" \
+    "mode=secondmate" \
+    "home=$BOUNDED_HOME/missing-home-$i" \
+    "projects=alpha"
+  i=$((i + 1))
+done
+cat > "$HERDR_BIN/herdr" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "${FM_TEST_HERDR_CALLS:?}"
+exit 0
+SH
+chmod +x "$HERDR_BIN/herdr"
+PATH="$HERDR_BIN:$FAKEBIN:$PATH" \
+  FM_ROOT_OVERRIDE="$ROOT" FM_HOME="$BOUNDED_HOME" \
+  FM_HOME_SUMMARY_TIMEOUT=60 FM_SNAPSHOT_CREW_STATE_TIMEOUT=2 \
+  FM_SNAPSHOT_SECONDMATE_CHILDREN=40 \
+  FM_SNAPSHOT_NOW="$NOW_THREE" FM_SNAPSHOT_NOW_EPOCH="$EPOCH_THREE" \
+  FM_TEST_HERDR_CALLS="$HERDR_CALLS" \
+  "$WRITER" --best-effort \
+  || fail "bounded Herdr summary publication changed the best-effort caller result"
+[ -f "$BOUNDED_HOME/state/home-summary.json" ] \
+  || fail "startup summary did not publish before its deadline"
+[ ! -s "$HERDR_CALLS" ] \
+  || fail "startup summary probed local endpoints through Herdr"
+jq -e --arg home "$BOUNDED_HOME" --arg now "$NOW_THREE" '
+  .schema == "fm-secondmate-home-summary.v1"
+  and .home == $home
+  and .generated == $now
+  and .counts.endpoints == 31
+  and (.endpoints | length) == 31
+  and all(.endpoints[];
+    .state == "unknown"
+    and .endpoint.exists == null
+    and .endpoint.agent_alive == "not_checked"
+    and .endpoint.status == "unknown")
+' "$BOUNDED_HOME/state/home-summary.json" >/dev/null \
+  || fail "unchecked Herdr endpoints were not preserved as unknown"
+pass "startup summary skips unbounded Herdr endpoint probes and preserves unknown state"
+
 # A structured in-flight inventory above Linux MAX_ARG_STRLEN must remain
 # publishable through both fleet snapshot modes and the real home-summary writer.
 mkdir -p "$LARGE_HOME/state" "$LARGE_HOME/data" "$LARGE_HOME/config" \
@@ -824,6 +884,23 @@ fm_write_meta "$RESTART_HOME/state/restart-task.meta" \
   "kind=ship" \
   "mode=no-mistakes" \
   "spawn_gen=fm.restart123456"
+# A publication-lock test needs a valid child observation before taking the
+# lock; a bare metadata row is unknown and the producer correctly rejects it.
+restart_gen=$("$ROOT/bin/fm-busy-event.sh" arm "$RESTART_HOME/state" restart-task)
+"$ROOT/bin/fm-busy-event.sh" apply "$RESTART_HOME/state" restart-task idle \
+  --gen "$restart_gen" --source claude-hook --event stop
+printf 'working: fixture ready\n' > "$RESTART_HOME/state/restart-task.status"
+(
+  # Adopt only the pre-existing routine line, so the later appended decision is
+  # the event that proves the restarted watcher can surface an actionable wake.
+  # shellcheck source=/dev/null
+  . "$ROOT/bin/fm-wake-lib.sh"
+  fm_wake_status_mark_current "$RESTART_HOME/state" "$RESTART_HOME/state/restart-task.status"
+)
+restart_initial=$(PATH="$FAKEBIN:$PATH" FM_ROOT_OVERRIDE="$ROOT" FM_HOME="$RESTART_HOME" \
+  "$SNAPSHOT" --secondmate-home-summary)
+printf '%s' "$restart_initial" | jq -e '.valid == true' >/dev/null \
+  || fail "restart publication fixture must be valid before its lock is acquired"
 RESTART_LOCK_MARKER="$TMP_ROOT/restart-lock-held"
 FM_ROOT_OVERRIDE="$ROOT" FM_HOME="$RESTART_HOME" bash -c '
   . "$1/bin/fm-wake-lib.sh"
@@ -853,14 +930,21 @@ done
 [ -e "$RESTART_HOME/state/.last-watcher-beat" ] \
   || fail "the first restart watcher did not begin polling"
 printf 'needs-decision [key=restart-gate]: restart the watcher\n' \
-  > "$RESTART_HOME/state/restart-task.status"
+  >> "$RESTART_HOME/state/restart-task.status"
 i=0
-while kill -0 "$WATCH_PID" 2>/dev/null && [ "$i" -lt 100 ]; do
+# Reconciliation and durable signal publication also run in this cycle.
+# Allow their bounded host work, while staying below the 60-second publisher
+# deadline whose accidental lock wait this fixture is meant to expose.
+while kill -0 "$WATCH_PID" 2>/dev/null && [ "$i" -lt 600 ]; do
   sleep 0.05
   i=$((i + 1))
 done
 kill -0 "$WATCH_PID" 2>/dev/null \
   && fail "the first restart watcher did not surface its actionable signal"
+grep -F 'signal:' "$TMP_ROOT/restart-watch-one.out" >/dev/null \
+  || fail "the first restart watcher exited without its actionable signal"
+kill -0 "$LOCK_HOLDER_PID" 2>/dev/null \
+  || fail "the publication lock expired before the actionable signal surfaced"
 wait "$WATCH_PID" >/dev/null 2>&1 || true
 WATCH_PID=
 rm -f "$RESTART_HOME/state/.last-watcher-beat"
@@ -901,8 +985,8 @@ kill -KILL "$LOCK_HOLDER_PID" >/dev/null 2>&1 || true
 wait "$LOCK_HOLDER_PID" >/dev/null 2>&1 || true
 LOCK_HOLDER_PID=
 PATH="$FAKEBIN:$PATH" FM_ROOT_OVERRIDE="$ROOT" FM_HOME="$RESTART_HOME" \
-  FM_HOME_SUMMARY_IF_IDLE=1 "$WRITER" --best-effort \
-  || fail "stale-lock recovery changed the best-effort caller result"
+  FM_HOME_SUMMARY_IF_IDLE=0 FM_HOME_SUMMARY_TIMEOUT=60 "$WRITER" \
+  || fail "stale-lock recovery could not publish a valid home summary"
 i=0
 while [ ! -e "$RESTART_HOME/state/home-summary.json" ] && [ "$i" -lt 200 ]; do
   sleep 0.05

@@ -131,7 +131,7 @@
 #   - `done` rows are never listed. Retained completion history belongs to the
 #     reporting surfaces (bin/fm-bearings-snapshot.sh, /ahoy), and at startup it
 #     is pure weight - 10 done rows cost 3.3KB in an observed main-home digest.
-#   - Every in-flight, held, and blocked row is listed IN FULL, with its
+#   - Every distinct in-flight, held, and blocked row is listed IN FULL, with its
 #     hold_kind/hold_reason and blocked_by. Those are the rows AGENTS.md
 #     sections 7 and 10 make actionable at startup, so they are never bounded
 #     away.
@@ -147,7 +147,9 @@
 # and hold_reason, never body. The groups are the tool's own filters
 # (`--state in_flight`, `--state held`, `--state queued --blocked`, and
 # `tasks-axi ready`), so this script never reimplements task state; the groups
-# can overlap, because an in-flight item that is also held appears under both.
+# can overlap; an identical row in a later group references the first complete
+# record rather than paying for the same fields twice. The renderer validates
+# table counts before emitting anything and preserves differing rows in full.
 # When manual mode is selected, or tasks-axi is unavailable or incompatible,
 # this script prints only backlog section headings and item title lines, so
 # title-line hold and blocked-by metadata remain visible while indented bodies
@@ -441,13 +443,9 @@ print_backlog_manual_compact() {
 }
 
 # tasks-axi closes every listing with its own help block. This section composes
-# four listings, so keeping them would repeat the same pointers four times, once
-# per group, each carrying this home's full backlog path. The section prints one
-# equivalent pointer of its own (print_backlog_pointer), so the per-group help
-# blocks stop at their `help[` header instead.
-strip_axi_help() {
-  awk '/^help\[/ { exit } { print }'
-}
+# four listings, so the renderers discard repeated per-group help pointers.
+# Identical complete task records are shared across recovery groups through
+# explicit group:row references; all group memberships remain visible.
 
 # Bound the dispatchable-now listing without rewriting the tool's own rendering:
 # `tasks-axi ready` rows are the indented lines under its ready[N]{...} header,
@@ -476,7 +474,7 @@ print_ready_queued_bounded() {
 }
 
 print_backlog_tasks_axi_compact() {
-  local path=$1 in_flight held blocked ready err
+  local path=$1 in_flight held blocked ready err groups
   if ! in_flight=$(tasks-axi list --file "$path" --state in_flight --fields "$BACKLOG_FIELDS" 2>&1); then
     err=$in_flight
   elif ! held=$(tasks-axi list --file "$path" --state held --fields "$BACKLOG_FIELDS" 2>&1); then
@@ -485,15 +483,13 @@ print_backlog_tasks_axi_compact() {
     err=$blocked
   elif ! ready=$(tasks-axi ready --file "$path" 2>&1); then
     err=$ready
+  elif ! groups=$(bash "$SCRIPT_DIR/fm-startup-backlog-dedup.sh" \
+    <(printf '%s\n' "$in_flight") <(printf '%s\n' "$held") <(printf '%s\n' "$blocked")); then
+    err='invalid tasks-axi recovery tables; complete title-line fallback follows'
   else
-    printf 'compact backlog listing (tasks-axi; done rows omitted; every in-flight, held, and blocked row shown in full; ready queued bounded to %s; task bodies omitted)\n' \
+    printf 'compact backlog listing (tasks-axi; done rows omitted; every distinct in-flight, held, and blocked record shown in full; repeated group membership referenced; ready queued bounded to %s; task bodies omitted)\n' \
       "$QUEUED_LIMIT"
-    printf '\nin flight:\n'
-    printf '%s\n' "$in_flight" | strip_axi_help
-    printf '\nheld (captain- or time-gated; an in-flight item that is also held appears in both groups):\n'
-    printf '%s\n' "$held" | strip_axi_help
-    printf '\nblocked queued:\n'
-    printf '%s\n' "$blocked" | strip_axi_help
+    printf '%s\n' "$groups"
     printf '\nready queued (dispatchable now):\n'
     print_ready_queued_bounded "$ready"
     return 0
