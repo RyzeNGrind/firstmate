@@ -1,0 +1,11 @@
+{
+  "recovery_source_sha256": "35106c4b55c66267e690722f5ab6c964b33e51ebe3257a9d44244554ba40105e",
+  "contribution_source_sha256": [
+    "305d3bae77358edf648d10e3be01174047ff0a27ffe5d78f78685e25add99f39",
+    "94e5586d9a5fc1a9270e03efccf5a3b789f3b089fad6ab5dccf41216a7ab7e05"
+  ],
+  "contribution_output_bytes": 525883,
+  "summary_endpoints": 31,
+  "source_records_unchanged": true,
+  "coverage_outputs_identical": true
+}

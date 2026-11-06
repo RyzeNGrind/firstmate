@@ -1,0 +1,4 @@
+ok - exact overlapping records retain membership and differing fields with fewer bytes and unchanged sources
+ok - malformed successful backend responses fall back to complete held and blocked title records
+ok - compatible tasks-axi backlog rendering drops done rows and keeps every in-flight, held, and blocked row
+ok - the startup backlog bound cuts only dispatchable queued rows and discloses the remainder exactly

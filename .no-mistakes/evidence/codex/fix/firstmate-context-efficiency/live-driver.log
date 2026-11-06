@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-context.py", line 89, in <module>
+    assert d['valid'] and len(d['endpoints'])==31
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,72 @@
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": true,
+    "proven_clear": true,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 0,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-11-06T06:33:29Z",
+  "generated_epoch": 1793946809,
+  "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-watcher-home",
+  "valid": true,
+  "reason": null,
+  "invalidity": {
+    "kind": null,
+    "ids": []
+  },
+  "state": "active_child_work",
+  "active_children": [
+    {
+      "id": "live-watch",
+      "kind": "ship",
+      "state": "working",
+      "repo": "firstmate",
+      "name": "Preserve publication single flight",
+      "source": "status-log",
+      "doing": "ready"
+    }
+  ],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [
+    {
+      "id": "live-watch",
+      "state": "working",
+      "source": "status-log",
+      "endpoint": {
+        "target": "fm-context-validation:0",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:33:29Z",
+        "freshness": "fresh"
+      }
+    }
+  ],
+  "counts": {
+    "active_children": 1,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 1
+  },
+  "omitted": []
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "command": [
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/bin/fm-home-summary-refresh.sh"
+    ],
+    "exit": 0,
+    "seconds": 10.075,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/bin/fm-fleet-snapshot.sh",
+      "--json"
+    ],
+    "exit": 0,
+    "seconds": 13.852,
+    "stdout_bytes": 155445,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/baseline/bin/fm-test-run.sh",
+      "--check-coverage"
+    ],
+    "exit": 1,
+    "seconds": 38.233,
+    "stdout_bytes": 0,
+    "stderr_bytes": 71
+  },
+  {
+    "command": [
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/bin/fm-test-run.sh",
+      "--check-coverage"
+    ],
+    "exit": 0,
+    "seconds": 59.224,
+    "stdout_bytes": 167,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/bin/fm-test-run.sh",
+      "--check-coverage"
+    ],
+    "exit": 0,
+    "seconds": 52.376,
+    "stdout_bytes": 167,
+    "stderr_bytes": 0
+  }
+]

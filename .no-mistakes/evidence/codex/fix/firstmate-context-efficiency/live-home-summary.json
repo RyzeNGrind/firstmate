@@ -1,0 +1,484 @@
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": true,
+    "proven_clear": true,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 0,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-11-06T06:30:55Z",
+  "generated_epoch": 1793946655,
+  "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary",
+  "valid": false,
+  "reason": "child current state unavailable: mate-01, mate-02, mate-03, mate-04, mate-05, mate-06, mate-07, mate-08, mate-09, mate-10, mate-11, mate-12, mate-13, mate-14, mate-15, mate-16, mate-17, mate-18, mate-19, mate-20, mate-21, mate-22, mate-23, mate-24, mate-25, mate-26, mate-27, mate-28, mate-29, mate-30, mate-31",
+  "invalidity": {
+    "kind": "child_current_unavailable",
+    "ids": [
+      "mate-01",
+      "mate-02",
+      "mate-03",
+      "mate-04",
+      "mate-05",
+      "mate-06",
+      "mate-07",
+      "mate-08",
+      "mate-09",
+      "mate-10",
+      "mate-11",
+      "mate-12",
+      "mate-13",
+      "mate-14",
+      "mate-15",
+      "mate-16",
+      "mate-17",
+      "mate-18",
+      "mate-19",
+      "mate-20",
+      "mate-21",
+      "mate-22",
+      "mate-23",
+      "mate-24",
+      "mate-25",
+      "mate-26",
+      "mate-27",
+      "mate-28",
+      "mate-29",
+      "mate-30",
+      "mate-31"
+    ]
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [
+    {
+      "id": "mate-01",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-1",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-02",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-2",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-03",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-3",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-04",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-4",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-05",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-5",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-06",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-6",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-07",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-7",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-08",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-8",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-09",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-9",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-10",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-10",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-11",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-11",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-12",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-12",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-13",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-13",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-14",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-14",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-15",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-15",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-16",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-16",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-17",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-17",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-18",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-18",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-19",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-19",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-20",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-20",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-21",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-21",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-22",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-22",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-23",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-23",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-24",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-24",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-25",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-25",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-26",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-26",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-27",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-27",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-28",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-28",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-29",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-29",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-30",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-30",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    },
+    {
+      "id": "mate-31",
+      "state": "unknown",
+      "source": "none",
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-31",
+        "exists": null,
+        "agent_alive": "not_checked",
+        "status": "unknown",
+        "observed_at": "2026-11-06T06:30:55Z",
+        "freshness": "fresh"
+      }
+    }
+  ],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 31
+  },
+  "omitted": []
+}

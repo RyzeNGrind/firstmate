@@ -1,0 +1,7 @@
+{
+  "contract": "Relocated home file map fenced content, including all record owners and boundaries",
+  "identical_bytes": 21498,
+  "sha256": "9962c13c83f253cfec5e52225f198f12f71f27b0eaed67dd75070451c90ecaed",
+  "base": "225b5c52",
+  "destination": "docs/configuration.md#home-file-map"
+}

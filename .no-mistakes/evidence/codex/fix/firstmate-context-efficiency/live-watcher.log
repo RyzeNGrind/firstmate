@@ -1,0 +1,1 @@
+Real tmux endpoint and Firstmate watcher surfaced a decision, restarted under the publication lock, and published valid JSON after lock release; all processes removed.

@@ -1,0 +1,7 @@
+{
+  "command": "bin/fm-fleet-snapshot.sh --contribution-input | consumer-that-closes-after-100-bytes",
+  "exit": 141,
+  "read_bytes": 100,
+  "stderr": "",
+  "transport_directories_remaining": 0
+}

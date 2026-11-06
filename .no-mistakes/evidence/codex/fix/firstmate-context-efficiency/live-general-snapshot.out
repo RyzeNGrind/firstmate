@@ -1,0 +1,4607 @@
+{
+  "schema": "fm-fleet-snapshot.v1",
+  "generated": "2026-11-06T06:31:05Z",
+  "fm_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary",
+  "roots": {
+    "fm_root": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M",
+    "state": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state",
+    "data": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data",
+    "config": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/config",
+    "projects": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/projects"
+  },
+  "backlog": {
+    "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/backlog.md",
+    "present": true,
+    "records": []
+  },
+  "tasks": [
+    {
+      "id": "mate-01",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-01.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-01.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-1",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-1",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-01/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-1",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-01 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-02",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-02.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-02.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-2",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-2",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-02/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-2",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-02 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-03",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-03.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-03.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-3",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-3",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-03/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-3",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-03 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-04",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-04.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-04.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-4",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-4",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-04/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-4",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-04 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-05",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-05.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-05.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-5",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-5",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-05/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-5",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-05 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-06",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-06.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-06.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-6",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-6",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-06/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-6",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-06 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-07",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-07.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-07.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-7",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-7",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-07/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-7",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-07 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-08",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-08.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-08.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-8",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-8",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-08/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-8",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-08 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-09",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-09.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-09.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-9",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-9",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-09/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-9",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-09 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-10",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-10.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-10.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-10",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-10",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-10/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-10",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-10 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-11",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-11.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-11.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-11",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-11",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-11/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-11",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-11 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-12",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-12.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-12.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-12",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-12",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-12/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-12",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-12 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-13",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-13.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-13.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-13",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-13",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-13/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-13",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-13 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-14",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-14.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-14.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-14",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-14",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-14/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-14",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-14 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-15",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-15.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-15.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-15",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-15",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-15/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-15",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-15 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-16",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-16.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-16.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-16",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-16",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-16/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-16",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-16 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-17",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-17.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-17.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-17",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-17",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-17/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-17",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-17 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-18",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-18.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-18.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-18",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-18",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-18/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-18",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-18 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-19",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-19.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-19.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-19",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-19",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-19/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-19",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-19 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-20",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-20.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-20.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-20",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-20",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-20/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-20",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-20 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-21",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-21.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-21.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-21",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-21",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-21/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-21",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-21 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-22",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-22.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-22.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-22",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-22",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-22/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-22",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-22 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-23",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-23.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-23.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-23",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-23",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-23/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-23",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-23 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-24",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-24.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-24.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-24",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-24",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-24/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-24",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-24 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-25",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-25.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-25.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-25",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-25",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-25/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-25",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-25 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-26",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-26.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-26.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-26",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-26",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-26/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-26",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-26 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-27",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-27.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-27.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-27",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-27",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-27/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-27",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-27 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-28",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-28.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-28.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-28",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-28",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-28/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-28",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-28 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-29",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-29.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-29.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-29",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-29",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-29/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-29",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-29 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-30",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-30.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-30.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-30",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-30",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-30/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-30",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-30 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    },
+    {
+      "id": "mate-31",
+      "kind": "secondmate",
+      "harness": "claude",
+      "mode": "secondmate",
+      "yolo": "",
+      "project": "firstmate",
+      "spawn_gen": null,
+      "backend": "tmux",
+      "remote": null,
+      "paths": {
+        "meta": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-31.meta",
+          "present": true
+        },
+        "status_log": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/state/mate-31.status",
+          "present": false,
+          "kind": "event_history",
+          "last_event": {
+            "state": "",
+            "note": "",
+            "raw": "",
+            "age_seconds": null
+          }
+        },
+        "worktree": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-31",
+          "present": false
+        },
+        "home": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-31",
+          "present": false
+        },
+        "report": {
+          "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/mate-31/report.md",
+          "present": false
+        }
+      },
+      "secondmate_projects": [
+        "alpha"
+      ],
+      "current_state": {
+        "state": "unknown",
+        "source": "none",
+        "detail": "worktree gone (torn down?)",
+        "raw": "state: unknown · source: none · worktree gone (torn down?)",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "endpoint": {
+        "target": "fm-validation-nonexistent-2278335:mate-31",
+        "exists": false,
+        "agent_alive": "dead",
+        "status": "absent",
+        "observed_at": "2026-11-06T06:31:05Z",
+        "freshness": "fresh"
+      },
+      "pr": {
+        "url": null,
+        "source": "absent",
+        "head": null
+      },
+      "hints": {
+        "pending_decision": false,
+        "blocked_event": false,
+        "open_decisions": [],
+        "scout_report_present": false,
+        "last_event_text": ""
+      },
+      "actions": {
+        "send": "bin/fm-send.sh fm-mate-31 '<request>'",
+        "watch": "read status/doc return channel; do not routinely fm-peek a secondmate for answers",
+        "return_channel_note": "Secondmate answers come back through status/doc paths after a marked fm-send request."
+      },
+      "backlog": null
+    }
+  ],
+  "main_inventory": {
+    "valid": true,
+    "reason": null,
+    "orphan_in_flight": [],
+    "unstructured_current_count": 0
+  },
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": true,
+    "proven_clear": true,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 0,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "scout_reports": [],
+  "secondmate_current": {
+    "registry": {
+      "present": false,
+      "available": true,
+      "complete": true,
+      "reason": null,
+      "provenance": "registered-table",
+      "path": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/data/secondmates.md",
+      "freshness": {
+        "status": "fresh",
+        "observed_at": "2026-11-06T06:31:05Z"
+      },
+      "records": [],
+      "input_truncated": false,
+      "records_truncated": false,
+      "reasons": [],
+      "lines_in_window": 0,
+      "records_in_window": 0
+    },
+    "records": [
+      {
+        "id": "mate-01",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-1",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-1",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-02",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-2",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-2",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-03",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-3",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-3",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-04",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-4",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-4",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-05",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-5",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-5",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-06",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-6",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-6",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-07",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-7",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-7",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-08",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-8",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-8",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-09",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-9",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-9",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-10",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-10",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-10",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-11",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-11",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-11",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-12",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-12",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-12",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-13",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-13",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-13",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-14",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-14",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-14",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-15",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-15",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-15",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-16",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-16",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-16",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-17",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-17",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-17",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-18",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-18",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-18",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-19",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-19",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-19",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-20",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-20",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-20",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-21",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-21",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-21",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-22",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-22",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-22",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-23",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-23",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-23",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-24",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-24",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-24",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-25",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-25",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-25",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-26",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-26",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-26",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-27",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-27",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-27",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-28",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-28",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-28",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-29",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-29",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-29",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-30",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-30",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-30",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      },
+      {
+        "id": "mate-31",
+        "home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-31",
+        "host": null,
+        "remote": false,
+        "registered": false,
+        "spawn_gen": null,
+        "current": {
+          "state": "unknown",
+          "reason": "secondmate metadata is not registered"
+        },
+        "invalidity": null,
+        "reconcile_inventory": null,
+        "provenance": {
+          "selected": "unknown",
+          "structured_home": "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-31",
+          "parent_event_role": "fallback-only-not-current"
+        },
+        "freshness": {
+          "status": "unknown",
+          "observed_at": "2026-11-06T06:31:05Z",
+          "age_seconds": null
+        },
+        "active_children": [],
+        "decisions_open": [],
+        "holds": [],
+        "queued": [],
+        "landed": [],
+        "endpoints": [],
+        "counts": {
+          "active_children": 0,
+          "decisions_open": 0,
+          "holds": 0,
+          "queued": 0,
+          "landed": 0,
+          "endpoints": 0
+        },
+        "omitted": [],
+        "parent_event": {
+          "raw": "",
+          "note": "",
+          "age_seconds": null,
+          "open_activities": [],
+          "open_decisions": [],
+          "activity_scan": {
+            "records": [],
+            "available": true,
+            "input_truncated": false,
+            "retained_truncated": false,
+            "reasons": [],
+            "lines_in_window": 0,
+            "records_in_window": 0
+          }
+        },
+        "terminal_evidence": {
+          "provenance": "parent-direct-report-terminal",
+          "trust": "untrusted-supplement",
+          "captured": false,
+          "observed_at": "2026-11-06T06:31:05Z",
+          "freshness": "not-collected",
+          "reason": "no parent event to compare",
+          "lines": 0,
+          "bytes": 0,
+          "event_note_seen": false,
+          "contradiction": false
+        },
+        "contradiction": false
+      }
+    ],
+    "total_registered": 0,
+    "total": 31,
+    "shown": 31,
+    "truncated": 0
+  },
+  "secondmate_landed": {
+    "records": [],
+    "truncated": [],
+    "unreadable": [
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-1",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-2",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-3",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-4",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-5",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-6",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-7",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-8",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-9",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-10",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-11",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-12",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-13",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-14",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-15",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-16",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-17",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-18",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-19",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-20",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-21",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-22",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-23",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-24",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-25",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-26",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-27",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-28",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-29",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-30",
+      "/home/ryzengrind/.no-mistakes/worktrees/7fb96f32e182/01M6QR5909YJ3WYB48FAM10J1M/.validation/live-summary/absent-31"
+    ],
+    "partial": []
+  },
+  "secondmate_guidance": {
+    "note": "For kind=secondmate, bearings selects validated structured state from that registered home; parent events and bounded terminal evidence are fallback-only supplements and never current-state authority."
+  }
+}

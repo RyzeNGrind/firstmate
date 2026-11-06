@@ -1,0 +1,10 @@
+{
+  "first_exit": 0,
+  "signal_surfaced_while_publication_lock_held": true,
+  "restarted_publication_error_bytes": 0,
+  "final_summary_valid": true,
+  "terminal_grid": {
+    "rows": 40,
+    "cols": 120
+  }
+}

@@ -1,0 +1,16 @@
+
+in flight (group 1):
+count: 1
+tasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:
+  overlap-task,in_flight,ship,firstmate,"Preserve title, comma and authority",none,captain,Preserve full decision durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance durable nuance
+
+held (captain- or time-gated) (group 2):
+count: 0
+tasks[0]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:
+overlap references (group:row, counting full records only; 1):
+  same record as 1:1
+
+blocked queued (group 3):
+count: 1
+tasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:
+  blocked-task,queued,scout,firstmate,Keep blocked membership,overlap-task,"-","-"
