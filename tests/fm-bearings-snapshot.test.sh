@@ -508,10 +508,11 @@ EOF
   printf '%s' "$canonical" | jq -e '
     .secondmate_current.records[] | select(.id == "domain-alpha") | .endpoints[] | select(.id == "phase8")
     | .endpoint.status == "unknown"
-      and .endpoint.exists == true
+      and .endpoint.exists == null
+      and .endpoint.agent_alive == "not_checked"
       and .endpoint.freshness == "fresh"
       and .endpoint.observed_at == "2026-07-11T18:00:00Z"
-  ' >/dev/null || fail "child endpoint observation lacked bounded current freshness: $canonical"
+  ' >/dev/null || fail "bounded child summary must retain freshness without endpoint probes: $canonical"
   pass "Bearings excludes a status-only child decision"
 }
 
