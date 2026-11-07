@@ -64,10 +64,12 @@
 #     fm-classify-lib.sh's authoritative status_open_decisions fold and reconciled
 #     against current_state; hints.pending_decision and hints.blocked_event are
 #     booleans derived from that set.
-#     endpoint.exists is the cheap local backend endpoint-presence read.
-#     endpoint.agent_alive is populated for local secondmates only, where it is
-#     useful return-channel supervision data; remote secondmates use "unknown"
-#     without a probe, and other tasks use "not_checked".
+#     endpoint.exists is the cheap local backend endpoint-presence read in
+#     --json mode. endpoint.agent_alive is populated for local secondmates only,
+#     where it is useful return-channel supervision data; remote secondmates use
+#     "unknown" without a probe, and other tasks use "not_checked". The bounded
+#     --secondmate-home-summary mode skips local endpoint probes too, preserving
+#     endpoint.exists as null and endpoint.agent_alive as "not_checked".
 #   scout_reports[]: present data/<id>/report.md pointers.
 #   main_inventory: {valid,reason,orphan_in_flight[],unstructured_current_count} -
 #     main-home current-inventory checks shared with secondmate_home_summary_json
@@ -267,7 +269,9 @@ that home.
 Each local per-task current-state read is bounded by FM_SNAPSHOT_CREW_STATE_TIMEOUT
 (default 10 seconds); a read that hits the bound reports state unknown. Local task
 observations run concurrently, up to FM_SNAPSHOT_LOCAL_READ_CONCURRENCY (default 8).
-Remote secondmate endpoint liveness is not probed by this command.
+Endpoint liveness is not probed in this mode; endpoint.exists remains null,
+endpoint.agent_alive remains "not_checked", and endpoint.status remains "unknown".
+The general --json snapshot continues to collect local endpoint evidence.
 Terminal contradiction evidence uses
 FM_SNAPSHOT_TERMINAL_LINES, FM_SNAPSHOT_TERMINAL_BYTES, and
 FM_SNAPSHOT_TERMINAL_TIMEOUT and never becomes canonical current state.
@@ -655,7 +659,7 @@ prefetch_task_observations() {  # <meta> <id>
     kind=$(meta_value "$meta" kind)
     backend=$(fm_backend_of_meta "$meta")
     target=$(fm_backend_target_of_meta "$meta")
-    if [ -n "$target" ]; then
+    if [ -n "$target" ] && [ "$OUTPUT_MODE" != secondmate-home-summary ]; then
       if fm_backend_target_exists "$backend" "$target" "fm-$id" >/dev/null 2>&1; then
         endpoint_exists=true
       else
@@ -685,10 +689,10 @@ prefetch_task_observations() {  # <meta> <id>
   return "$current_rc"
 }
 
-# Current-state and endpoint reads are independent observations. Start each
-# task's pair together so five local workers pay one slow no-mistakes response
-# window rather than five in series, while every command bound remains owned by
-# fm-timeout-lib.sh.
+# Current-state and requested endpoint reads are independent observations.
+# Start each task's pair together so local workers pay one slow no-mistakes
+# response window rather than two in series, while every command bound remains
+# owned by fm-timeout-lib.sh. The bounded home-summary mode skips endpoint reads.
 prefetch_task_current_states() {
   local meta captured_meta id active=0 index=0 rc=0
   local -a pids=()
@@ -1985,25 +1989,30 @@ contribution_tasks_json() {
   done | jq -s .
 }
 
+JSON_TRANSPORT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/fm-fleet-snapshot.XXXXXX") \
+  || { echo "fm-fleet-snapshot: temporary transport directory creation failed" >&2; exit 1; }
+BACKLOG_JSON_FILE="$JSON_TRANSPORT_DIR/backlog.json"
+printf '%s\n' "$BACKLOG_JSON" > "$BACKLOG_JSON_FILE" \
+  || { echo "fm-fleet-snapshot: temporary backlog file write failed" >&2; exit 1; }
+
 if [ "$OUTPUT_MODE" = contribution-input ]; then
   # Reuse the canonical backlog parser, without observing workers or other homes.
-  contribution_tasks=$(contribution_tasks_json) || { echo "fm-fleet-snapshot: contribution task read failed" >&2; exit 1; }
-  jq -n --argjson backlog "$BACKLOG_JSON" --argjson tasks "$contribution_tasks" '{backlog:$backlog,tasks:$tasks}'
-  exit 0
+  # This path needs the same file transport as the full snapshot: a large
+  # backlog can exceed the operating system's per-argument limit on its own.
+  contribution_tasks_json > "$JSON_TRANSPORT_DIR/contribution-tasks.json" \
+    || { echo "fm-fleet-snapshot: contribution task read failed" >&2; exit 1; }
+  jq -n --slurpfile backlog "$BACKLOG_JSON_FILE" --slurpfile tasks "$JSON_TRANSPORT_DIR/contribution-tasks.json" \
+    '{backlog:$backlog[0],tasks:$tasks[0]}'
+  exit $?
 fi
 prefetch_task_current_states || { echo "fm-fleet-snapshot: task observation failed" >&2; exit 1; }
 TASKS_JSON=$(task_json_lines) || { echo "fm-fleet-snapshot: task snapshot failed" >&2; exit 1; }
 
-JSON_TRANSPORT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/fm-fleet-snapshot.XXXXXX") \
-  || { echo "fm-fleet-snapshot: temporary transport directory creation failed" >&2; exit 1; }
-BACKLOG_JSON_FILE="$JSON_TRANSPORT_DIR/backlog.json"
 TASKS_JSON_FILE="$JSON_TRANSPORT_DIR/tasks.json"
 MAIN_INVENTORY_JSON_FILE="$JSON_TRANSPORT_DIR/main-inventory.json"
 SCOUT_REPORTS_JSON_FILE="$JSON_TRANSPORT_DIR/scout-reports.json"
 SECONDMATE_CURRENT_JSON_FILE="$JSON_TRANSPORT_DIR/secondmate-current.json"
 SECONDMATE_LANDED_JSON_FILE="$JSON_TRANSPORT_DIR/secondmate-landed.json"
-printf '%s\n' "$BACKLOG_JSON" > "$BACKLOG_JSON_FILE" \
-  || { echo "fm-fleet-snapshot: temporary backlog file write failed" >&2; exit 1; }
 printf '%s\n' "$TASKS_JSON" > "$TASKS_JSON_FILE" \
   || { echo "fm-fleet-snapshot: temporary task file write failed" >&2; exit 1; }
 

@@ -128,6 +128,10 @@ require_file() {
   exit 9
 }
 task_header() {
+  if [ "${FM_FAKE_TASKS_AXI_MALFORMED:-0}" = 1 ]; then
+    printf 'count: 99\ntasks[99]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:\n'
+    return
+  fi
   printf 'count: %s\n' "$1"
   printf 'tasks[%s]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:\n' "$1"
 }
@@ -1741,7 +1745,7 @@ EOF
   out=$(FM_FAKE_TASKS_AXI_LOG="$log" FM_FAKE_TASKS_AXI_READY=3 \
     run_session_start "$home" "$root" "$fakebin:$BASE_PATH")
 
-  assert_contains "$out" "compact backlog listing (tasks-axi; done rows omitted; every in-flight, held, and blocked row shown in full; ready queued bounded to 20; task bodies omitted)" \
+  assert_contains "$out" "compact backlog listing (tasks-axi; done rows omitted; every distinct in-flight, held, and blocked record shown in full; repeated group membership referenced; ready queued bounded to 20; task bodies omitted)" \
     "compatible tasks-axi backend did not render the compact backlog listing"
   assert_contains "$out" "tasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:" \
     "tasks-axi compact listing omitted the expected structured field header"
@@ -2699,6 +2703,118 @@ EOF
   pass "session start rejects Pi loaded markers from previous sessions"
 }
 
+test_backlog_exact_overlap_references_preserve_sources() {
+  local dir row differing out before after original_bytes output_bytes rc group empty middle last invalid
+  dir="$TMP_ROOT/backlog-exact-overlap"
+  mkdir -p "$dir"
+  row='  held-task,in_flight,ship,firstmate,"A title, with commas",none,captain,'
+  row="$row$(printf '%01200d' 0)"
+  differing="${row}different finding"
+  printf 'count: 1\ntasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:\n%s\n' "$row" > "$dir/in-flight"
+  cp "$dir/in-flight" "$dir/held"
+  printf 'count: 1\ntasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:\n%s\n' "$differing" > "$dir/blocked"
+  before=$(cksum "$dir/in-flight" "$dir/held" "$dir/blocked")
+  out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/held" "$dir/blocked") \
+    || fail "identical recovery tables could not be composed"
+  assert_contains "$out" "$row" "the first complete record changed"
+  assert_contains "$out" "$differing" "a differing decision field disappeared"
+  assert_contains "$out" 'same record as 1:1' "the held-group membership lost its exact reference"
+  assert_contains "$out" 'count: 0' "the deduplicated table kept its old row count"
+  original_bytes=$(cat "$dir/in-flight" "$dir/held" "$dir/blocked" | wc -c)
+  output_bytes=$(printf '%s\n' "$out" | wc -c)
+  [ "$output_bytes" -lt "$original_bytes" ] || fail "sharing a long identical record did not reduce bytes"
+  after=$(cksum "$dir/in-flight" "$dir/held" "$dir/blocked")
+  [ "$before" = "$after" ] || fail "rendering modified a source record"
+
+  printf 'count: 0\ntasks: 0 held tasks in this backlog\n' > "$dir/empty-held"
+  printf 'count: 0\ntasks: 0 blocked queued tasks in this backlog\n' > "$dir/empty-blocked"
+  printf 'count: 0\ntasks: 0 in_flight tasks in this backlog\n' > "$dir/empty-flight"
+  printf 'count: 0\ntasks[0]{id,title}:\n' > "$dir/empty-table"
+  printf 'count: 2\ntasks[2]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:\n%s\n%s\n' \
+    "$row" "$differing" > "$dir/populated"
+  before=$(cksum "$dir/empty-held" "$dir/empty-blocked" "$dir/empty-table" "$dir/populated")
+  for empty in empty-blocked empty-table; do
+    out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/held" "$dir/$empty") \
+      || fail "empty last group disabled populated overlap deduplication"
+    assert_contains "$out" $'held (captain- or time-gated) (group 2):\ncount: 0\ntasks[0]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:' \
+      "the populated group's schema changed"
+    assert_contains "$out" 'same record as 1:1' "empty last group lost the populated overlap reference"
+    middle='empty-held'
+    [ "$empty" != empty-table ] || middle='empty-table'
+    out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/$middle" "$dir/populated") \
+      || fail "empty middle group disabled populated overlap deduplication"
+    assert_contains "$out" $'blocked queued (group 3):\ncount: 1\ntasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_reason}:' \
+      "empty middle group changed the populated group's count or schema"
+    assert_contains "$out" "$differing" "empty middle group lost a differing field"
+    assert_contains "$out" 'same record as 1:1' "empty middle group renumbered the origin reference"
+  done
+  for middle in empty-held empty-table; do
+    for last in empty-blocked empty-table; do
+      out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/populated" "$dir/$middle" "$dir/$last") \
+        || fail "empty middle and last groups rejected populated records"
+      assert_contains "$out" "$row" "empty groups lost the first populated record"
+      assert_contains "$out" "$differing" "empty groups lost a differing record"
+      out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/empty-flight" "$dir/$middle" "$dir/$last") \
+        || fail "valid all-empty recovery groups were rejected"
+      for group in 'in flight (group 1):' 'held (captain- or time-gated) (group 2):' 'blocked queued (group 3):'; do
+        assert_contains "$out" "$group" "an empty recovery group lost its membership label"
+      done
+      [ "$(printf '%s\n' "$out" | awk '/^count: 0$/ { n++ } END { print n+0 }')" -eq 3 ] \
+        || fail "all-empty groups did not retain three zero counts"
+    done
+  done
+  after=$(cksum "$dir/empty-held" "$dir/empty-blocked" "$dir/empty-table" "$dir/populated")
+  [ "$before" = "$after" ] || fail "empty-group rendering modified a source record"
+  printf 'count: 1\ntasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_until}:\n%s\n' "$row" > "$dir/other-schema"
+  out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/empty-held" "$dir/other-schema") \
+    || fail "identical rows with differing schemas were rejected"
+  assert_contains "$out" 'tasks[1]{id,state,kind,repo,title,blocked_by,hold_kind,hold_until}:' \
+    "a differing schema was lost"
+  assert_not_contains "$out" 'same record as' "identical rows with differing schemas were deduplicated"
+  [ "$(printf '%s\n' "$out" | awk -v row="$row" '$0 == row { n++ } END { print n+0 }')" -eq 2 ] \
+    || fail "a full record with a differing schema was lost"
+  for invalid in \
+    $'count: 1\ntasks: 0 held tasks in this backlog' \
+    $'count: 0\ntasks: 1 held tasks in this backlog' \
+    $'count: 0\ntasks: 0 held tasks in this backlog\n  unexpected,row' \
+    $'count: 0\ntasks: 0 held tasks in this backlog\ntasks[0]{id,title}:' \
+    $'count: 0\ntasks[0]{id,title}:\ntasks: 0 held tasks in this backlog' \
+    $'count: 1\ncount: 0\ntasks: 0 held tasks in this backlog' \
+    $'count: 0\ntasks: invalid response'; do
+    printf '%s\n' "$invalid" > "$dir/bad"
+    rc=0
+    out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/bad" "$dir/blocked") || rc=$?
+    [ "$rc" -ne 0 ] || fail "malformed or contradictory empty group was accepted"
+    [ -z "$out" ] || fail "malformed empty group emitted a partial recovery listing"
+  done
+  printf 'count: 2\ntasks[2]{id,title}:\n  incomplete,row\n' > "$dir/bad"
+  rc=0
+  out=$(bash "$ROOT/bin/fm-startup-backlog-dedup.sh" "$dir/in-flight" "$dir/bad" "$dir/blocked") || rc=$?
+  [ "$rc" -ne 0 ] || fail "malformed recovery table was accepted"
+  [ -z "$out" ] || fail "malformed table emitted a misleading partial listing"
+  pass "exact overlapping records retain membership and differing fields with fewer bytes and unchanged sources"
+}
+
+test_backlog_malformed_success_uses_manual_fallback() {
+  local rec root home fakebin out
+  rec=$(new_world backlog-malformed-success)
+  IFS='|' read -r root home fakebin <<EOF
+$rec
+EOF
+  make_fake_toolchain "$fakebin"
+  make_fake_tasks_axi_compact "$fakebin"
+  make_fake_ps_claude "$fakebin"
+  write_long_body_backlog "$home/data/backlog.md"
+  out=$(FM_FAKE_TASKS_AXI_MALFORMED=1 run_session_start "$home" "$root" "$fakebin:$BASE_PATH")
+  assert_contains "$out" 'invalid tasks-axi recovery tables' "malformed successful backend output was trusted"
+  assert_contains "$out" '- [ ] held-queued - Held queued work' "malformed table fallback lost held work"
+  assert_contains "$out" 'blocked-by: compact-startup' "malformed table fallback lost dependencies"
+  assert_not_contains "$out" 'tasks[99]' "malformed table leaked into the recovery listing"
+  pass "malformed successful backend responses fall back to complete held and blocked title records"
+}
+
+test_backlog_exact_overlap_references_preserve_sources
+test_backlog_malformed_success_uses_manual_fallback
 test_context_digest_absent_empty_present
 test_lock_refusal_read_only_path
 test_lock_write_failure_read_only_path

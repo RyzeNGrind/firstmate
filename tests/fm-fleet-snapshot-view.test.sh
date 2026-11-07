@@ -1152,6 +1152,69 @@ EOF
   pass "home-summary excludes kind=secondmate from unowned_current and terminal_in_flight"
 }
 
+test_large_contribution_input_uses_private_file_transport() {
+  local home fakebin out before after bytes real_jq rc
+  home=$(make_home large-contribution-input)
+  fakebin=$(make_fakebin "$home")
+  mkdir -p "$home/tmp"
+  awk 'BEGIN {
+    print "## Queued"
+    for (i = 1; i <= 400; i++) {
+      printf "- [ ] retained-%04d - Retained title %04d (repo: alpha) (kind: ship) (since 2026-11-06)\n", i, i
+      printf "  Keep detail %04d: preserve ordering, authority and https://example.invalid/proof/%04d.\n", i, i
+    }
+  }' > "$home/data/backlog.md"
+  fm_write_meta "$home/state/retained-0001.meta" \
+    'window=must-not-observe:worker' 'kind=ship' 'project=alpha'
+  cat > "$fakebin/tmux" <<'SH'
+#!/usr/bin/env bash
+printf 'unexpected worker observation\n' >> "${FM_TEST_OBSERVATION_MARKER:?}"
+exit 97
+SH
+  chmod +x "$fakebin/tmux"
+  before=$(cksum "$home/data/backlog.md" "$home/state/retained-0001.meta")
+  out="$home/contribution.json"
+  PATH="$fakebin:$PATH" FM_HOME="$home" TMPDIR="$home/tmp" \
+    FM_TEST_OBSERVATION_MARKER="$home/observed" "$SNAPSHOT" --contribution-input > "$out" \
+    || fail "large contribution input failed"
+  bytes=$(wc -c < "$out" | tr -d ' ')
+  [ "$bytes" -gt 131072 ] || fail "fixture did not exceed Linux's per-argument limit: $bytes"
+  jq -e '
+    (.backlog.records | length) == 400
+    and ([.backlog.records[].id] == [range(1;401) | "retained-" + (tostring | "0000" + . | .[-4:])])
+    and (.backlog.records | all(.state == "queued" and .kind == "ship" and .repo == "alpha"))
+    and .backlog.records[399].title == "Retained title 0400"
+    and (.backlog.records[399].body_excerpt | contains("Keep detail 0400: preserve ordering, authority and https://example.invalid/proof/0400."))
+    and .tasks == [{id:"retained-0001",kind:"ship",pr:{url:"",head:""},merge_authority:"attended"}]
+  ' "$out" >/dev/null || fail "large contribution input lost backlog or ownership detail"
+  after=$(cksum "$home/data/backlog.md" "$home/state/retained-0001.meta")
+  [ "$before" = "$after" ] || fail "contribution input changed its source records"
+  [ ! -e "$home/observed" ] || fail "contribution input observed a worker"
+  [ -z "$(find "$home/tmp" -mindepth 1 -maxdepth 1 -print)" ] \
+    || fail "contribution input left private transport files behind"
+  real_jq=$(command -v jq)
+  cat > "$fakebin/jq" <<'SH'
+#!/usr/bin/env bash
+if [ "${1:-}" = -n ] && [ "${2:-}" = --slurpfile ]; then
+  exit 71
+fi
+exec "${FM_TEST_REAL_JQ:?}" "$@"
+SH
+  chmod +x "$fakebin/jq"
+  if PATH="$fakebin:$PATH" FM_HOME="$home" TMPDIR="$home/tmp" \
+    FM_TEST_REAL_JQ="$real_jq" FM_TEST_OBSERVATION_MARKER="$home/observed" \
+    "$SNAPSHOT" --contribution-input > "$home/failed.json"; then
+    fail "contribution input silently accepted JSON assembly failure"
+  else
+    rc=$?
+  fi
+  [ "$rc" -eq 71 ] || fail "contribution input lost JSON assembly exit status: $rc"
+  [ -z "$(find "$home/tmp" -mindepth 1 -maxdepth 1 -print)" ] \
+    || fail "failed contribution input left private transport files behind"
+  pass "large contribution input retains every record without argv overflow, worker probes, or leftover files"
+}
+
+test_large_contribution_input_uses_private_file_transport
 test_empty_fleet_json
 test_fixture_snapshot_json
 test_home_summary_excludes_secondmate_from_child_inventory
