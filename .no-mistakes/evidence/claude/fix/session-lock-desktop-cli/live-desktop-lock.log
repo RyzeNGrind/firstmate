@@ -1,0 +1,85 @@
+Role: baseline
+CLAUDE_PID=2120904
+CLAUDE_CODE_SESSION_ID=2a5ef424-d9d3-481d-93d9-1b45fa4c238f
+2120904     397 2.1.321-3fb3e65 /home/ryzengrind/.claude/remote/ccd-cli/2.1.321-3fb3e6595884 --init-only --setting-sources  --settings /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/live-settings.json
+Desktop process recognized as harness: rc=0
+
+$ fm-lock.sh
+error: cannot locate harness process in ancestry
+Acquisition exit: 1
+
+$ fm-lock.sh status
+lock: free
+
+Persisted lock pid: Persisted session id: 
+Role: owner
+CLAUDE_PID=2123992
+CLAUDE_CODE_SESSION_ID=56fc7b0b-cd39-4c6b-8652-55066910deac
+2123992     397 2.1.321-3fb3e65 /home/ryzengrind/.claude/remote/ccd-cli/2.1.321-3fb3e6595884 --init-only --setting-sources  --settings /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/live-settings.json
+Desktop process recognized as harness: rc=0
+
+$ fm-lock.sh
+lock acquired: harness pid 2123992
+Acquisition exit: 0
+
+$ fm-lock.sh status
+lock: held by live harness pid 2123992
+
+$ fm-lock.sh (same-session confirmation)
+lock acquired: harness pid 2123992
+Lock and session sidecar unchanged: rc=0
+
+Persisted lock pid: 2123992
+Persisted session id: 56fc7b0b-cd39-4c6b-8652-55066910deac
+
+Role: competitor
+CLAUDE_PID=2127520
+CLAUDE_CODE_SESSION_ID=beefce1a-02d8-46d3-89fa-c1065b318ea2
+2127520     397 2.1.321-3fb3e65 /home/ryzengrind/.claude/remote/ccd-cli/2.1.321-3fb3e6595884 --init-only --setting-sources  --settings /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/live-settings.json
+Desktop process recognized as harness: rc=0
+
+$ fm-lock.sh
+error: another live firstmate session holds the lock (pid 2123992, session 56fc7b0b-cd39-4c6b-8652-55066910deac); operate read-only until resolved
+Acquisition exit: 1
+
+$ fm-lock.sh status
+lock: held by live harness pid 2123992
+
+Persisted lock pid: 2123992
+Persisted session id: 56fc7b0b-cd39-4c6b-8652-55066910deac
+
+Role: sibling
+CLAUDE_PID=2131133
+CLAUDE_CODE_SESSION_ID=85194d10-2ca9-4a1b-ab77-1bf91877ad51
+2131133     397 server          /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/.claude/remote/srv/test/server --init-only --setting-sources  --settings /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/live-settings.json
+Desktop process recognized as harness: rc=1
+
+$ fm-lock.sh
+error: cannot locate harness process in ancestry
+Acquisition exit: 1
+
+$ fm-lock.sh status
+lock: free
+
+Persisted lock pid: Persisted session id: 
+Role: reclaim
+CLAUDE_PID=2133159
+CLAUDE_CODE_SESSION_ID=5046dbfb-32a5-4795-bb59-e33f11c5ed34
+2133159     397 2.1.321-3fb3e65 /home/ryzengrind/.claude/remote/ccd-cli/2.1.321-3fb3e6595884 --init-only --setting-sources  --settings /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/live-settings.json
+Desktop process recognized as harness: rc=0
+
+$ fm-lock.sh
+lock acquired: harness pid 2133159
+Acquisition exit: 0
+
+$ fm-lock.sh status
+lock: held by live harness pid 2133159
+
+$ fm-lock.sh (same-session confirmation)
+lock acquired: harness pid 2133159
+Lock and session sidecar unchanged: rc=0
+
+Persisted lock pid: 2133159
+Persisted session id: 5046dbfb-32a5-4795-bb59-e33f11c5ed34
+
+LIVE RESULT: baseline reproduced; acquisition, confirmation, contention, sibling rejection, and dead-owner reclaim passed.

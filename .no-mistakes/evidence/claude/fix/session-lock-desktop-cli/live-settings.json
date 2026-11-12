@@ -1,0 +1,1 @@
+{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "bash /home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/live-hook.sh", "timeout": 100}]}]}}

@@ -1,0 +1,30 @@
+{
+  "owner": {
+    "hook": {
+      "session_id": "56fc7b0b-cd39-4c6b-8652-55066910deac",
+      "transcript_path": "/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/owner/config/projects/-home-ryzengrind--no-mistakes-worktrees-27179effe3d7-01M77BEGTK6X83V8DHJXSWDF34/56fc7b0b-cd39-4c6b-8652-55066910deac.jsonl",
+      "cwd": "/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34",
+      "hook_event_name": "SessionStart",
+      "source": "startup"
+    },
+    "claude_pid": 2123992,
+    "persisted_lock_pid": 2123992,
+    "persisted_lock_session": "56fc7b0b-cd39-4c6b-8652-55066910deac",
+    "acquire_exit": 0,
+    "confirm_exit": 0
+  },
+  "reclaim": {
+    "hook": {
+      "session_id": "5046dbfb-32a5-4795-bb59-e33f11c5ed34",
+      "transcript_path": "/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34/.test-session-lock/reclaim/config/projects/-home-ryzengrind--no-mistakes-worktrees-27179effe3d7-01M77BEGTK6X83V8DHJXSWDF34/5046dbfb-32a5-4795-bb59-e33f11c5ed34.jsonl",
+      "cwd": "/home/ryzengrind/.no-mistakes/worktrees/27179effe3d7/01M77BEGTK6X83V8DHJXSWDF34",
+      "hook_event_name": "SessionStart",
+      "source": "startup"
+    },
+    "claude_pid": 2133159,
+    "persisted_lock_pid": 2133159,
+    "persisted_lock_session": "5046dbfb-32a5-4795-bb59-e33f11c5ed34",
+    "acquire_exit": 0,
+    "confirm_exit": 0
+  }
+}
