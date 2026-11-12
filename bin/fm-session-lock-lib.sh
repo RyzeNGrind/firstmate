@@ -49,6 +49,12 @@ fm_harness_path_name() {  # <path>
       */"$name"/*) printf '%s' "$name"; return 0 ;;
     esac
   done
+  # Claude Code's desktop app runs its CLI from a versioned executable under the
+  # remote tree (~/.claude/remote/ccd-cli/<version>). Neither the command name nor
+  # any exact path component says claude, so that install path pair is the identity.
+  case "/$path/" in
+    */.claude/remote/ccd-cli/*) printf '%s' claude; return 0 ;;
+  esac
   return 1
 }
 

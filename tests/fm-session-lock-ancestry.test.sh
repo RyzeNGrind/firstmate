@@ -1091,7 +1091,57 @@ test_verified_reclaim_keeps_new_sidecar() {
   pass "session-lock: a verified reclaim keeps the new sidecar beside the new pid"
 }
 
+# Claude Code's desktop app runs its CLI from a versioned executable under the
+# remote tree. Neither the command name nor any exact path component says claude,
+# so the ~/.claude/remote/ccd-cli install path is the identity, while the remote
+# server beside it is not a harness. Without this the desktop session can never
+# own the home lock, and every session start refuses it as read-only.
+test_desktop_claude_cli_is_identified_from_its_install_path() {
+  local dir fakebin got
+  dir="$TMP_ROOT/desktop-claude-cli"
+  fakebin=$(fm_fakebin "$dir")
+  mkdir -p "$dir/state"
+  cat > "$fakebin/ps" <<'SH'
+#!/usr/bin/env bash
+set -u
+field= pid=
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o) field=$2; shift 2 ;;
+    -p) pid=$2; shift 2 ;;
+    *) shift ;;
+  esac
+done
+case "$pid:$field" in
+  800:comm=) printf '%s\n' '2.1.321-3fb3e6' ;;
+  800:args=) printf '%s\n' '/home/u/.claude/remote/ccd-cli/2.1.321-3fb3e6595884 --output-format stream-json --model=claude-haiku-5-5' ;;
+  800:ppid=) printf '%s\n' 801 ;;
+  801:comm=) printf '%s\n' server ;;
+  801:args=) printf '%s\n' '/home/u/.claude/remote/srv/4c111e86/server --serve' ;;
+  801:ppid=) printf '%s\n' 1 ;;
+  *:comm=) printf '%s\n' bash ;;
+  *:args=) printf '%s\n' 'bash /repo/bin/fm-lock.sh' ;;
+  *:ppid=) printf '%s\n' 800 ;;
+esac
+SH
+  chmod +x "$fakebin/ps"
+  printf '800\n' > "$dir/state/.lock"
+
+  got=$(lib_eval "$fakebin" 'fm_harness_ancestry_pid') \
+    || fail "the desktop Claude CLI was not found in the ancestry at all"
+  [ "$got" = 800 ] || fail "ancestry resolved '$got', expected the desktop CLI pid 800"
+  lib_eval "$fakebin" 'fm_harness_pid_alive 800' \
+    || fail "a live desktop Claude CLI was not recognized as a harness"
+  lib_eval "$fakebin" 'fm_harness_process_matches "2.1.321-3fb3e6" "/home/u/.claude/remote/ccd-cli/2.1.321-3fb3e6595884 --x" && [ "$FM_HARNESS_IS_CLAUDE" -eq 1 ]' \
+    || fail "the desktop Claude CLI must be Claude-shaped so its trusted session id can own the lock"
+  if lib_eval "$fakebin" 'fm_harness_pid_alive 801'; then
+    fail "the remote server beside the desktop CLI was treated as a harness"
+  fi
+  pass "session-lock: the desktop Claude Code CLI is identified from its install path; its remote server is not"
+}
+
 test_version_named_session_is_identified_on_both_platforms
+test_desktop_claude_cli_is_identified_from_its_install_path
 test_harness_at_namespace_pid1_is_examined
 test_ordinary_paths_are_never_harness_processes
 test_harness_beyond_a_gap_never_owns_the_lock
