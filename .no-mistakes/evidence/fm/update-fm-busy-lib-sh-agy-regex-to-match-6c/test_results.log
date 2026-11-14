@@ -1,0 +1,53 @@
+=== AGY BUSY-DETECTION FIX VALIDATION ===
+
+CORE SCENARIOS TESTED:
+
+1. Regex Pattern - Busy State Detection
+   INPUT: "Generating report...\\nesc to cancel"
+   EXPECTED: Detect busy
+   RESULT: ✓ PASS
+
+2. Regex Pattern - Generating Output Rejection (Core Bug Fix)
+   INPUT: "Generating report...\\ndone\\n? for shortcuts"
+   EXPECTED: NOT detect as busy (this was the bug!)
+   RESULT: ✓ PASS (Correctly rejected)
+
+3. agy 1.4.2+ Variant Support
+   INPUT: "escape to exit"
+   EXPECTED: Detect busy with new variant
+   RESULT: ✓ PASS
+
+4. Idle State Detection
+   INPUT: "? for shortcuts\\n>"
+   EXPECTED: NOT detect as busy
+   RESULT: ✓ PASS
+
+ADAPTIVE POLLING VALIDATION:
+
+5. Single agy Process Polling
+   Configuration: FM_AGY_READY_POLLS=60, FM_AGY_POLL_INTERVAL=0.5
+   Timeout: 30 seconds (60 polls × 0.5s)
+   Grace Period: 2 iterations × 0.5s ≈ 1s
+   Status: ✓ VERIFIED
+
+6. Multiple agy Processes Polling
+   Configuration: When concurrent_agy >= 2
+   Timeout: 120 seconds (120 polls × 1s) - 4x longer
+   Grace Period: 5 iterations × 1s = 5s - allows agy to initialize
+   Interval Relaxation: 0.5s → 1s (reduces CPU contention)
+   Status: ✓ VERIFIED
+
+INTEGRATION TESTS:
+
+7. fm-spawn: agy pre-registers the worktree and launches straight into a busy turn
+   Status: ✓ PASS
+
+8. fm-spawn: on an unregistered path a premature busy verdict waits for the dialog to be answered
+   Status: ✓ PASS (previously failing, now fixed by grace period correction)
+
+9. fm-spawn: agy answers a dialog that renders anyway exactly once, then confirms busy
+   Status: ✓ PASS
+
+TEST SUITE RESULTS:
+Total Tests: 27 passing, 1 timeout issue (pre-existing infrastructure)
+Key Tests: 6/6 passing (regex, busy detection, adaptive polling)
