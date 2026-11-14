@@ -3950,7 +3950,7 @@ agy_wait_for_working() {
     interval=1              # Relax interval to reduce spin/contention
     grace_period=5          # Give agy 5 seconds before first busy check
   else
-    grace_period=2          # Single agy: 2 second grace period
+    grace_period=4          # Single agy: 2 second grace period (4 × 0.5s)
   fi
 
   # First, skip early polls during grace period to let agy initialize
