@@ -3932,7 +3932,7 @@ agy_pane_is_working() {  # <plain-pane-capture>
 }
 
 agy_wait_for_working() {
-  local pane i=0 concurrent_agy busy_count grace_period
+  local pane i=0 concurrent_agy grace_period
 
   # Adaptive timeout: check for concurrent agy spawns to adjust polling under contention.
   # Under parallel spawning, multiple agy instances contend for CPU/IO, so we need
