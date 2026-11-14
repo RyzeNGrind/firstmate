@@ -46,7 +46,7 @@ agy is deliberately absent from the session-lock name vocabulary in `../../../..
 ## Worker busy state and turn end
 
 `../../../../../bin/fm-spawn.sh` arms no busy generation for agy and writes no sidecar, exactly because no writer could ever clear a seeded record.
-`fm_busy_agy_tail_busy` matches the pinned status row, originally `esc to cancel` on agy 1.2.0, expanded in 1.4.2+ to also match variant punctuation (`escape`, `exit`) and additional busy indicators (`processing...`, `generating`). The regex is intentionally flexible for cross-version compatibility: `(esc|escape)[[:space:]]*to[[:space:]]*(cancel|exit)|processing\.\.\.|generating`.
+`fm_busy_agy_tail_busy` matches the pinned status row, originally `esc to cancel` on agy 1.2.0, with improved flexibility for agy 1.4.2+ variants: supports both `esc` and `escape` as prefixes, and both `cancel` and `exit` as completion words. Whitespace between tokens is flexible (`[[:space:]]*`). The regex intentionally does NOT match `Generating` or `processing...` as those are free-floating output lines that worker processes may echo, causing false busy classifications. The conservative pattern is: `(esc|escape)[[:space:]]*to[[:space:]]*(cancel|exit)`.
 
 **Parallel spawning fix (2026-11-14):** The pane-scraping approach has an inherent race condition: under parallel spawning or slow filesystem, multiple agy instances contend for CPU/IO and the busy indicator appears slowly. The polling loop was timing out even though agy would start fine with more time. Fixed by implementing adaptive polling:
 - Count concurrent `agy` processes to detect parallel spawning
