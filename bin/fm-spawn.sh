@@ -3932,7 +3932,7 @@ agy_pane_is_working() {  # <plain-pane-capture>
 }
 
 agy_wait_for_working() {
-  local pane i=0 concurrent_agy grace_period
+  local pane i=0 concurrent_agy grace_period grace_i
 
   # Adaptive timeout: check for concurrent agy spawns to adjust polling under contention.
   # Under parallel spawning, multiple agy instances contend for CPU/IO, so we need
@@ -3953,8 +3953,9 @@ agy_wait_for_working() {
   fi
 
   # First, skip early polls during grace period to let agy initialize
-  while [ "$i" -lt "$grace_period" ]; do
-    i=$((i + 1))
+  grace_i=0
+  while [ "$grace_i" -lt "$grace_period" ]; do
+    grace_i=$((grace_i + 1))
     sleep "$interval"
   done
 
