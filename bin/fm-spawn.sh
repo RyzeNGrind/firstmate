@@ -3940,9 +3940,6 @@ agy_pane_is_working() {  # <plain-pane-capture>
 
 agy_wait_for_working() {
   local pane i=0 max=${FM_AGY_READY_POLLS:-240} interval=${FM_AGY_POLL_INTERVAL:-0.5} elapsed_s
-  case "$max" in ''|*[!0-9]*) max=240 ;; esac
-  [ "$max" -gt 0 ] || max=240
-  awk -v p="$interval" 'BEGIN { exit !(p ~ /^[0-9]+(\.[0-9]+)?$/) }' || interval=0.5
   elapsed_s=$(awk -v m="$max" -v p="$interval" 'BEGIN { printf "%g", m * p }')
   AGY_READY_BOUND="${elapsed_s}s (${max} polls at ${interval}s)"
   while [ "$i" -lt "$max" ]; do

@@ -956,7 +956,7 @@ test_agy_ready_polls_env_override_controls_bound_and_failure_message() {
   sleep_log="$CASE_DIR/sleep.log"
   : > "$sleep_log"
   rc=0
-  out=$(FM_USE_DEFAULT_AGY_READY_POLLS=1 FM_AGY_READY_POLLS=5 FM_AGY_POLL_INTERVAL=0.5 \
+  out=$(FM_USE_DEFAULT_AGY_READY_POLLS=1 FM_AGY_READY_POLLS=5 FM_AGY_POLL_INTERVAL=.1 \
     FM_FAKE_AGY_BUSY_AT=65 FM_FAKE_SLEEP_LOG="$sleep_log" \
     run_agy_spawn "$CASE_DIR" "$HOME_DIR" "$PROJ_DIR" "$WT_DIR" \
     "$FAKEBIN_DIR" "$id" --model gemini-3.8-flash-low) || rc=$?
@@ -964,12 +964,12 @@ test_agy_ready_polls_env_override_controls_bound_and_failure_message() {
   captures=$(count_capture_calls "$CASE_DIR/tmux-calls.log")
   [ "$captures" -eq 5 ] \
     || fail "expected FM_AGY_READY_POLLS=5 to poll exactly 5 times, got $captures"
-  waits=$(count_half_second_sleeps "$sleep_log")
+  waits=$(grep -Fxc '.1' "$sleep_log" || true)
   [ "$waits" -eq 4 ] \
-    || fail "expected 4 inter-poll 0.5s sleeps for FM_AGY_READY_POLLS=5, got $waits"
-  assert_contains "$out" "within 2.5s (5 polls at 0.5s)" \
-    "overridden readiness timeout did not state the 2.5s (5 polls at 0.5s) elapsed bound"
-  assert_grep "failed: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-$id within 2.5s (5 polls at 0.5s)" \
+    || fail "expected 4 inter-poll .1s sleeps for FM_AGY_READY_POLLS=5, got $waits"
+  assert_contains "$out" "within 0.5s (5 polls at .1s)" \
+    "overridden readiness timeout did not state the 0.5s (5 polls at .1s) elapsed bound"
+  assert_grep "failed: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-$id within 0.5s (5 polls at .1s)" \
     <(sed -E 's/ \[at=[0-9]+\]//' "$HOME_DIR/state/$id.status") \
     "task status did not record the overridden elapsed bound"
   pass "fm-spawn: FM_AGY_READY_POLLS and FM_AGY_POLL_INTERVAL override the bound and failure message"
