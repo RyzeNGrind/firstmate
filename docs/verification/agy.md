@@ -106,7 +106,8 @@ The completed turn showed the reply, then the idle composer:
 ? for shortcuts                                                         Gemini 3.8 Flash · low
 ```
 
-`fm_busy_agy_tail_busy` and the delivery guard in `bin/fm-composer-lib.sh` match the `esc to cancel` token alone: the TUI pins that status row to the bottom of the pane for the whole turn, and the idle row replaces it with `? for shortcuts`.
+The TUI pins a status row to the bottom of the pane for the whole turn (verified as `esc to cancel` on agy 1.2.0; agy 1.4.2+ supports variants like `escape` and `exit`); see [`../../.agents/skills/harness-adapters/references/harness/agy.md`](../../.agents/skills/harness-adapters/references/harness/agy.md) for the current regex pattern and `fm_busy_agy_tail_busy` implementation.
+The idle row replaces it with `? for shortcuts`.
 The `Generating...` spinner word is deliberately not a signal: it is a free-floating output line, so ordinary worker output such as `Generating report...` would otherwise classify an idle worker as busy or acknowledge a submit that did not land.
 No busy phase without the status row was observed live; every captured mid-turn frame carried it.
 `fm_busy_classify` reports `unknown agy-regex` when the token is absent, because a long turn can scroll the marker out of the captured tail.
