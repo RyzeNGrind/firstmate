@@ -3937,7 +3937,8 @@ agy_wait_for_working() {
   # Adaptive timeout: check for concurrent agy spawns to adjust polling under contention.
   # Under parallel spawning, multiple agy instances contend for CPU/IO, so we need
   # longer timeouts and adaptive backoff. Count live agy processes to estimate contention.
-  concurrent_agy=$(pgrep -c '^agy$' 2>/dev/null || echo 1)
+  concurrent_agy=$(pgrep -c '^agy$' 2>/dev/null)
+  concurrent_agy=${concurrent_agy:-0}
 
   # Scale polling parameters based on concurrency:
   # - 1 agy: 60 polls × 0.5s = 30s timeout
