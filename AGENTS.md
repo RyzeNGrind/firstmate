@@ -275,6 +275,27 @@ A secondmate is idle by default and acts only on work routed by the main firstma
 It reconciles its own work under way after restart, then waits silently; an empty queue never authorizes a survey, audit, or self-directed improvement sweep.
 Do not reconstruct or supervise a secondmate's child tree from the main home.
 
+#### Per-host secondmate homes and parallel routing
+
+Each infrastructure host (bld, nas, alpha, theta, delta, epsilon, beta, ws) has its own isolated secondmate home at `~/.firstmate-<host>`, with independent backlog, state, and project routing.
+Per-host secondmate homes enable true parallel work execution: workers on `bld` route through `FM_HOME=~/.firstmate-bld` and report status to that secondmate's backlog, rather than contending for the main fleet lock.
+Each secondmate home has a crew-dispatch.json that enables upstream reporting to the main firstmate via a durable inbox at `state/.upstream-inbox/`.
+
+**Routing model:**
+
+1. **Main firstmate (primary):** Supervises all secondmates and the fleet, holds the captain channel, and executes `local-only` and cross-host work.
+2. **Per-host secondmate:** Isolated FM_HOME, manages its own backlog, routes tasks to workers on its assigned host, and reports completion to upstream via the pending-reply and status channels.
+3. **Worker launch:** `FM_HOME=~/.firstmate-<host> fm-spawn.sh` routes the worker into that host's secondmate home; workers exit automatically and report through that home's status records.
+4. **Upstream status:** Each secondmate home's status and completion events are durable; the main firstmate polls and aggregates them for captain visibility.
+
+**Secondmate homes registered:**
+- `sm-bld` (bare metal x86_64 builder) → `~/.firstmate-bld`
+- `sm-nas` (aarch64 RPi4) → `~/.firstmate-nas`
+- `sm-alpha` (aarch64 OCI cache/gateway) → `~/.firstmate-alpha`
+- `sm-theta`, `sm-delta`, `sm-epsilon` (x86_64 OCI compute) → `~/.firstmate-theta` etc.
+- `sm-beta` (x86_64 OCI Forgejo) → `~/.firstmate-beta`
+- `sm-ws` (physical workstation, primary builder when online) → `~/.firstmate-ws`
+
 Route durable knowledge to its most specific owner:
 
 - Home-domain captain preferences and working style belong in `data/captain.md` after inspect-then-update.
