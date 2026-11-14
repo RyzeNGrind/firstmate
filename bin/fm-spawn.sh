@@ -3913,15 +3913,22 @@ rovo_endpoint_cleanup() {
 # verdict is known to coexist with an unanswered dialog: a busy verdict counts
 # only when the path was pre-registered or the dialog has been seen and
 # answered; on an unregistered path it keeps polling for the dialog instead.
+# Default readiness bound is 240 polls at 0.5s (120s plus capture time) so a
+# loaded host has headroom for agy to enter a busy turn; FM_AGY_READY_POLLS
+# and FM_AGY_POLL_INTERVAL override the bound and cadence.
 AGY_TRUST_DIALOG='Do you trust the contents of this project?'
 AGY_TRUST_ANSWERED=0
+AGY_READY_BOUND=
 
 agy_capture() {
   fm_backend_capture "$BACKEND" "$T" 120 "$W" 2>/dev/null || true
 }
 
 agy_pane_shows_trust_dialog() {  # <plain-pane-capture>
-  printf '%s\n' "$1" | grep -Fq "$AGY_TRUST_DIALOG"
+  case "$1" in
+    *"$AGY_TRUST_DIALOG"*) return 0 ;;
+  esac
+  return 1
 }
 
 agy_pane_is_working() {  # <plain-pane-capture>
@@ -3932,7 +3939,12 @@ agy_pane_is_working() {  # <plain-pane-capture>
 }
 
 agy_wait_for_working() {
-  local pane i=0 max=${FM_AGY_READY_POLLS:-60} interval=${FM_AGY_POLL_INTERVAL:-0.5}
+  local pane i=0 max=${FM_AGY_READY_POLLS:-240} interval=${FM_AGY_POLL_INTERVAL:-0.5} elapsed_s
+  case "$max" in ''|*[!0-9]*) max=240 ;; esac
+  [ "$max" -gt 0 ] || max=240
+  awk -v p="$interval" 'BEGIN { exit !(p ~ /^[0-9]+(\.[0-9]+)?$/) }' || interval=0.5
+  elapsed_s=$(awk -v m="$max" -v p="$interval" 'BEGIN { printf "%g", m * p }')
+  AGY_READY_BOUND="${elapsed_s}s (${max} polls at ${interval}s)"
   while [ "$i" -lt "$max" ]; do
     pane=$(agy_capture)
     if agy_pane_shows_trust_dialog "$pane"; then
@@ -5072,11 +5084,11 @@ fi
 if [ "$HARNESS" = agy ]; then
   if ! agy_wait_for_working; then
     if [ "$AGY_TRUST_ANSWERED" -eq 1 ]; then
-      agy_spawn_fail "agy did not start processing its brief after the folder-trust dialog was answered in window $T"
+      agy_spawn_fail "agy did not start processing its brief after the folder-trust dialog was answered in window $T within $AGY_READY_BOUND"
     elif [ "$AGY_TRUST_PREREGISTERED" -eq 1 ]; then
-      agy_spawn_fail "agy did not start processing its brief in the pre-trusted worktree in window $T"
+      agy_spawn_fail "agy did not start processing its brief in the pre-trusted worktree in window $T within $AGY_READY_BOUND"
     else
-      agy_spawn_fail "agy never showed its folder-trust dialog on an unregistered worktree in window $T, so the brief could not be confirmed to run there"
+      agy_spawn_fail "agy never showed its folder-trust dialog on an unregistered worktree in window $T within $AGY_READY_BOUND, so the brief could not be confirmed to run there"
     fi
     exit 1
   fi
