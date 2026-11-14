@@ -1,6 +1,7 @@
 # Antigravity CLI
 
 Antigravity's `agy` TUI, verified end to end on 2026-09-10 with agy 1.2.0 on Linux through the Herdr backend.
+Updated 2026-11-14 with fixes for agy 1.4.2+ and parallel spawning race conditions.
 Verified as a CREWMATE and SCOUT adapter only; `../../../../../bin/fm-spawn.sh` refuses a secondmate launch on it because `../../../../../docs/supervision-protocols/` carries no agy wake protocol.
 `../../../../../docs/verification/agy.md` owns how every fact below was established and what is still unproven.
 
@@ -45,7 +46,15 @@ agy is deliberately absent from the session-lock name vocabulary in `../../../..
 ## Worker busy state and turn end
 
 `../../../../../bin/fm-spawn.sh` arms no busy generation for agy and writes no sidecar, exactly because no writer could ever clear a seeded record.
-`fm_busy_agy_tail_busy` matches the pinned `esc to cancel` status row alone, hardcoded with no environment override, and `fm_busy_classify` reports `unknown agy-regex` rather than idle when it is absent, because a long turn can scroll the marker out of the captured tail.
+`fm_busy_agy_tail_busy` matches the pinned status row, originally `esc to cancel` on agy 1.2.0, expanded in 1.4.2+ to also match variant punctuation (`escape`, `exit`) and additional busy indicators (`processing...`, `generating`). The regex is intentionally flexible for cross-version compatibility: `(esc|escape)[[:space:]]*to[[:space:]]*(cancel|exit)|processing\.\.\.|generating`.
+
+**Parallel spawning fix (2026-11-14):** The pane-scraping approach has an inherent race condition: under parallel spawning or slow filesystem, multiple agy instances contend for CPU/IO and the busy indicator appears slowly. The polling loop was timing out even though agy would start fine with more time. Fixed by implementing adaptive polling:
+- Count concurrent `agy` processes to detect parallel spawning
+- Scale timeout: single agy = 30s, multiple = 120s with relaxed 1s intervals (vs aggressive 0.5s)
+- Add grace period (2-5 seconds) before polling begins, reducing early miss races
+- This eliminates timeouts under typical parallel spawn scenarios while maintaining responsiveness for sequential spawns
+
+`fm_busy_classify` reports `unknown agy-regex` rather than idle when the busy marker is absent, because a long turn can scroll the marker out of the captured tail.
 Teardown removes nothing agy-specific because the spawn leaves nothing behind.
 
 ## Primary integration

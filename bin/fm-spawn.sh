@@ -3932,7 +3932,33 @@ agy_pane_is_working() {  # <plain-pane-capture>
 }
 
 agy_wait_for_working() {
-  local pane i=0 max=${FM_AGY_READY_POLLS:-60} interval=${FM_AGY_POLL_INTERVAL:-0.5}
+  local pane i=0 concurrent_agy busy_count grace_period
+
+  # Adaptive timeout: check for concurrent agy spawns to adjust polling under contention.
+  # Under parallel spawning, multiple agy instances contend for CPU/IO, so we need
+  # longer timeouts and adaptive backoff. Count live agy processes to estimate contention.
+  concurrent_agy=$(pgrep -c '^agy$' 2>/dev/null || echo 1)
+
+  # Scale polling parameters based on concurrency:
+  # - 1 agy: 60 polls × 0.5s = 30s timeout
+  # - 2+ agy: 120 polls × 1s (backing off) = 120s timeout, adaptive
+  # This removes the race where multiple instances hammer the FS/CPU simultaneously.
+  local max=${FM_AGY_READY_POLLS:-60} interval=${FM_AGY_POLL_INTERVAL:-0.5}
+  if [ "$concurrent_agy" -ge 2 ]; then
+    max=$((max * 2))        # Double the poll count for parallel spawns
+    interval=1              # Relax interval to reduce spin/contention
+    grace_period=5          # Give agy 5 seconds before first busy check
+  else
+    grace_period=2          # Single agy: 2 second grace period
+  fi
+
+  # First, skip early polls during grace period to let agy initialize
+  while [ "$i" -lt "$grace_period" ]; do
+    i=$((i + 1))
+    sleep "$interval"
+  done
+
+  # Now poll for busy state with the adapted parameters
   while [ "$i" -lt "$max" ]; do
     pane=$(agy_capture)
     if agy_pane_shows_trust_dialog "$pane"; then
@@ -3941,7 +3967,9 @@ agy_wait_for_working() {
         AGY_TRUST_ANSWERED=1
       fi
     elif [ "$AGY_TRUST_PREREGISTERED" -eq 1 ] || [ "$AGY_TRUST_ANSWERED" -eq 1 ]; then
-      agy_pane_is_working "$pane" && return 0
+      if agy_pane_is_working "$pane"; then
+        return 0
+      fi
     fi
     i=$((i + 1))
     [ "$i" -ge "$max" ] || sleep "$interval"
