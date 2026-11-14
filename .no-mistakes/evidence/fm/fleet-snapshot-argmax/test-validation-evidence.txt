@@ -1,0 +1,68 @@
+=== VALIDATION EVIDENCE: fm-fleet-snapshot.sh Large JSON Fix ===
+
+COMMIT: 41af12718ea8d3c199020e132395b55d5994f4bb
+BRANCH: fm/fleet-snapshot-argmax
+BASE: 27319d25f4ef94214a6e0f322827cb11a88bb1d6
+
+=== CHANGE SUMMARY ===
+The fix changes the --contribution-input code path from using --argjson (which
+passes JSON via shell argv) to --slurpfile (which reads JSON from temp files).
+
+File: bin/fm-fleet-snapshot.sh
+Lines 2004-2005:
+  jq -n --slurpfile backlog "$BACKLOG_JSON_FILE" --slurpfile tasks "$JSON_TRANSPORT_DIR/contribution-tasks.json" \
+    '{backlog:$backlog[0],tasks:$tasks[0]}'
+
+This solves the "Argument list too long" error when the backlog JSON exceeds
+the kernel's per-argument limit (typically ~128KB on Linux).
+
+=== REGRESSION TEST ===
+Test: test_oversized_backlog_contribution_input (added to tests/fm-contributions.test.sh)
+Status: ✓ PASSED
+
+The test:
+1. Creates a synthetic FM home
+2. Generates an oversized backlog with 2000 items + 120 char padding each
+3. Calls fm-fleet-snapshot.sh --contribution-input
+4. Verifies:
+   - No "Argument list too long" error
+   - Output contains >= 2000 backlog records
+   - Output structure is valid (backlog and tasks fields present)
+
+=== LIVE VALIDATION ===
+Tested with a 432K backlog file containing 2500+ items with padding:
+
+Command:
+  FM_HOME="$test_home" FM_ROOT_OVERRIDE="$test_home" \
+    FM_STATE_OVERRIDE="$test_home/state" FM_DATA_OVERRIDE="$test_home/data" \
+    FM_CONFIG_OVERRIDE="$test_home/config" FM_PROJECTS_OVERRIDE="$test_home/projects" \
+    bin/fm-fleet-snapshot.sh --contribution-input
+
+Result:
+  ✓ Command succeeded without error
+  ✓ Processed all 2500 backlog records
+  ✓ Output is valid JSON with structure:
+    {
+      backlog: { records: [...], path: "...", present: true, ... },
+      tasks: [...]
+    }
+
+=== CLEANUP VERIFICATION ===
+Verified that temporary directories (JSON_TRANSPORT_DIR) created in
+/tmp/fm-fleet-snapshot.XXXXXX are properly cleaned up:
+- Before command: 0 fm-fleet-snapshot temp dirs
+- After command:  0 fm-fleet-snapshot temp dirs
+- Cleanup: ✓ SUCCESSFUL
+
+Cleanup is handled by the trap handler on EXIT calling cleanup_json_files()
+which removes the entire JSON_TRANSPORT_DIR.
+
+=== CONCLUSION ===
+✓ Fix correctly implemented
+✓ Regression test passes
+✓ Large JSON handling verified to work
+✓ Cleanup verified to work
+✓ No "Argument list too long" errors occur
+
+The change is safe to ship. It fixes a real issue (argv size limit exceeded
+with large backlogs) and properly handles resource cleanup.
