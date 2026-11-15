@@ -1,0 +1,15 @@
+default-size 80x24
+Scenario: override; started: 2026-11-15T00:28:21Z
+Scenario: override; exit=1; elapsed=6s
+warning: /home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/home/data/agy-live-override/launch-brief.md records no delivery contract line (scaffolded before ship briefs recorded one); launching on the explicit --mode no-mistakes - confirm its definition of done matches
+error: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-agy-live-override within 0.5s (5 polls at .1s); inspect window firstmate:fm-agy-live-override
+warning: leaving task agy-live-override's slot claim on /home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/pool/.treehouse/project-8faedf/1/project in place; the Treehouse project lock is no longer held, so the next spawn's claim replaces it
+failed [at=1794702507]: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-agy-live-override within 0.5s (5 polls at .1s)
+bash
+Scenario: default; started: 2026-11-15T00:28:27Z
+Scenario: default; exit=1; elapsed=134s
+warning: /home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/home/data/agy-live-default/launch-brief.md records no delivery contract line (scaffolded before ship briefs recorded one); launching on the explicit --mode no-mistakes - confirm its definition of done matches
+error: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-agy-live-default within 120s (240 polls at 0.5s); inspect window firstmate:fm-agy-live-default
+warning: leaving task agy-live-default's slot claim on /home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/pool/.treehouse/project-8faedf/1/project in place; the Treehouse project lock is no longer held, so the next spawn's claim replaces it
+failed [at=1794702641]: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-agy-live-default within 120s (240 polls at 0.5s)
+bash

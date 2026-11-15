@@ -1,0 +1,40 @@
+bash-5.3$ treehouse get
+🌳 Setting up worktree...
+🌳 Entered worktree at /home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/p
+ool/.treehouse/project-8faedf/1/project. Type 'exit' to return.
+ln: failed to create symbolic link '/usr/bin/systemctl': Permission denied
+ln: failed to create symbolic link '/usr/bin/grep': Permission denied
+
+[ryzengrind@pc:/home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/pool/.tre
+ehouse/project-8faedf/1/project]$ export GOTMPDIR=/tmp/fm-agy-live-override/gotmp
+export COMPACT_ADVISER_DISABLE=1
+
+[ryzengrind@pc:/home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/pool/.tre
+ehouse/project-8faedf/1/project]$ export COMPACT_ADVISER_DISABLE=1
+export FM_TASK_ID=agy-live-override
+
+[ryzengrind@pc:/home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/pool/.tre
+ehouse/project-8faedf/1/project]$ export FM_TASK_ID=agy-live-override
+
+[ryzengrind@pc:/home/ryzengrind/.no-mistakes/worktrees/2ed17f20e3da/01M7E8T4DHZBQYYKAMDP18Y2YA/.agy-live-check/pool/.tre
+ehouse/project-8faedf/1/project]$ . '/tmp/fm-agy-live-override+325ee0747829984dfff8e4f5ac8d04da2af7694db73ee9c6d00b1a81d
+a70ea6a/launch.s1794702504.2204017.7024.sh'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

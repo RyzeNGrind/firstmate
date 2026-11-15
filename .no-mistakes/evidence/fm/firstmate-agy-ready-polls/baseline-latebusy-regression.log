@@ -1,0 +1,1 @@
+not ok - a pre-trusted agy launch turning busy at poll 65 (past the old 60-poll bound) must succeed under the default bound: expected exit 0, got 1
