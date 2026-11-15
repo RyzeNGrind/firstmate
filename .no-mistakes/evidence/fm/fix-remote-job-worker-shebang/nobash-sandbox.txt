@@ -1,0 +1,18 @@
+=== base (/tmp/tmp.NgB09VqnWL/base_root) ===
+HOST has no /bin/bash
+ENSURE_WORKER: FAILED: remote job worker did not report ready after startup
+#!/bin/bash
+env: ‘/tmp/tmp.NgB09VqnWL/base_root/bin/fm-remote-job-worker.sh’: No such file or directory
+env: ‘/tmp/tmp.NgB09VqnWL/base_root/bin/fm-remote-job-worker.sh’: No such file or directory
+   3776 /bin/bash /home/ryzengrind/.local/share/firstmate/code/bin/fm-remote-job-worker.sh
+2931790 /bin/bash /home/ryzengrind/.local/share/firstmate/code/bin/fm-remote-job-worker.sh --serve
+3487550 /run/current-system/sw/bin/zsh -c source /home/ryzengrind/.claude/shell-snapshots/snapshot-zsh-1794777772084-wqshrk.sh 2>/dev/null || true && setopt NO_EXTENDED_GLOB NO_BARE_GLOB_QUAL 2>/dev/null || true && { \builtin unalias -- 'unsetenv'; \builtin unset -f -- 'unsetenv'; } >/dev/null 2>&1 || true && eval 'cd /home/ryzengrind/.no-mistakes/worktrees/392a86146409/01M7GH9SQKBWSB6PK6H48XJ54Z; T=$(cat /tmp/_t_path); EV=/home/ryzengrind/.no-mistakes/evidence/01M7GH9SQKBWSB6PK6H48XJ54Z rm -f $EV/nobash-sandbox.txt sed -i '"'"'s|^pkill.*|pkill -u $(id -u) -f "^(/usr/bin/env )?(bash )?$root/bin/fm-remote-job-worker.sh" 2>/dev/null|'"'"' $T/drive.sh for v in base new; do  if [ $v = base ]; then R=$T/base_root; else R=$PWD; fi  rm -rf $T/home_$v; mkdir -p $T/home_$v/.firstmate; chmod 700 $T/home_$v $T/home_$v/.firstmate  echo "=== $v ($R) ===" | tee -a $EV/nobash-sandbox.txt  timeout 120 bwrap --dev-bind / / --tmpfs /bin --die-with-parent -- $T/drive.sh $R $T/home_$v 2>&1 | tee -a $EV/nobash-sandbox.txt done' < /dev/null && pwd -P >| /tmp/claude-4c94-cwd
+=== new (/home/ryzengrind/.no-mistakes/worktrees/392a86146409/01M7GH9SQKBWSB6PK6H48XJ54Z) ===
+HOST has no /bin/bash
+ENSURE_WORKER: ok (ready)
+#!/usr/bin/env bash
+   3776 /bin/bash /home/ryzengrind/.local/share/firstmate/code/bin/fm-remote-job-worker.sh
+2931790 /bin/bash /home/ryzengrind/.local/share/firstmate/code/bin/fm-remote-job-worker.sh --serve
+3487550 /run/current-system/sw/bin/zsh -c source /home/ryzengrind/.claude/shell-snapshots/snapshot-zsh-1794777772084-wqshrk.sh 2>/dev/null || true && setopt NO_EXTENDED_GLOB NO_BARE_GLOB_QUAL 2>/dev/null || true && { \builtin unalias -- 'unsetenv'; \builtin unset -f -- 'unsetenv'; } >/dev/null 2>&1 || true && eval 'cd /home/ryzengrind/.no-mistakes/worktrees/392a86146409/01M7GH9SQKBWSB6PK6H48XJ54Z; T=$(cat /tmp/_t_path); EV=/home/ryzengrind/.no-mistakes/evidence/01M7GH9SQKBWSB6PK6H48XJ54Z rm -f $EV/nobash-sandbox.txt sed -i '"'"'s|^pkill.*|pkill -u $(id -u) -f "^(/usr/bin/env )?(bash )?$root/bin/fm-remote-job-worker.sh" 2>/dev/null|'"'"' $T/drive.sh for v in base new; do  if [ $v = base ]; then R=$T/base_root; else R=$PWD; fi  rm -rf $T/home_$v; mkdir -p $T/home_$v/.firstmate; chmod 700 $T/home_$v $T/home_$v/.firstmate  echo "=== $v ($R) ===" | tee -a $EV/nobash-sandbox.txt  timeout 120 bwrap --dev-bind / / --tmpfs /bin --die-with-parent -- $T/drive.sh $R $T/home_$v 2>&1 | tee -a $EV/nobash-sandbox.txt done' < /dev/null && pwd -P >| /tmp/claude-4c94-cwd
+3527800 bash /home/ryzengrind/.no-mistakes/worktrees/392a86146409/01M7GH9SQKBWSB6PK6H48XJ54Z/bin/fm-remote-job-worker.sh
+3527867 bash /home/ryzengrind/.no-mistakes/worktrees/392a86146409/01M7GH9SQKBWSB6PK6H48XJ54Z/bin/fm-remote-job-worker.sh --serve
