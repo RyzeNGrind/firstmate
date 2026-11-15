@@ -458,9 +458,7 @@ test_agy_trust_refuses_out_of_scope_paths() {
 # installs node and agy in the same directory still sees agy absent when the
 # fake agy stub is removed.
 NODE_BIN=$(command -v node) || fail "test needs node"
-GIT_BIN=$(command -v git) || fail "test needs git"
-GIT_BIN_DIR=$(dirname "$GIT_BIN")
-BASE_PATH=${FM_TEST_BASE_PATH:-$GIT_BIN_DIR:/usr/bin:/bin:/usr/sbin:/sbin}
+BASE_PATH=${FM_TEST_BASE_PATH:-/usr/bin:/bin:/usr/sbin:/sbin:/run/current-system/sw/bin}
 
 make_agy_fakebin() {
   local dir=$1 fakebin
