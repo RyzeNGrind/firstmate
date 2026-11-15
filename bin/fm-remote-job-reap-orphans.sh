@@ -66,13 +66,15 @@ reap_worker_root() { # <command>
     *) return 1 ;;
   esac
   prefix=${path%"$REAP_SUFFIX"}
-  # Drop leading interpreter tokens (ps reports "/bin/bash <script>" or, under
-  # an env shebang, "bash <script>" or "/usr/bin/env bash <script>").
-  # A bare word cannot start an absolute code root, so it is always an
-  # interpreter; an absolute leading token is dropped only when it really is an
-  # executable, so a code root that itself contains a space is read whole.
+  # Drop leading shell-interpreter tokens only (ps reports "/bin/bash <script>"
+  # or, under an env shebang, "bash <script>" or "/usr/bin/env bash <script>").
+  # Any other leading word is not a worker launcher and leaves a non-absolute
+  # prefix that does not match. An absolute leading token is dropped only when it
+  # really is an executable, so a code root that itself contains a space is read
+  # whole.
   while [ "$prefix" != "${prefix#* }" ]; do
     leading=${prefix%% *}
+    case "${leading##*/}" in bash|sh|env) ;; *) break ;; esac
     case "$leading" in
       /*) [ -f "$leading" ] && [ -x "$leading" ] || break ;;
     esac

@@ -270,3 +270,22 @@ assert_contains "$out" "$ENVW" "the reaper did not recognise an abandoned worker
 wait_gone "$ENVW" 20 || fail "the abandoned env-shebang worker survived the reaper"
 wait_gone "$ENVW_SERVE" 20 || fail "the abandoned env-shebang worker's serving child survived the reaper"
 pass "the reaper recognises a worker launched through an env shebang"
+
+# --- a non-worker command that merely names a pruned worker script ------------
+#
+# A pager following a log or script path is not a worker launcher, so the reaper
+# must leave it alone even though its command line ends in the worker suffix and
+# its path root does not exist.
+
+CASE4="$TMP_ROOT/case4"
+mkdir -p "$CASE4"
+tail -F "$CASE4/pruned-root/bin/fm-remote-job-worker.sh" >/dev/null 2>&1 &
+PAGER_PID=$!
+track "$PAGER_PID"
+sleep 1
+alive "$PAGER_PID" || fail "the non-worker fixture process did not stay running"
+
+out=$("$REAPER" 2>&1) || fail "the reaper failed against a non-worker process: $out"
+assert_not_contains "$out" "$PAGER_PID" "the reaper reported a non-worker process that only names a worker script path"
+alive "$PAGER_PID" || fail "the reaper stopped a non-worker process that only names a worker script path"
+pass "a non-worker command naming a pruned worker script is never reaped"
