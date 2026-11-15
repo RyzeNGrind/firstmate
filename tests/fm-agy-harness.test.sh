@@ -122,7 +122,9 @@ test_agy_claims_no_inherited_launcher_marker() {
   local fakebin out
   # AGENT=1 was observed on a live agy TUI as inherited launcher state, so it
   # must never promote to an agy identity the way GEMINI_CLI does for gemini.
-  out=$(AGENT=1 "$HARNESS")
+  fakebin=$(fm_fakebin "$TMP_ROOT/anc-agent-env")
+  fm_fake_blind_ancestry "$fakebin"
+  out=$(AGENT=1 PATH="$fakebin:$PATH" "$HARNESS")
   [ "$out" != agy ] \
     || fail "an inherited AGENT=1 must never claim the agy identity, got '$out'"
   # Drive the hazard the other way: agy does not clear an inherited CLAUDECODE,
@@ -446,7 +448,18 @@ test_agy_trust_refuses_out_of_scope_paths() {
 # of where the turn runs);
 # FM_FAKE_AGY_RACE=1 models Herdr's native busy verdict rendering one capture
 # before the dialog paints; FM_FAKE_AGY_ANSWER=stuck models a dialog whose
-# answer never turns into a busy turn.
+# answer never turns into a busy turn; FM_FAKE_AGY_BUSY_AT=<n> delays a
+# pre-trusted launch's transition into a busy turn until the <n>-th pane
+# capture.
+# The spawn drives the real bin/fm-agy-trust.sh and the fake tmux's trust
+# lookup under this base PATH, and both read agy's settings store with node,
+# which runners do not keep in the system bin dirs. Symlink node into each
+# fakebin rather than adding its parent directory to BASE_PATH so a host that
+# installs node and agy in the same directory still sees agy absent when the
+# fake agy stub is removed.
+NODE_BIN=$(command -v node) || fail "test needs node"
+BASE_PATH=${FM_TEST_BASE_PATH:-/usr/bin:/bin:/usr/sbin:/sbin:/run/current-system/sw/bin}
+
 make_agy_fakebin() {
   local dir=$1 fakebin
   fakebin=$(fm_fakebin "$dir")
@@ -454,8 +467,19 @@ make_agy_fakebin() {
 #!/usr/bin/env bash
 set -u
 printf '%s\n' "$*" >> "$FM_FAKE_TMUX_CALL_LOG"
-state=$(cat "$FM_FAKE_AGY_STATE" 2>/dev/null || true)
+state=
+[ ! -f "$FM_FAKE_AGY_STATE" ] || IFS= read -r state < "$FM_FAKE_AGY_STATE" || true
 fake_screen() {
+  if [ "$state" = pending_busy ]; then
+    local captures=0
+    [ ! -f "${FM_FAKE_AGY_STATE}.captures" ] || IFS= read -r captures < "${FM_FAKE_AGY_STATE}.captures" || true
+    captures=$(( captures + 1 ))
+    printf '%s\n' "$captures" > "${FM_FAKE_AGY_STATE}.captures"
+    if [ "$captures" -ge "${FM_FAKE_AGY_BUSY_AT:-1}" ]; then
+      state=busy
+      printf 'busy\n' > "$FM_FAKE_AGY_STATE"
+    fi
+  fi
   case "$state" in
     dialog)
       printf 'Accessing workspace:\n\n%s\n\nDo you trust the contents of this project?\n\nAntigravity CLI requires permission to read, edit, and execute files here.\n\n> Yes, I trust this folder\n  No, exit\n' "$FM_FAKE_PANE_PATH"
@@ -510,7 +534,12 @@ case "${1:-}" in
         case "$state" in
           launched)
             if fake_path_trusted; then
-              printf 'busy\n' > "$FM_FAKE_AGY_STATE"
+              if [ "${FM_FAKE_AGY_BUSY_AT:-1}" -gt 1 ]; then
+                printf '0\n' > "${FM_FAKE_AGY_STATE}.captures"
+                printf 'pending_busy\n' > "$FM_FAKE_AGY_STATE"
+              else
+                printf 'busy\n' > "$FM_FAKE_AGY_STATE"
+              fi
             elif [ "${FM_FAKE_AGY_RACE:-0}" = 1 ]; then
               printf 'racing\n' > "$FM_FAKE_AGY_STATE"
             else
@@ -532,6 +561,17 @@ esac
 exit 0
 SH
   chmod +x "$fakebin/tmux"
+  local real_sleep
+  real_sleep=$(command -v sleep) || return 1
+  cat > "$fakebin/sleep" <<SH
+#!/usr/bin/env bash
+if [ -n "\${FM_FAKE_SLEEP_LOG:-}" ]; then
+  printf '%s\n' "\${1:-}" >> "\$FM_FAKE_SLEEP_LOG"
+  exit 0
+fi
+exec "$real_sleep" "\$@"
+SH
+  chmod +x "$fakebin/sleep"
   cat > "$fakebin/agy" <<'SH'
 #!/usr/bin/env bash
 set -u
@@ -547,6 +587,7 @@ echo "fake agy must never execute" >&2
 exit 9
 SH
   chmod +x "$fakebin/agy"
+  ln -sf "$NODE_BIN" "$fakebin/node"
   fm_fake_exit0 "$fakebin" treehouse gh-axi gh
   printf '%s\n' "$fakebin"
 }
@@ -585,18 +626,21 @@ $1
 EOF
 }
 
-# The spawn drives the real bin/fm-agy-trust.sh and the fake tmux's trust
-# lookup under this base PATH, and both read agy's settings store with node,
-# which runners do not keep in the system bin dirs. Carry the directory the
-# invoking environment resolves node from, the fm-kimi-harness shape.
-NODE_BIN=$(command -v node) || fail "test needs node"
-NODE_BIN_DIR=$(dirname "$NODE_BIN")
-BASE_PATH=${FM_TEST_BASE_PATH:-$NODE_BIN_DIR:/usr/bin:/bin:/usr/sbin:/sbin}
-
 run_agy_spawn() {
   local case_dir=$1 home=$2 proj=$3 wt=$4 fakebin=$5 id=$6
   shift 6
-  HOME="$home" FM_ROOT_OVERRIDE='' FM_HOME="$home" \
+  local -a poll_env=()
+  if [ "${FM_USE_DEFAULT_AGY_READY_POLLS:-0}" != 1 ]; then
+    poll_env=(
+      "FM_AGY_READY_POLLS=${FM_AGY_READY_POLLS:-4}"
+      "FM_AGY_POLL_INTERVAL=${FM_AGY_POLL_INTERVAL:-0}"
+    )
+  else
+    [ -z "${FM_AGY_READY_POLLS+x}" ] || poll_env+=("FM_AGY_READY_POLLS=$FM_AGY_READY_POLLS")
+    [ -z "${FM_AGY_POLL_INTERVAL+x}" ] || poll_env+=("FM_AGY_POLL_INTERVAL=$FM_AGY_POLL_INTERVAL")
+  fi
+  env -u FM_AGY_READY_POLLS -u FM_AGY_POLL_INTERVAL "${poll_env[@]}" \
+    HOME="$home" FM_ROOT_OVERRIDE='' FM_HOME="$home" \
     FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
     FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
     FM_SPAWN_NO_GUARD=1 FM_FAKE_PANE_PATH="$wt" TMUX="fake,1,0" \
@@ -610,7 +654,9 @@ run_agy_spawn() {
     FM_FAKE_AGY_ASSUME_TRUSTED="${FM_FAKE_AGY_ASSUME_TRUSTED:-0}" \
     FM_FAKE_AGY_RACE="${FM_FAKE_AGY_RACE:-0}" \
     FM_FAKE_AGY_ANSWER="${FM_FAKE_AGY_ANSWER:-works}" \
-    FM_AGY_READY_POLLS=4 FM_AGY_POLL_INTERVAL=0 FM_AGY_MODELS_TIMEOUT=${FM_AGY_MODELS_TIMEOUT:-1} \
+    FM_FAKE_AGY_BUSY_AT="${FM_FAKE_AGY_BUSY_AT:-1}" \
+    FM_FAKE_SLEEP_LOG="${FM_FAKE_SLEEP_LOG:-}" \
+    FM_AGY_MODELS_TIMEOUT="${FM_AGY_MODELS_TIMEOUT:-1}" \
     PATH="$fakebin:$BASE_PATH" \
     "$SPAWN" "$id" "$proj" --harness agy --mode no-mistakes --yolo off "$@" 2>&1
 }
@@ -831,11 +877,100 @@ test_agy_pre_trusted_path_that_never_turns_busy_fails_the_spawn() {
   [ "$rc" -ne 0 ] || fail "a dialog that never turns into a busy turn must fail the spawn"
   assert_contains "$out" "did not start processing its brief after the folder-trust dialog was answered" \
     "a stuck trust dialog failed without its concrete reason"
+  assert_contains "$out" "within 0s (4 polls at 0s)" \
+    "a stuck trust dialog failure did not state the elapsed poll bound"
   [ "$(count_enter_sends "$CASE_DIR/tmux-calls.log")" -eq 2 ] \
     || fail "the gate must answer the dialog exactly once and never hammer Enter"
   assert_contains "$(cat "$CASE_DIR/tmux-calls.log")" "kill-window" \
     "a failed agy readiness gate left its launched endpoint running"
   pass "fm-spawn: an agy dialog that never turns busy fails the spawn and closes the endpoint"
+}
+
+count_capture_calls() {  # <tmux-call-log>
+  grep -c '^capture-pane .* -S -120$' "$1" || true
+}
+
+count_half_second_sleeps() {  # <sleep-log>
+  grep -c '^0\.5$' "$1" || true
+}
+
+test_agy_default_ready_polls_reaches_late_busy_turn_beyond_60_polls() {
+  local id rec out rc captures waits sleep_log
+  id="agy-latebusy-z15-$$"
+  rec=$(make_agy_spawn_case latebusy "$id")
+  read_agy_spawn_record "$rec"
+  sleep_log="$CASE_DIR/sleep.log"
+  : > "$sleep_log"
+  rc=0
+  out=$(FM_USE_DEFAULT_AGY_READY_POLLS=1 FM_FAKE_AGY_BUSY_AT=65 FM_FAKE_SLEEP_LOG="$sleep_log" \
+    run_agy_spawn "$CASE_DIR" "$HOME_DIR" "$PROJ_DIR" "$WT_DIR" \
+    "$FAKEBIN_DIR" "$id" --model gemini-3.8-flash-low) || rc=$?
+  expect_code 0 "$rc" "a pre-trusted agy launch turning busy at poll 65 (past the old 60-poll bound) must succeed under the default bound"
+  assert_contains "$out" "spawned $id harness=agy" "late-busy agy spawn did not report success"
+  [ "$(cat "$CASE_DIR/agy.state")" = busy ] \
+    || fail "late-busy agy spawn did not reach the busy state"
+  captures=$(count_capture_calls "$CASE_DIR/tmux-calls.log")
+  [ "$captures" -eq 65 ] \
+    || fail "expected 65 readiness captures to reach poll 65, got $captures"
+  waits=$(count_half_second_sleeps "$sleep_log")
+  [ "$waits" -eq 64 ] \
+    || fail "expected 64 default 0.5s readiness sleeps before poll 65, got $waits"
+  pass "fm-spawn: default FM_AGY_READY_POLLS reaches a late busy turn beyond the old 60-poll bound"
+}
+
+test_agy_default_ready_polls_exhaustion_reports_elapsed_bound() {
+  local id rec out rc captures waits sleep_log
+  id="agy-defbound-z16-$$"
+  rec=$(make_agy_spawn_case defbound "$id")
+  read_agy_spawn_record "$rec"
+  sleep_log="$CASE_DIR/sleep.log"
+  : > "$sleep_log"
+  rc=0
+  out=$(FM_USE_DEFAULT_AGY_READY_POLLS=1 FM_FAKE_AGY_BUSY_AT=9999 FM_FAKE_SLEEP_LOG="$sleep_log" \
+    run_agy_spawn "$CASE_DIR" "$HOME_DIR" "$PROJ_DIR" "$WT_DIR" \
+    "$FAKEBIN_DIR" "$id" --model gemini-3.8-flash-low) || rc=$?
+  [ "$rc" -ne 0 ] || fail "a pre-trusted agy launch that never turns busy must fail after exhausting the default poll bound"
+  captures=$(count_capture_calls "$CASE_DIR/tmux-calls.log")
+  [ "$captures" -eq 240 ] \
+    || fail "expected the default readiness gate to poll 240 times before failing, got $captures"
+  waits=$(count_half_second_sleeps "$sleep_log")
+  [ "$waits" -eq 239 ] \
+    || fail "expected 239 inter-poll 0.5s sleeps across 240 default polls, got $waits"
+  assert_contains "$out" "agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-$id within 120s (240 polls at 0.5s)" \
+    "pre-trusted readiness timeout did not state the default 120s (240 polls at 0.5s) elapsed bound"
+  assert_grep "failed: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-$id within 120s (240 polls at 0.5s)" \
+    <(sed -E 's/ \[at=[0-9]+\]//' "$HOME_DIR/state/$id.status") \
+    "task status did not record the pre-trusted readiness failure with its elapsed bound"
+  assert_contains "$(cat "$CASE_DIR/tmux-calls.log")" "kill-window" \
+    "a failed pre-trusted agy readiness gate left its launched endpoint running"
+  pass "fm-spawn: default 240-poll agy readiness bound states 120s (240 polls at 0.5s) on failure"
+}
+
+test_agy_ready_polls_env_override_controls_bound_and_failure_message() {
+  local id rec out rc captures waits sleep_log
+  id="agy-ovrbound-z17-$$"
+  rec=$(make_agy_spawn_case ovrbound "$id")
+  read_agy_spawn_record "$rec"
+  sleep_log="$CASE_DIR/sleep.log"
+  : > "$sleep_log"
+  rc=0
+  out=$(FM_USE_DEFAULT_AGY_READY_POLLS=1 FM_AGY_READY_POLLS=5 FM_AGY_POLL_INTERVAL=.1 \
+    FM_FAKE_AGY_BUSY_AT=65 FM_FAKE_SLEEP_LOG="$sleep_log" \
+    run_agy_spawn "$CASE_DIR" "$HOME_DIR" "$PROJ_DIR" "$WT_DIR" \
+    "$FAKEBIN_DIR" "$id" --model gemini-3.8-flash-low) || rc=$?
+  [ "$rc" -ne 0 ] || fail "an explicit FM_AGY_READY_POLLS=5 override must stop before a poll-65 busy render"
+  captures=$(count_capture_calls "$CASE_DIR/tmux-calls.log")
+  [ "$captures" -eq 5 ] \
+    || fail "expected FM_AGY_READY_POLLS=5 to poll exactly 5 times, got $captures"
+  waits=$(grep -Fxc '.1' "$sleep_log" || true)
+  [ "$waits" -eq 4 ] \
+    || fail "expected 4 inter-poll .1s sleeps for FM_AGY_READY_POLLS=5, got $waits"
+  assert_contains "$out" "within 0.5s (5 polls at .1s)" \
+    "overridden readiness timeout did not state the 0.5s (5 polls at .1s) elapsed bound"
+  assert_grep "failed: agy did not start processing its brief in the pre-trusted worktree in window firstmate:fm-$id within 0.5s (5 polls at .1s)" \
+    <(sed -E 's/ \[at=[0-9]+\]//' "$HOME_DIR/state/$id.status") \
+    "task status did not record the overridden elapsed bound"
+  pass "fm-spawn: FM_AGY_READY_POLLS and FM_AGY_POLL_INTERVAL override the bound and failure message"
 }
 
 test_agy_missing_binary_refuses_before_pane_creation() {
@@ -914,6 +1049,9 @@ test_agy_dialog_despite_registration_is_answered_once
 test_agy_unregistered_path_ignores_busy_until_the_dialog_is_answered
 test_agy_unregistered_path_without_a_dialog_fails_the_spawn
 test_agy_pre_trusted_path_that_never_turns_busy_fails_the_spawn
+test_agy_default_ready_polls_reaches_late_busy_turn_beyond_60_polls
+test_agy_default_ready_polls_exhaustion_reports_elapsed_bound
+test_agy_ready_polls_env_override_controls_bound_and_failure_message
 test_agy_missing_binary_refuses_before_pane_creation
 test_agy_secondmate_is_refused
 test_agy_spawn_arms_no_busy_wiring
