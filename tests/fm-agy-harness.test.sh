@@ -980,7 +980,9 @@ test_agy_ready_polls_env_override_ignores_concurrent_agy_processes() {
     id="agy-ovrconc$n-z18-$$"
     rec=$(make_agy_spawn_case "ovrconc$n" "$id")
     read_agy_spawn_record "$rec"
-    printf '#!/bin/sh\nprintf "5\\n"\n' > "$FAKEBIN_DIR/pgrep"
+    : > "$CASE_DIR/pgrep.log"
+    # Regression guard: the agy spawn path must never consult a process count.
+    printf '#!/bin/sh\nprintf "%%s\\n" "$*" >> "%s"\nprintf "5\\n"\n' "$CASE_DIR/pgrep.log" > "$FAKEBIN_DIR/pgrep"
     chmod +x "$FAKEBIN_DIR/pgrep"
     : > "$CASE_DIR/sleep.log"
     ids+=("$id")
@@ -1013,6 +1015,8 @@ test_agy_ready_polls_env_override_ignores_concurrent_agy_processes() {
       || fail "concurrent spawn $id: expected 4 inter-poll .1s sleeps, got $waits"
     assert_contains "$out" "within 0.5s (5 polls at .1s)" \
       "concurrent spawn $id: overridden readiness bound changed while other agy processes were running"
+    [ ! -s "$CASE_DIR/pgrep.log" ] \
+      || fail "concurrent spawn $id: pgrep was consulted on the agy spawn path: $(cat "$CASE_DIR/pgrep.log")"
   done
   pass "fm-spawn: concurrent agy spawns each honor explicit readiness overrides regardless of agy process count"
 }
