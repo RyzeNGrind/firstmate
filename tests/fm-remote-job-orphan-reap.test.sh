@@ -119,7 +119,7 @@ start_worker() {
     fm_remote_job_start_linux_worker "$root" "$account_home" >&2 || exit 1
     deadline=$(( $(date +%s) + 10 ))
     while [ "$(date +%s)" -lt "$deadline" ]; do
-      pid=$(pgrep -f "^/bin/bash $root/bin/fm-remote-job-worker.sh\$" | head -n 1)
+      pid=$(pgrep -f "(^| )$root/bin/fm-remote-job-worker.sh\$" | head -n 1)
       if pid_is_numeric "$pid"; then
         printf '%s\n' "$pid"
         exit 0
@@ -227,3 +227,46 @@ pass "the reaper stops an abandoned worker's whole tree"
 out=$("$REAPER" 2>&1) || fail "a repeat reaper run failed: $out"
 assert_not_contains "$out" "$STALE" "the reaper reported an already-stopped worker"
 pass "the reaper is idempotent"
+
+# --- a worker under an env shebang, with bash reachable only through PATH -----
+#
+# NixOS hosts have no /bin/bash, so the worker's "#!/usr/bin/env bash" resolves
+# bash from PATH and ps reports "bash <script>" rather than "/bin/bash <script>".
+# The stub directory below is the only place this fixture's bash is found.
+
+CASE3="$TMP_ROOT/case3"
+mkdir -p "$CASE3/remote-root/bin" "$CASE3/stub"
+ln -s "$(command -v bash)" "$CASE3/stub/bash"
+cat > "$CASE3/remote-root/bin/fm-remote-job-worker.sh" <<'SH'
+#!/usr/bin/env bash
+set -u
+if [ "${1:-}" = --serve ]; then
+  while :; do sleep 0.2; done
+fi
+while :; do
+  "$0" --serve &
+  wait $! 2>/dev/null
+  sleep 0.2
+done
+SH
+chmod +x "$CASE3/remote-root/bin/fm-remote-job-worker.sh"
+printf 'fixture\n' > "$CASE3/remote-root/AGENTS.md"
+
+set -m
+PATH="$CASE3/stub:$PATH" "$CASE3/remote-root/bin/fm-remote-job-worker.sh" >/dev/null 2>&1 &
+ENVW=$!
+set +m
+track "$ENVW"
+wait_child "$ENVW" 10 || fail "the env-shebang worker never started its serving child"
+ENVW_SERVE=$(pgrep -P "$ENVW" | head -n 1)
+
+out=$("$REAPER" 2>&1) || fail "the reaper failed against a live env-shebang worker: $out"
+assert_not_contains "$out" "$ENVW" "the reaper reported an env-shebang worker whose code root still exists"
+alive "$ENVW" || fail "the reaper stopped an env-shebang worker whose code root still exists"
+
+rm -rf "$CASE3/remote-root"
+out=$("$REAPER" 2>&1) || fail "the reaper failed against an abandoned env-shebang worker: $out"
+assert_contains "$out" "$ENVW" "the reaper did not recognise an abandoned worker launched through an env shebang"
+wait_gone "$ENVW" 20 || fail "the abandoned env-shebang worker survived the reaper"
+wait_gone "$ENVW_SERVE" 20 || fail "the abandoned env-shebang worker's serving child survived the reaper"
+pass "the reaper recognises a worker launched through an env shebang"
