@@ -373,6 +373,11 @@
 # busy turn - answering the dialog first if it renders anyway - before
 # reporting success (the rovo/kimi launch-then-confirm shape). Its busy state
 # is a screen-scrape fallback like grok and rovo, and it is crewmate/scout only.
+# The readiness gate defaults to 240 polls (FM_AGY_READY_POLLS) at 0.5s
+# (FM_AGY_POLL_INTERVAL), giving loaded hosts more time to enter a busy turn.
+# Failures report the nominal polls-times-interval bound (120s by default),
+# not measured wall time: capture and classification add time, and sleeps
+# occur only between polls. Both environment overrides remain supported.
 # cursor installs no per-task hook either: it writes state/<id>.cursor-session to
 # bind the pane to cursor's own conversation transcript (projects root, the exact
 # workspace path cursor records in .workspace-trusted, and the conversations that
@@ -3913,9 +3918,6 @@ rovo_endpoint_cleanup() {
 # verdict is known to coexist with an unanswered dialog: a busy verdict counts
 # only when the path was pre-registered or the dialog has been seen and
 # answered; on an unregistered path it keeps polling for the dialog instead.
-# Default readiness bound is 240 polls at 0.5s (120s plus capture time) so a
-# loaded host has headroom for agy to enter a busy turn; FM_AGY_READY_POLLS
-# and FM_AGY_POLL_INTERVAL override the bound and cadence.
 AGY_TRUST_DIALOG='Do you trust the contents of this project?'
 AGY_TRUST_ANSWERED=0
 AGY_READY_BOUND=
