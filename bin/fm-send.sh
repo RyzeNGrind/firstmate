@@ -1088,7 +1088,11 @@ else
     case "$ring_rc" in
     1) echo "fm-send: doorbell skipped (composer visibly holds pending text); the steer is durably recorded at $INBOX_RECORD and the watcher will re-ring" >&2 ;;
     2) echo "fm-send: doorbell did not reach $T; the steer is durably recorded at $INBOX_RECORD and the watcher will re-ring" >&2 ;;
-    3) echo "fm-send: doorbell not typed because the agent in $T has exited; the steer is durably recorded at $INBOX_RECORD for recovery (stuck-crewmate-recovery), and the watcher will not re-ring a dead pane" >&2 ;;
+    3) echo "fm-send: doorbell not typed because the agent in $T has exited; the steer is durably recorded at $INBOX_RECORD for recovery (stuck-crewmate-recovery)" >&2
+       # Wake before marker: at-least-once, matching inbox_steer_escalate_unavailable's ordering.
+       fm_wake_append stale "$T" "stale: $T (unread firstmate instruction: $INBOX_RECORD is unhandled and the worker's agent has exited or its endpoint is missing at delivery time, so the doorbell was not typed; recover the worker)" || true
+       fm_task_inbox_record_escalated "$STATE" "$INBOX_TASK_ID" "$INBOX_RECORD" || true
+       ;;
     esac
     exit 0
   fi

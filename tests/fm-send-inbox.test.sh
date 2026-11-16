@@ -25,6 +25,9 @@
 #  10. An empty or whitespace-only text steer is refused before anything is
 #      marked, recorded, or typed - on the marked secondmate path that means
 #      no marker-only record and no pending-reply expectation.
+#  11. A dead or missing endpoint at ring time queues a stale wake and writes
+#      the .escalated marker immediately, so recovery is not delayed by the
+#      watcher's grace period.
 # Every case below that passes a literal `$...` message quotes it on purpose
 # (the point is sending an unexpanded `$` line), so SC2016 is disabled.
 # shellcheck disable=SC2016
@@ -197,6 +200,29 @@ test_failed_ring_is_still_sent() {
   assert_contains "$(cat "$err")" "watcher will re-ring" \
     "the failed-ring notice should point at the re-ring"
   pass "fm-send inbox: a failed doorbell is still a durably sent steer"
+}
+
+test_dead_endpoint_at_ring_time_fast_tracks_recovery() {
+  local dir err rc wake_queue escalated
+  dir=$(setup_case deadring)
+  err="$dir/send.err"
+  # Use a window absent from the stub's inventory (list-windows always returns
+  # "fm-t1") so fm_backend_tmux_agent_state returns "missing" and
+  # fm_task_inbox_ring returns 3, triggering the fast-path escalation.
+  fm_write_meta "$dir/home/state/t1.meta" "window=sess:fm-gone" "kind=ship" "harness=claude"
+  run_send "$dir" "$err" -- t1 "check the CI result"
+  rc=$?
+  expect_code 0 "$rc" "a dead-endpoint send must still succeed (steer is durably recorded)"
+  [ -f "$dir/home/state/t1.inbox/001.msg" ] || fail "the steer was not durably recorded"
+  wake_queue="$dir/home/state/.wake-queue"
+  [ -f "$wake_queue" ] || fail "no stale wake was queued; expected an immediate stale wake on dead-endpoint delivery"
+  assert_contains "$(cat "$wake_queue")" "sess:fm-gone" \
+    "the stale wake must name the dead endpoint"
+  assert_contains "$(cat "$wake_queue")" "stale" \
+    "the queued wake must be the stale kind"
+  escalated="$dir/home/state/t1.inbox/.escalated"
+  [ -f "$escalated" ] || fail "no .escalated marker was written; the watcher would re-ring a known-dead pane"
+  pass "fm-send inbox: a dead endpoint at ring time queues a stale wake and writes the .escalated marker immediately"
 }
 
 test_harness_invocations_stay_typed() {
@@ -416,6 +442,7 @@ test_multiline_steer_is_legal
 test_resend_enqueues_new_sequence
 test_pending_composer_skips_ring_advisorily
 test_failed_ring_is_still_sent
+test_dead_endpoint_at_ring_time_fast_tracks_recovery
 test_harness_invocations_stay_typed
 test_explicit_target_stays_typed
 test_key_path_never_touches_inbox
