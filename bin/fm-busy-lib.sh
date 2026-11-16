@@ -901,6 +901,12 @@ fm_busy_agy_tail_busy() {
     | grep -qiE 'esc[[:space:]]+to[[:space:]]+cancel'
 }
 
+# An exact idle status row is evidence only at the bottom of Agy's pane.
+fm_busy_agy_tail_idle() {
+  grep -v '^[[:space:]]*$' | tail -1 \
+    | grep -qE '^\?[[:space:]]+for shortcuts[[:space:]]+Gemini[[:space:]]+.+[[:space:]]·[[:space:]]+(low|medium|high)[[:space:]]*$'
+}
+
 # --- launch-prompt signatures (fm_busy_launch_prompt_parked) ----------------
 #
 # Each function consumes a captured pane tail on stdin (the caller's whole
@@ -1156,10 +1162,12 @@ fm_busy_classify() {  # <backend> <target> <harness> <id> <state-dir> [tail40]
           return 0
         fi
       fi
-      # Best-effort like rovo: a long turn can scroll the busy marker out of
-      # the captured tail, so its absence means "can't tell," never idle.
+      # Busy evidence wins over an idle-looking footer in the same capture;
+      # absence of the busy marker alone never proves idle.
       if printf '%s' "$tail40" | fm_busy_agy_tail_busy; then
         printf 'busy agy-regex'
+      elif printf '%s' "$tail40" | fm_busy_agy_tail_idle; then
+        printf 'idle agy-regex'
       else
         printf 'unknown agy-regex'
       fi
