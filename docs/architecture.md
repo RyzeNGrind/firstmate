@@ -307,6 +307,10 @@ That keeps spawn launch compatible across claude, codex, opencode, pi, pi-signed
 
 ## Optional secondmates
 
+A standing supervisor may exist only for an isolation boundary, never for a function.
+An isolation boundary means at least one of: own credentials, own client or brand identity, own deploy surface, or own host.
+Work that shares all four belongs under one supervisor; the difference belongs in the task brief, not in a separate supervisor loaded on every wake.
+
 `data/secondmates.md` records persistent secondmates with natural-language scopes, project clone lists, and home paths.
 A local route points directly at its home, while a remote route adds an SSH alias and remote Firstmate code root so the entire home and all of its child work stay on that host.
 Remote placement pins the remote second-mate agent to Herdr while leaving the remote home's worker backend selection independent, and every non-doctor primary-to-remote `fm-on` command runs through the remote account's Firstmate-owned job worker rather than its SSH process or a Herdr pane.
