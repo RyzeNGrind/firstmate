@@ -56,8 +56,8 @@ TXT
 
 # The code root a worker command line was launched from, echoed only when the
 # command is unambiguously a worker invocation: an absolute script path ending
-# in the worker suffix, optionally preceded by the interpreter ps reports as
-# "/bin/bash <script>", with at most the --serve argument after it.
+# in the worker suffix, optionally preceded by the interpreter tokens ps reports,
+# with at most the --serve argument after it.
 reap_worker_root() { # <command>
   local command=$1 path prefix leading
   case "$command" in
@@ -66,13 +66,20 @@ reap_worker_root() { # <command>
     *) return 1 ;;
   esac
   prefix=${path%"$REAP_SUFFIX"}
-  case "$prefix" in /*) ;; *) return 1 ;; esac
-  leading=${prefix%% *}
-  # Drop the leading token only when it really is the interpreter binary, so a
-  # code root that itself contains a space is read whole rather than split.
-  if [ "$leading" != "$prefix" ] && [ -f "$leading" ] && [ -x "$leading" ]; then
+  # Drop leading shell-interpreter tokens only (ps reports "/bin/bash <script>"
+  # or, under an env shebang, "bash <script>" or "/usr/bin/env bash <script>").
+  # Any other leading word is not a worker launcher and leaves a non-absolute
+  # prefix that does not match. An absolute leading token is dropped only when it
+  # really is an executable, so a code root that itself contains a space is read
+  # whole.
+  while [ "$prefix" != "${prefix#* }" ]; do
+    leading=${prefix%% *}
+    case "${leading##*/}" in bash|sh|env) ;; *) break ;; esac
+    case "$leading" in
+      /*) [ -f "$leading" ] && [ -x "$leading" ] || break ;;
+    esac
     prefix=${prefix#"$leading" }
-  fi
+  done
   case "$prefix" in /*) ;; *) return 1 ;; esac
   printf '%s\n' "$prefix"
 }
