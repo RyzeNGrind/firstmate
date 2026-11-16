@@ -973,6 +973,54 @@ test_agy_ready_polls_env_override_controls_bound_and_failure_message() {
   pass "fm-spawn: FM_AGY_READY_POLLS and FM_AGY_POLL_INTERVAL override the bound and failure message"
 }
 
+test_agy_ready_polls_env_override_ignores_concurrent_agy_processes() {
+  local n id rec out rc captures waits sleep_log
+  local -a ids=() cases=() pids=()
+  for n in 1 2 3; do
+    id="agy-ovrconc$n-z18-$$"
+    rec=$(make_agy_spawn_case "ovrconc$n" "$id")
+    read_agy_spawn_record "$rec"
+    : > "$CASE_DIR/pgrep.log"
+    # Regression guard: the agy spawn path must never consult a process count.
+    printf '#!/bin/sh\nprintf "%%s\\n" "$*" >> "%s"\nprintf "5\\n"\n' "$CASE_DIR/pgrep.log" > "$FAKEBIN_DIR/pgrep"
+    chmod +x "$FAKEBIN_DIR/pgrep"
+    : > "$CASE_DIR/sleep.log"
+    ids+=("$id")
+    cases+=("$rec")
+    (
+      read_agy_spawn_record "$rec"
+      rc=0
+      out=$(FM_USE_DEFAULT_AGY_READY_POLLS=1 FM_AGY_READY_POLLS=5 FM_AGY_POLL_INTERVAL=.1 \
+        FM_FAKE_AGY_BUSY_AT=65 FM_FAKE_SLEEP_LOG="$CASE_DIR/sleep.log" \
+        run_agy_spawn "$CASE_DIR" "$HOME_DIR" "$PROJ_DIR" "$WT_DIR" \
+        "$FAKEBIN_DIR" "$id" --model gemini-3.8-flash-low) || rc=$?
+      printf '%s\n' "$rc" > "$CASE_DIR/rc"
+      printf '%s\n' "$out" > "$CASE_DIR/out"
+    ) &
+    pids+=($!)
+  done
+  for n in "${pids[@]}"; do wait "$n"; done
+  for n in 0 1 2; do
+    id=${ids[$n]}
+    read_agy_spawn_record "${cases[$n]}"
+    rc=$(cat "$CASE_DIR/rc")
+    out=$(cat "$CASE_DIR/out")
+    sleep_log="$CASE_DIR/sleep.log"
+    [ "$rc" -ne 0 ] || fail "concurrent spawn $id: an explicit FM_AGY_READY_POLLS=5 override must stop before a poll-65 busy render"
+    captures=$(count_capture_calls "$CASE_DIR/tmux-calls.log")
+    [ "$captures" -eq 5 ] \
+      || fail "concurrent spawn $id: expected exactly 5 polls under FM_AGY_READY_POLLS=5, got $captures"
+    waits=$(grep -Fxc '.1' "$sleep_log" || true)
+    [ "$waits" -eq 4 ] \
+      || fail "concurrent spawn $id: expected 4 inter-poll .1s sleeps, got $waits"
+    assert_contains "$out" "within 0.5s (5 polls at .1s)" \
+      "concurrent spawn $id: overridden readiness bound changed while other agy processes were running"
+    [ ! -s "$CASE_DIR/pgrep.log" ] \
+      || fail "concurrent spawn $id: pgrep was consulted on the agy spawn path: $(cat "$CASE_DIR/pgrep.log")"
+  done
+  pass "fm-spawn: concurrent agy spawns each honor explicit readiness overrides regardless of agy process count"
+}
+
 test_agy_missing_binary_refuses_before_pane_creation() {
   local id rec out rc
   id="agy-missing-z5-$$"
@@ -1052,6 +1100,7 @@ test_agy_pre_trusted_path_that_never_turns_busy_fails_the_spawn
 test_agy_default_ready_polls_reaches_late_busy_turn_beyond_60_polls
 test_agy_default_ready_polls_exhaustion_reports_elapsed_bound
 test_agy_ready_polls_env_override_controls_bound_and_failure_message
+test_agy_ready_polls_env_override_ignores_concurrent_agy_processes
 test_agy_missing_binary_refuses_before_pane_creation
 test_agy_secondmate_is_refused
 test_agy_spawn_arms_no_busy_wiring
