@@ -25,6 +25,8 @@
 #  10. An empty or whitespace-only text steer is refused before anything is
 #      marked, recorded, or typed - on the marked secondmate path that means
 #      no marker-only record and no pending-reply expectation.
+#  11. A dead-agent doorbell (ring_rc=3) is still a durably sent steer
+#      (exit 0, record written): the watcher's re-ring ladder owns delivery.
 # Every case below that passes a literal `$...` message quotes it on purpose
 # (the point is sending an unexpanded `$` line), so SC2016 is disabled.
 # shellcheck disable=SC2016
@@ -66,7 +68,13 @@ case "${1:-}" in
     fi
     exit 0 ;;
   display-message)
-    for a in "$@"; do case "$a" in *cursor_y*) printf '1\n'; exit 0 ;; esac; done
+    for a in "$@"; do
+      case "$a" in
+        *cursor_y*) printf '1\n'; exit 0 ;;
+        *pane_current_command*) [ -z "${FM_FAKE_TMUX_AGENT:-}" ] || { printf '%s\n' "$FM_FAKE_TMUX_AGENT"; exit 0; } ;;
+        *pane_tty*) [ -z "${FM_FAKE_TMUX_AGENT:-}" ] || { printf '\n'; exit 0; } ;;
+      esac
+    done
     printf 'fakepane\n'; exit 0 ;;
   capture-pane)
     if [ "${FM_FAKE_TMUX_COMPOSER:-}" = pending ]; then
@@ -197,6 +205,20 @@ test_failed_ring_is_still_sent() {
   assert_contains "$(cat "$err")" "watcher will re-ring" \
     "the failed-ring notice should point at the re-ring"
   pass "fm-send inbox: a failed doorbell is still a durably sent steer"
+}
+
+test_dead_agent_ring_is_still_sent() {
+  local dir err rc
+  dir=$(setup_case deadring)
+  err="$dir/send.err"
+  run_send "$dir" "$err" FM_FAKE_TMUX_AGENT=zsh -- t1 "steer to a dead agent"
+  rc=$?
+  expect_code 0 "$rc" "a dead-agent doorbell must not fail the send"
+  [ -f "$dir/home/state/t1.inbox/001.msg" ] || fail "the steer was not recorded"
+  [ ! -s "$dir/send.log" ] || fail "a dead agent was typed into:"$'\n'"$(cat "$dir/send.log")"
+  assert_contains "$(cat "$err")" "watcher will re-ring" \
+    "the dead-agent notice should point at the re-ring"
+  pass "fm-send inbox: a dead-agent doorbell is still a durably sent steer"
 }
 
 test_harness_invocations_stay_typed() {
@@ -416,6 +438,7 @@ test_multiline_steer_is_legal
 test_resend_enqueues_new_sequence
 test_pending_composer_skips_ring_advisorily
 test_failed_ring_is_still_sent
+test_dead_agent_ring_is_still_sent
 test_harness_invocations_stay_typed
 test_explicit_target_stays_typed
 test_key_path_never_touches_inbox

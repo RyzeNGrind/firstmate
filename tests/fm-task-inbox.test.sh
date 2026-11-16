@@ -25,7 +25,9 @@
 #      one stale wake once the ring budget is spent.
 #   6. Dead panes: the doorbell line is a shell no-op when executed by a bare
 #      shell, the ring skips an agent the backend classifies dead, and the
-#      watcher surfaces such a record exactly once instead of re-ringing.
+#      watcher enters the ring ladder with consumed-budget attempts rather than
+#      escalating on the first dead poll, so a transient false-dead verdict
+#      cannot permanently strand the steer.
 set -u
 
 # shellcheck source=tests/wake-helpers.sh
@@ -747,7 +749,11 @@ test_watcher_escalates_once_after_budget() {
   pass "watcher: a spent ring budget emits exactly one ordinary stale wake for recovery"
 }
 
-test_watcher_dead_pane_escalates_once_without_ringing() {
+# A dead pane's unhandled instruction enters the ring ladder like any other
+# ring skip: budget is consumed without typing, and escalation happens only
+# after FM_TASK_INBOX_RING_MAX attempts. A transient false-dead verdict must
+# not permanently strand the steer by writing .escalated on the first poll.
+test_watcher_dead_pane_enters_ladder_and_escalates_after_budget() {
   local dir state out log pid rec
   dir=$(setup_watch_case dead-pane)
   state="$dir/state"; out="$dir/watch.out"; log="$dir/send.log"; : > "$log"
@@ -755,25 +761,22 @@ test_watcher_dead_pane_escalates_once_without_ringing() {
   age_path "$rec"
   watch_bg "$state" "$dir/fakebin" "$out" \
     FM_SEND_LOG="$log" FM_FAKE_TMUX_CAPTURE="$(idle_capture "$dir")" \
-    FM_FAKE_TMUX_AGENT=zsh FM_TASK_INBOX_RING_MAX=99
+    FM_FAKE_TMUX_AGENT=zsh FM_TASK_INBOX_RING_MAX=1
   pid=$!
   wait_watcher_gone "$pid" \
-    || { kill "$pid" 2>/dev/null; fail "the watcher never surfaced a dead pane's unhandled instruction"; }
+    || { kill "$pid" 2>/dev/null; fail "the watcher did not escalate a dead pane's unhandled instruction within budget"; }
   [ ! -s "$log" ] || fail "a dead pane was typed into:"$'\n'"$(cat "$log")"
   [ "$(grep -cF 'unread firstmate instruction' "$state/.wake-queue" 2>/dev/null || true)" = 1 ] \
     || fail "a dead pane should surface exactly one stale wake:"$'\n'"$(cat "$state/.wake-queue" 2>/dev/null)"
-  grep -qF "agent has exited" "$state/.wake-queue" \
-    || fail "the stale wake should say the agent has exited:"$'\n'"$(cat "$state/.wake-queue")"
   grep -qF "$rec" "$state/.wake-queue" || fail "the stale wake should name the record path"
   [ -f "$rec" ] || fail "the durable record must survive for recovery"
   [ "$(cat "$state/t1.inbox/.escalated")" = "${rec##*/}" ] \
     || fail "the escalation marker should suppress further surfacing of this record"
-  [ ! -e "$state/t1.inbox/.ring-state" ] || fail "a dead pane must not enter the re-ring ladder"
-  # The ladder is capped: nothing further is due for this record, so no later
-  # poll rings the dead pane or queues a second wake.
+  [ -e "$state/t1.inbox/.ring-state" ] \
+    || fail "a dead pane should enter the re-ring ladder (ring-state must be created)"
   [ "$(inbox_lib "$state" fm_task_inbox_due_action "$state" t1)" = quiet ] \
-    || fail "a dead pane already surfaced must be quiet on later polls"
-  pass "watcher: a positively dead pane is never typed into and surfaces exactly one stale wake"
+    || fail "an escalated record must be quiet on later polls"
+  pass "watcher: a dead pane enters the ring ladder and escalates after the attempt budget is spent"
 }
 
 test_watcher_dead_pane_ignores_stale_busy_state() {
@@ -785,7 +788,7 @@ test_watcher_dead_pane_ignores_stale_busy_state() {
   age_path "$rec"
   watch_bg "$state" "$dir/fakebin" "$out" \
     FM_SEND_LOG="$log" FM_FAKE_TMUX_CAPTURE="$dir/busy.capture" \
-    FM_FAKE_TMUX_AGENT=zsh FM_BUSY_REGEX=BUSYTOKEN FM_TASK_INBOX_RING_MAX=99
+    FM_FAKE_TMUX_AGENT=zsh FM_BUSY_REGEX=BUSYTOKEN FM_TASK_INBOX_RING_MAX=1
   pid=$!
   wait_watcher_gone "$pid" \
     || { kill "$pid" 2>/dev/null; fail "stale busy state hid a dead pane's unhandled instruction"; }
@@ -817,5 +820,5 @@ test_watcher_quiet_on_healthy_inbox
 test_watcher_ack_silences_unwritable_ladder
 test_watcher_surfaces_unwritable_ladder
 test_watcher_escalates_once_after_budget
-test_watcher_dead_pane_escalates_once_without_ringing
+test_watcher_dead_pane_enters_ladder_and_escalates_after_budget
 test_watcher_dead_pane_ignores_stale_busy_state
