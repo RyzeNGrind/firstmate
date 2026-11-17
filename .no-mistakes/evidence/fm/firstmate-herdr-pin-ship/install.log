@@ -1,0 +1,3 @@
+fm-install-herdr.sh: downloading herdr-linux-x86_64 from https://github.com/ogulcancelik/herdr/releases/download/v0.9.5/herdr-linux-x86_64
+fm-install-herdr.sh: installed herdr 0.9.5 (protocol 22) to /tmp/tmp.CBmpKqY4GX/bin/herdr
+herdr 0.9.5

@@ -1,0 +1,4 @@
+herdr 0.7.4
+v2.0.1
+{"client":{"version":"0.7.4","channel":"stable","protocol":16,"binary":"/nix/store/3j7nkyj4pkm28ydxp9n4ccakhqngda93-herdr-0.7.4/bin/herdr","session":null},"server":{"status":"running","running":true,"version":"0.7.4","protocol":16,"capabilities":{"live_handoff":true,"detached_server_daemon":false},"compatible":true,"socket":"/home/ryzengrind/.config/herdr/herdr.sock","session":null,"restart_needed":false},"update":{"restart_needed":false}}
+::error::expected exact Herdr pin 0.9.5, got 0.7.4

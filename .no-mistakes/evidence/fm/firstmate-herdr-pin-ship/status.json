@@ -1,0 +1,17 @@
+{
+  "client": {
+    "version": "0.9.5",
+    "channel": "stable",
+    "protocol": 22,
+    "endpoint_protocol_generation": 1,
+    "endpoint_capabilities": [
+      "surface_interest",
+      "presentation_effects_fence",
+      "health_check"
+    ],
+    "remote_host_bridge": true,
+    "remote_bridge_idle_timeout": true,
+    "binary": "/tmp/tmp.CBmpKqY4GX/bin/herdr",
+    "session": null
+  }
+}
