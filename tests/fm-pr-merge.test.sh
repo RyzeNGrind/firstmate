@@ -3513,6 +3513,37 @@ write_forgejo_runs_json_workflow_runs() {
 JSON
 }
 
+write_forgejo_runs_json_attempts() {
+  local file=$1 old=$2 new=$3
+  cat > "$file" <<JSON
+{"workflow_runs":[{"id":1374,"status":"$old","workflow_id":"pr-check.yml","title":"t","index_in_repo":395,"created":"2026-11-16T04:11:21Z","commit_sha":"$FORGEJO_HEAD"},{"id":1382,"status":"$new","workflow_id":"pr-check.yml","title":"t","index_in_repo":403,"created":"2026-11-17T03:54:25Z","commit_sha":"$FORGEJO_HEAD"}],"total_count":2}
+JSON
+}
+
+test_forgejo_merge_superseded_run_case() {
+  local label=$1 old=$2 new=$3 want=$4 case_dir rc
+  case_dir=$(make_forgejo_case "forgejo-attempts-$label")
+  write_forgejo_runs_json_attempts "$case_dir/forgejo-data/runs.json" "$old" "$new"
+  set +e
+  run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" > "$case_dir/stdout" 2> "$case_dir/stderr"
+  rc=$?
+  set -e
+  expect_code "$want" "$rc" "forgejo-attempts-$label: unexpected exit"
+  if [ "$want" = 0 ]; then
+    [ -e "$case_dir/forgejo-merged" ] || fail "forgejo-attempts-$label: not merged"
+  else
+    assert_grep "pr-check.yml" "$case_dir/stderr" "forgejo-attempts-$label: refusal did not name workflow"
+    [ ! -e "$case_dir/forgejo-merged" ] || fail "forgejo-attempts-$label: merged despite red/pending latest"
+  fi
+  pass "fm-pr-merge judges newest Forgejo attempt per workflow ($label)"
+}
+
+test_forgejo_merge_superseded_runs() {
+  test_forgejo_merge_superseded_run_case stale-failure-newer-success failure success 0
+  test_forgejo_merge_superseded_run_case newest-failure success failure 1
+  test_forgejo_merge_superseded_run_case newest-pending success pending 1
+}
+
 test_forgejo_merge_workflow_runs_success() {
   local case_dir rc
   case_dir=$(make_forgejo_case forgejo-workflow-runs-success)
@@ -3720,6 +3751,7 @@ test_forgejo_merge_not_mergeable
 test_forgejo_merge_workflow_runs_success
 test_forgejo_merge_workflow_runs_failure
 test_forgejo_merge_workflow_runs_success_skips_null_statuses
+test_forgejo_merge_superseded_runs
 test_forgejo_merge_workflow_runs_success_skips_empty_statuses
 test_forgejo_merge_skipped_run_alone_merges
 test_forgejo_merge_workflow_runs_status_skipped_merges
