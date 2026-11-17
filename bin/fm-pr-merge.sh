@@ -1203,6 +1203,7 @@ forgejo_curl_post_diagnostic() {
 
 # Print the names of workflow runs and status checks that are not green.
 # Filters out null-state AND empty-state status entries, keeping only success contexts.
+# Only the newest attempt per workflow is judged, so a green rerun supersedes an older failure.
 forgejo_checks_not_green() {
   local runs_json status_json
   if ! runs_json=$(forgejo_curl_api "$forgejo_token_var" "actions/runs?head_sha=$FM_PR_MERGE_HEAD&limit=50" 2>/dev/null) \
@@ -1210,10 +1211,13 @@ forgejo_checks_not_green() {
     return 1
   fi
   printf '%s' "$runs_json" | jq -r --arg head "$FM_PR_MERGE_HEAD" '
-    (.data // .workflow_runs)[]?
-    | select(.head_sha == $head or .head_sha == null)
+    [(.data // .workflow_runs)[]?
+      | select((.head_sha // .commit_sha) == $head or (.head_sha // .commit_sha) == null)]
+    | group_by((.workflow_id // .name // .id) | tostring)
+    | map(sort_by([(.index_in_repo // 0), (.created // .updated // ""), (.id // 0)]) | last)
+    | .[]
     | select((.conclusion // .status) != "success" and (.conclusion // .status) != "skipped")
-    | .name // "unnamed"
+    | .name // .workflow_id // .title // "unnamed"
   ' 2>/dev/null || return 1
 
   if ! status_json=$(forgejo_curl_api "$forgejo_token_var" "commits/$FM_PR_MERGE_HEAD/status" 2>/dev/null) \
