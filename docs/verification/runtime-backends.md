@@ -1070,6 +1070,46 @@ The CLI matrix was checked directly:
 All destructive verification used `bin/fm-herdr-lab.sh` with a non-default `fm-lab-` name and a byte-identical default-session tripwire.
 No ambient `herdr server stop` command is a supported test operation.
 
+### fm-install-herdr.sh pin
+
+Measured 2026-11-12 on Linux x86_64: `bin/fm-install-herdr.sh` pins Herdr v0.9.5.
+The four official v0.9.5 release assets were downloaded directly and their digests verified independently of the GitHub API's reported digest field:
+
+```sh
+for asset in herdr-linux-x86_64 herdr-linux-aarch64 herdr-macos-aarch64 herdr-macos-x86_64; do
+  curl -fsSL "https://github.com/ogulcancelik/herdr/releases/download/v0.9.5/$asset" -o "$asset"
+done
+sha256sum herdr-linux-x86_64 herdr-linux-aarch64 herdr-macos-aarch64 herdr-macos-x86_64
+```
+
+```text
+14d9e8bc8b4a9e0118d77c32266f76d461f09b40342eb23752960bd89f59929d  herdr-linux-x86_64
+17d7536f2da50859523680ef279dffcac8e4a235f4e46fe8da6c2ec44141897c  herdr-linux-aarch64
+fb77c2232a05a8035421382c894392f4174e4e38a18e48af3dd0290157c3a7e2  herdr-macos-aarch64
+5fb0a908ec7f6745e3e245738b06bfad56c46391c391ab3c0955fbead01f1369  herdr-macos-x86_64
+```
+
+These match the script's updated pins and the asset repo's own reported digests.
+The downloaded Linux x86_64 binary's version and protocol were then confirmed through an isolated `fm-lab-` session rather than the live default session, per `bin/fm-herdr-lab.sh`'s session-scoping contract:
+
+```sh
+herdr --version
+LAB=$(bin/fm-herdr-lab.sh name fm-herdr-pin-check)
+bin/fm-herdr-lab.sh provision "$LAB"
+PATH="<dir-with-the-downloaded-binary>:$PATH" bin/fm-herdr-lab.sh run "$LAB" status --json
+bin/fm-herdr-lab.sh teardown "$LAB"
+```
+
+```text
+herdr 0.9.5
+{"client":{"version":"0.9.5","channel":"stable","protocol":22,...},"server":{"version":"0.7.4","protocol":16,...,"session":"fm-lab-..."}}
+```
+
+The client reports the exact pinned version (0.9.5) and a protocol (22) at or above the required floor.
+`FM_HERDR_CI_MIN_PROTOCOL` stays at 16: Herdr's release notes (checked through v0.8.0 - v0.9.5) record user-facing fixes and features only, never a protocol-number stability commitment, so there is no vendor evidence to justify raising the floor past the suite-verified 16 even though 0.9.5 itself reports 22.
+`bin/fm-herdr-lab.sh`'s default-session tripwire confirmed the live default session (herdr 0.7.4, protocol 16, compatible) was unchanged after this probe.
+Refresh this record by re-running the commands above after any future `fm-install-herdr.sh` pin bump.
+
 ### fm-remote server birth and login-keychain access
 
 Measured 2026-09-09 on macOS 26 (Darwin 25.6.0) aarch64 with Claude Code 2.1.266 and Herdr 0.9.0, the guarantee behind `bin/fm-remote-herdr-guard.sh` and the doctor's `herdr-server` check: login-keychain access follows the audit session a process was born into, never the launch shape or the shell.
