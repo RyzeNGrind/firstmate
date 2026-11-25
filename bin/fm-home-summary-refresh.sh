@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # fm-home-summary-refresh.sh - publish this home's structured summary ledger.
 #
-# Usage: fm-home-summary-refresh.sh [--best-effort]
+# Usage: fm-home-summary-refresh.sh [--best-effort] [--if-stale <sec>] [--async]
 #
 # The published state/home-summary.json is the exact
 # `fm-fleet-snapshot.sh --secondmate-home-summary` document for this FM_HOME.
@@ -16,8 +16,15 @@
 # A home-local refresh lock serializes concurrent triggers so an older in-flight
 # summary cannot overwrite one computed after a later status change. The shared
 # timeout owner bounds the complete refresh with FM_HOME_SUMMARY_TIMEOUT
-# (default 60 seconds). No reader can observe temporary output through the
-# ledger path.
+# (default 180 seconds), and orphaned `.home-summary.*.??????` scratch files
+# left behind by a SIGKILL timeout are swept under the refresh lock so state/
+# can never accumulate leaked temp files. No reader can observe temporary output
+# through the ledger path.
+#
+# With --if-stale <sec> (or FM_HOME_SUMMARY_MIN_TTL=<sec>), an existing ledger
+# whose generated_epoch is younger than <sec> seconds short-circuits immediately.
+# With --async, the refresh is launched detached (with FM_HOME_SUMMARY_IF_IDLE=1)
+# so callers never block waiting for a full fleet scan.
 #
 # With --best-effort, a failure is appended to the bounded home-local
 # state/.home-summary-refresh.log when available, with stderr as the bounded
@@ -38,9 +45,11 @@ LEDGER="$STATE/home-summary.json"
 ERROR_LOG="$STATE/.home-summary-refresh.log"
 REFRESH_LOCK="$STATE/.home-summary-refresh.lock"
 ERROR_LOG_MAX_BYTES=${FM_HOME_SUMMARY_ERROR_LOG_MAX_BYTES:-65536}
-HOME_SUMMARY_TIMEOUT=${FM_HOME_SUMMARY_TIMEOUT:-60}
+HOME_SUMMARY_TIMEOUT=${FM_HOME_SUMMARY_TIMEOUT:-180}
 HOME_SUMMARY_IF_IDLE=${FM_HOME_SUMMARY_IF_IDLE:-0}
+HOME_SUMMARY_MIN_TTL=${FM_HOME_SUMMARY_MIN_TTL:-0}
 BEST_EFFORT=0
+ASYNC_MODE=0
 HOME_SUMMARY_MODE=parent
 HOME_SUMMARY_ERROR=
 HOME_SUMMARY_FAILURE_STAMP=
@@ -56,26 +65,41 @@ usage() {
   sed -n '2,${/^#/!q;p;}' "$0" | sed 's/^# \{0,1\}//'
 }
 
-case "${1:-}" in
-  '') ;;
-  --best-effort) BEST_EFFORT=1 ;;
-  --_worker)
-    HOME_SUMMARY_MODE=worker
-    BEST_EFFORT=${FM_HOME_SUMMARY_WORKER_BEST_EFFORT:-0}
-    ;;
-  --_log-failure) HOME_SUMMARY_MODE=log-failure ;;
-  -h|--help) usage; exit 0 ;;
-  *) usage >&2; exit 2 ;;
-esac
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --best-effort) BEST_EFFORT=1 ;;
+    --async) ASYNC_MODE=1 ;;
+    --if-stale)
+      shift
+      [ $# -gt 0 ] || { usage >&2; exit 2; }
+      HOME_SUMMARY_MIN_TTL=$1
+      ;;
+    --if-stale=*)
+      HOME_SUMMARY_MIN_TTL=${1#--if-stale=}
+      ;;
+    --_worker)
+      HOME_SUMMARY_MODE=worker
+      BEST_EFFORT=${FM_HOME_SUMMARY_WORKER_BEST_EFFORT:-0}
+      ;;
+    --_log-failure) HOME_SUMMARY_MODE=log-failure ;;
+    --_sweep-orphans) HOME_SUMMARY_MODE=sweep-orphans ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+  esac
+  shift
+done
 case "$ERROR_LOG_MAX_BYTES" in
   ''|*[!0-9]*|0) ERROR_LOG_MAX_BYTES=65536 ;;
 esac
 case "$HOME_SUMMARY_TIMEOUT" in
-  ''|*[!0-9]*|0) HOME_SUMMARY_TIMEOUT=60 ;;
+  ''|*[!0-9]*|0) HOME_SUMMARY_TIMEOUT=180 ;;
 esac
 case "$HOME_SUMMARY_IF_IDLE" in
   0|1) ;;
   *) HOME_SUMMARY_IF_IDLE=0 ;;
+esac
+case "$HOME_SUMMARY_MIN_TTL" in
+  ''|*[!0-9]*) HOME_SUMMARY_MIN_TTL=0 ;;
 esac
 
 if [ "$HOME_SUMMARY_MODE" != parent ]; then
@@ -92,6 +116,40 @@ home_summary_cleanup() {
     fm_lock_release "$REFRESH_LOCK" || true
     HOME_SUMMARY_LOCK_HELD=0
   fi
+}
+
+# Sweep orphaned scratch files left behind by a previously SIGKILLed refresh.
+# Call ONLY while holding $REFRESH_LOCK so an active refresh's mktemp files
+# are never touched.
+home_summary_sweep_orphans_locked() {
+  local f
+  for f in "$STATE"/.home-summary.json.?????? "$STATE"/.home-summary-error.??????; do
+    [ -e "$f" ] || [ -L "$f" ] || continue
+    [ "$f" != "$HOME_SUMMARY_TMP" ] || continue
+    [ "$f" != "$HOME_SUMMARY_ERR_TMP" ] || continue
+    rm -f -- "$f" 2>/dev/null || true
+  done
+}
+
+# Fast freshness short-circuit for --if-stale <sec> / FM_HOME_SUMMARY_MIN_TTL.
+# Returns 0 when an existing ledger is strictly younger than $HOME_SUMMARY_MIN_TTL.
+home_summary_is_fresh() {
+  local gen_epoch now age
+  [ "$HOME_SUMMARY_MIN_TTL" -gt 0 ] 2>/dev/null || return 1
+  [ -r "$LEDGER" ] && [ -s "$LEDGER" ] || return 1
+  gen_epoch=$(sed -n 's/.*"generated_epoch"[[:space:]]*:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$LEDGER" 2>/dev/null | head -n 1)
+  case "$gen_epoch" in ''|*[!0-9]*) return 1 ;; esac
+  now=${FM_SNAPSHOT_NOW_EPOCH:-}
+  if [ -z "$now" ]; then
+    if [ "${BASH_VERSINFO[0]:-0}" -gt 4 ] \
+      || { [ "${BASH_VERSINFO[0]:-0}" -eq 4 ] && [ "${BASH_VERSINFO[1]:-0}" -ge 2 ]; }; then
+      printf -v now '%(%s)T' -1 2>/dev/null || now=
+    fi
+    [ -n "$now" ] || now=$(date +%s 2>/dev/null || printf '')
+  fi
+  case "$now" in ''|*[!0-9]*) return 1 ;; esac
+  age=$((now - gen_epoch))
+  [ "$age" -ge 0 ] && [ "$age" -lt "$HOME_SUMMARY_MIN_TTL" ]
 }
 
 home_summary_fail() {
@@ -115,6 +173,7 @@ home_summary_refresh_once() {
     fm_lock_acquire_wait "$REFRESH_LOCK"
   fi
   HOME_SUMMARY_LOCK_HELD=1
+  home_summary_sweep_orphans_locked
   HOME_SUMMARY_TMP=$(umask 077; mktemp "$STATE/.home-summary.json.XXXXXX") || {
     home_summary_fail "could not create an atomic publication file in $STATE"
     return 1
@@ -215,7 +274,32 @@ if [ "$HOME_SUMMARY_MODE" = log-failure ]; then
   exit 0
 fi
 
+if [ "$HOME_SUMMARY_MODE" = sweep-orphans ]; then
+  if [ -d "$STATE" ] && fm_lock_try_acquire "$REFRESH_LOCK"; then
+    HOME_SUMMARY_LOCK_HELD=1
+    trap home_summary_cleanup EXIT
+    home_summary_sweep_orphans_locked
+    fm_lock_release "$REFRESH_LOCK" || true
+    HOME_SUMMARY_LOCK_HELD=0
+    trap - EXIT
+  fi
+  exit 0
+fi
+
 if [ "$HOME_SUMMARY_MODE" = parent ]; then
+  if home_summary_is_fresh; then
+    exit 0
+  fi
+  if [ "$ASYNC_MODE" -eq 1 ]; then
+    (
+      exec </dev/null >/dev/null 2>&1
+      FM_HOME_SUMMARY_IF_IDLE=1 \
+        FM_HOME_SUMMARY_TIMEOUT="$HOME_SUMMARY_TIMEOUT" \
+        FM_HOME_SUMMARY_MIN_TTL="$HOME_SUMMARY_MIN_TTL" \
+        "$SCRIPT_DIR/fm-home-summary-refresh.sh" --best-effort &
+    )
+    exit 0
+  fi
   attempt_stamp=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null) || attempt_stamp=
   if fm_run_timed "$HOME_SUMMARY_TIMEOUT" env \
     FM_HOME_SUMMARY_WORKER_BEST_EFFORT="$BEST_EFFORT" \
@@ -224,6 +308,12 @@ if [ "$HOME_SUMMARY_MODE" = parent ]; then
     exit 0
   else
     refresh_rc=$?
+  fi
+  # When the timeout owner SIGKILLed the worker (rc=124 or >=128), its EXIT trap
+  # could not run. Reclaim the dead worker's lock (if idle) and sweep any
+  # orphaned `.home-summary.*.??????` files immediately.
+  if [ "$refresh_rc" -eq 124 ] || [ "$refresh_rc" -ge 128 ]; then
+    fm_run_timed 2 "$SCRIPT_DIR/fm-home-summary-refresh.sh" --_sweep-orphans >/dev/null 2>&1 || true
   fi
   if [ "$BEST_EFFORT" -eq 1 ]; then
     if [ "$refresh_rc" -eq 124 ]; then

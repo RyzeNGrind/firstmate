@@ -250,11 +250,16 @@ COMPLETION_FILE="$STATE/.session-start-complete"
 AGENTS_BASELINE_FILE="$STATE/.session-start-agents-baseline"
 
 REEMIT=0
+COMPACT_FLAG=0
 SESSION_SOURCE=
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --reemit)
       REEMIT=1
+      shift
+      ;;
+    --compact)
+      COMPACT_FLAG=1
       shift
       ;;
     --source)
@@ -271,7 +276,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     *)
       printf 'fm-session-start: unknown argument: %s\n' "$1" >&2
-      printf 'usage: fm-session-start.sh [--reemit] [--source <source>]\n' >&2
+      printf 'usage: fm-session-start.sh [--reemit] [--compact] [--source <source>]\n' >&2
       exit 2
       ;;
   esac
@@ -306,20 +311,14 @@ if [ -z "${FM_SESSION_START_STAGE_FILE:-}" ]; then
     # is lost, so the child still runs bounded.
     SESSION_START_STAGE_FILE=/dev/null
   fi
-  if [ "$REEMIT" -eq 1 ]; then
-    if [ -n "$SESSION_SOURCE" ]; then
-      fm_run_timed "$SESSION_START_BUDGET" \
-        env FM_SESSION_START_STAGE_FILE="$SESSION_START_STAGE_FILE" \
-        "$SCRIPT_DIR/fm-session-start.sh" --reemit --source "$SESSION_SOURCE"
-    else
-      fm_run_timed "$SESSION_START_BUDGET" \
-        env FM_SESSION_START_STAGE_FILE="$SESSION_START_STAGE_FILE" \
-        "$SCRIPT_DIR/fm-session-start.sh" --reemit
-    fi
-  elif [ -n "$SESSION_SOURCE" ]; then
+  _child_args=()
+  [ "$REEMIT" -eq 1 ] && _child_args+=(--reemit)
+  [ "$COMPACT_FLAG" -eq 1 ] && _child_args+=(--compact)
+  [ -n "$SESSION_SOURCE" ] && _child_args+=(--source "$SESSION_SOURCE")
+  if [ "${#_child_args[@]}" -gt 0 ]; then
     fm_run_timed "$SESSION_START_BUDGET" \
       env FM_SESSION_START_STAGE_FILE="$SESSION_START_STAGE_FILE" \
-      "$SCRIPT_DIR/fm-session-start.sh" --source "$SESSION_SOURCE"
+      "$SCRIPT_DIR/fm-session-start.sh" "${_child_args[@]}"
   else
     fm_run_timed "$SESSION_START_BUDGET" \
       env FM_SESSION_START_STAGE_FILE="$SESSION_START_STAGE_FILE" \
@@ -379,6 +378,21 @@ PRIMARY_HARNESS=$("$SCRIPT_DIR/fm-harness.sh" 2>/dev/null || printf unknown)
 . "$SCRIPT_DIR/fm-line-cap-lib.sh"
 # shellcheck source=bin/fm-hold-reason-lib.sh
 . "$SCRIPT_DIR/fm-hold-reason-lib.sh"
+# shellcheck source=bin/fm-model-tier-lib.sh
+. "$SCRIPT_DIR/fm-model-tier-lib.sh"
+
+FAST_COMPACT=0
+if [ "$COMPACT_FLAG" -eq 1 ] || [ "${FM_SESSION_COMPACT:-0}" = 1 ] || fm_model_is_fast; then
+  FAST_COMPACT=1
+fi
+FAST_ENDPOINT_JOBS=${FM_FAST_ENDPOINT_JOBS:-8}
+case "$FAST_ENDPOINT_JOBS" in ''|*[!0-9]*|0) FAST_ENDPOINT_JOBS=8 ;; esac
+FAST_ORPHAN_MAX=${FM_FAST_ORPHAN_MAX:-8}
+case "$FAST_ORPHAN_MAX" in ''|*[!0-9]*) FAST_ORPHAN_MAX=8 ;; esac
+FAST_CONTEXT_MAX_BYTES=${FM_FAST_CONTEXT_MAX_BYTES:-2048}
+case "$FAST_CONTEXT_MAX_BYTES" in ''|*[!0-9]*|0) FAST_CONTEXT_MAX_BYTES=2048 ;; esac
+FAST_MAP_MAX_BYTES=${FM_FAST_MAP_MAX_BYTES:-4096}
+case "$FAST_MAP_MAX_BYTES" in ''|*[!0-9]*|0) FAST_MAP_MAX_BYTES=4096 ;; esac
 
 # One tasks-axi compatibility verdict per session start. The probe costs three
 # tasks-axi subprocesses and this digest needs the same answer twice - here for
@@ -392,14 +406,34 @@ PRIMARY_HARNESS=$("$SCRIPT_DIR/fm-harness.sh" 2>/dev/null || printf unknown)
 if fm_tasks_axi_compatible; then TASKS_AXI_COMPATIBLE=1; else TASKS_AXI_COMPATIBLE=0; fi
 TASKS_AXI_CHECK_REASON=$(fm_tasks_axi_check_reason)
 
-STATUS_TAIL=${FM_SESSION_START_STATUS_TAIL:-5}
+if [ -n "${FM_SESSION_START_STATUS_TAIL:-}" ]; then
+  STATUS_TAIL=$FM_SESSION_START_STATUS_TAIL
+elif [ "$FAST_COMPACT" -eq 1 ]; then
+  STATUS_TAIL=${FM_FAST_STATUS_TAIL:-3}
+else
+  STATUS_TAIL=5
+fi
 case "$STATUS_TAIL" in ''|*[!0-9]*) STATUS_TAIL=5 ;; esac
-QUEUED_LIMIT=${FM_SESSION_START_QUEUED_LIMIT:-20}
+if [ -n "${FM_SESSION_START_QUEUED_LIMIT:-}" ]; then
+  QUEUED_LIMIT=$FM_SESSION_START_QUEUED_LIMIT
+elif [ "$FAST_COMPACT" -eq 1 ]; then
+  QUEUED_LIMIT=10
+else
+  QUEUED_LIMIT=20
+fi
 case "$QUEUED_LIMIT" in ''|*[!0-9]*|0) QUEUED_LIMIT=20 ;; esac
 # One per-task endpoint read may never outlive this bound: a hung backend CLI
 # becomes that task's endpoint: error line instead of the digest's whole
-# runtime budget.
-ENDPOINT_TIMEOUT=${FM_SESSION_START_ENDPOINT_TIMEOUT:-10}
+# runtime budget. In fast-tier compact mode, tighten the default per-probe
+# bound (2s vs 10s; healthy local IPC answers in <50ms) so wedged daemons on
+# low-RAM/WSL hosts cannot stall startup for 30s+.
+if [ -n "${FM_SESSION_START_ENDPOINT_TIMEOUT:-}" ]; then
+  ENDPOINT_TIMEOUT=$FM_SESSION_START_ENDPOINT_TIMEOUT
+elif [ "$FAST_COMPACT" -eq 1 ]; then
+  ENDPOINT_TIMEOUT=${FM_FAST_ENDPOINT_TIMEOUT:-2}
+else
+  ENDPOINT_TIMEOUT=10
+fi
 case "$ENDPOINT_TIMEOUT" in ''|*[!0-9]*) ENDPOINT_TIMEOUT=10 ;; esac
 [ "$ENDPOINT_TIMEOUT" -gt 0 ] 2>/dev/null || ENDPOINT_TIMEOUT=10
 BACKLOG_FIELDS=blocked_by,hold_kind,hold_reason
@@ -417,10 +451,20 @@ subsection() { printf '\n%s\n%s\n' "$1" "$SUBRULE"; }
 # AGENTS.md section 3) and must never be confused with an empty-but-present
 # file, so the two cases print differently.
 print_file_or_absent() {
-  local path=$1 label=$2
+  local path=$1 label=$2 max_bytes=${3:-0} size
   subsection "$label"
   if [ -f "$path" ]; then
     if [ -s "$path" ]; then
+      if [ "$FAST_COMPACT" -eq 1 ] && [ "$max_bytes" -gt 0 ] 2>/dev/null; then
+        size=$(wc -c < "$path" 2>/dev/null | tr -d '[:space:]')
+        case "$size" in ''|*[!0-9]*) size=0 ;; esac
+        if [ "$size" -gt "$max_bytes" ]; then
+          head -c "$max_bytes" "$path"
+          printf '\n[fast-tier compact: truncated at %s of %s bytes; read %s or query Graphify/MCP when full history is needed]\n' \
+            "$max_bytes" "$size" "$path"
+          return 0
+        fi
+      fi
       cat "$path"
     else
       printf '(present, empty)\n'
@@ -428,6 +472,60 @@ print_file_or_absent() {
   else
     printf 'ABSENT\n'
   fi
+}
+
+# Fast-tier helper: extract the last non-empty line of a status file, capped.
+fast_last_status_line() {  # <status-file> [max-chars]
+  local file=$1 cap=${2:-120} line
+  [ -r "$file" ] && [ -s "$file" ] || { printf '(no status)'; return 0; }
+  line=$(awk 'NF { last = $0 } END { print last }' "$file" 2>/dev/null | tr '\t\r\n' '   ')
+  [ -n "$line" ] || { printf '(empty status)'; return 0; }
+  if [ "${#line}" -gt "$cap" ]; then
+    printf '%s...' "${line:0:$((cap - 3))}"
+  else
+    printf '%s' "$line"
+  fi
+}
+
+# Extract the normalized leading status verb from a status log line, stripping
+# optional leading ISO timestamp and [task-id] prefix.
+fast_status_verb() {  # <line>
+  printf '%s\n' "${1:-}" | awk '
+    {
+      s = $0
+      sub(/^[[:space:]]+/, "", s)
+      sub(/^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9:.+-]+Z?[[:space:]]+/, "", s)
+      sub(/^\[[^]]+\][[:space:]]+/, "", s)
+      sub(/[:[:space:]\[].*$/, "", s)
+      print tolower(s)
+    }
+  '
+}
+
+# Returns 0 if a status line signals an active blocker, decision, error, or ready PR
+# that must NEVER be collapsed into a 1-line settled summary in fast-tier mode.
+fast_status_is_actionable() {  # <line>
+  local verb
+  verb=$(fast_status_verb "${1:-}")
+  case "$verb" in
+    blocked|needs-decision|decision|failed|error|pr-ready|conflict|escalated|escalation|stuck|action-required|waiting-captain|hold|held)
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+# Returns 0 if a status line signals a terminal/settled worker state (even when
+# a herdr/tmux pane remains open awaiting teardown).
+fast_status_is_settled() {  # <line>
+  local verb
+  verb=$(fast_status_verb "${1:-}")
+  case "$verb" in
+    done|resolved|merged|paused|completed|parked|retired|closed)
+      return 0
+      ;;
+  esac
+  return 1
 }
 
 print_backlog_pointer() {
@@ -563,16 +661,35 @@ print_backlog_compact() {
 }
 
 print_status_tail() {
-  local status=$1 line
+  local status=$1 line cap=$FM_LINE_CAP_DEFAULT
+  if [ "$FAST_COMPACT" -eq 1 ]; then
+    cap=${FM_FAST_LINE_CAP:-180}
+    case "$cap" in ''|*[!0-9]*|0) cap=180 ;; esac
+  fi
   printf 'status tail (last %s line(s), each capped at %s characters, wake-EVENT history, not current state; full log: %s):\n' \
-    "$STATUS_TAIL" "$FM_LINE_CAP_DEFAULT" "$status"
+    "$STATUS_TAIL" "$cap" "$status"
   # A crewmate writes its own status lines, so their length is unbounded: one
   # observed line ran 865 characters. Cap each one the way the wake digest's
   # OPEN DECISIONS section does; the lede carries the state word and the key,
   # and the full log path above reaches the rest.
   while IFS= read -r line || [ -n "$line" ]; do
-    fm_cap_line "$line"
+    fm_cap_line "$line" "$cap"
   done < <(tail -n "$STATUS_TAIL" "$status")
+}
+
+# Compact expanded .meta renderer for fast-tier active/blocked workers:
+# keeps all routing/identity/PR keys while omitting bulky boilerplate fields
+# and pointing directly to the full state/<id>.meta file.
+print_meta_fast() {  # <meta-file>
+  local meta=$1 mk mv
+  while IFS='=' read -r mk mv || [ -n "$mk" ]; do
+    case "$mk" in
+      id|kind|project|branch|backend|window|harness|model|effort|mode|pr|plane_issue_id|remote_host|home)
+        printf '%s=%s\n' "$mk" "$mv"
+        ;;
+    esac
+  done < "$meta"
+  printf '(full meta: state/%s)\n' "$(basename "$meta")"
 }
 
 # fm_session_start_endpoint_read <backend> <target> [expected-label]: ONE
@@ -923,53 +1040,152 @@ print_backlog_compact "$DATA/backlog.md" "data/backlog.md"
 
 subsection "Work under way (state/*.meta)"
 META_FOUND=0
+FAST_EP_DIR=
+if [ "$FAST_COMPACT" -eq 1 ]; then
+  FAST_EP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/fm-ss-ep.XXXXXX" 2>/dev/null) || FAST_EP_DIR=
+  if [ -n "$FAST_EP_DIR" ]; then
+    trap '[ -z "${FAST_EP_DIR:-}" ] || rm -rf -- "$FAST_EP_DIR" 2>/dev/null || true' EXIT
+    _ep_idx=0
+    _ep_running=0
+    for meta in "$STATE"/*.meta; do
+      [ -f "$meta" ] || continue
+      _ep_idx=$((_ep_idx + 1))
+      id=$(basename "$meta" .meta)
+      window=$(fm_meta_get "$meta" window)
+      [ -n "$window" ] || continue
+      target=$(fm_backend_target_of_meta "$meta")
+      backend=$(fm_backend_of_meta "$meta")
+      (
+        _rc=0
+        fm_session_start_endpoint_read "$backend" "${target:-$window}" "fm-$id" || _rc=$?
+        printf '%s\n' "$_rc" > "$FAST_EP_DIR/${_ep_idx}.rc" 2>/dev/null || true
+      ) &
+      _ep_running=$((_ep_running + 1))
+      if [ "$_ep_running" -ge "$FAST_ENDPOINT_JOBS" ]; then
+        wait
+        _ep_running=0
+      fi
+    done
+    [ "$_ep_running" -gt 0 ] && wait
+  fi
+fi
+
+_meta_idx=0
+FAST_SETTLED_COUNT=0
 for meta in "$STATE"/*.meta; do
   [ -f "$meta" ] || continue
   META_FOUND=1
+  _meta_idx=$((_meta_idx + 1))
   id=$(basename "$meta" .meta)
-  printf '\n--- %s ---\n' "$id"
-  cat "$meta"
-
   window=$(fm_meta_get "$meta" window)
   target=$(fm_backend_target_of_meta "$meta")
+  backend=
+  endpoint_state=unknown
+  endpoint_rc=1
   if [ -n "$window" ]; then
     backend=$(fm_backend_of_meta "$meta")
     endpoint_rc=0
-    fm_session_start_endpoint_read "$backend" "${target:-$window}" "fm-$id" || endpoint_rc=$?
+    if [ -n "$FAST_EP_DIR" ] && [ -r "$FAST_EP_DIR/${_meta_idx}.rc" ]; then
+      endpoint_rc=$(cat "$FAST_EP_DIR/${_meta_idx}.rc" 2>/dev/null || printf '1')
+      case "$endpoint_rc" in ''|*[!0-9]*) endpoint_rc=1 ;; esac
+    else
+      fm_session_start_endpoint_read "$backend" "${target:-$window}" "fm-$id" || endpoint_rc=$?
+    fi
     # Only the timeout owner's own statuses mean the read itself failed: 124 is
     # the bound firing and >=128 is a signal death. Every other nonzero status
     # is the probe's own verdict that the endpoint is gone.
     if [ "$endpoint_rc" -eq 0 ]; then
-      printf 'endpoint: alive (backend=%s window=%s)\n' "$backend" "$window"
+      endpoint_state=alive
     elif [ "$endpoint_rc" -eq 124 ] || [ "$endpoint_rc" -ge 128 ]; then
-      printf 'endpoint: error (backend=%s window=%s - the endpoint read died or hit its %ss bound; the digest continued past it)\n' \
-        "$backend" "$window" "$ENDPOINT_TIMEOUT"
+      endpoint_state=error
     else
-      printf 'endpoint: dead (backend=%s window=%s)\n' "$backend" "$window"
+      endpoint_state=dead
     fi
-  else
-    printf 'endpoint: unknown (no window recorded)\n'
   fi
 
   status="$STATE/$id.status"
+  if [ "$FAST_COMPACT" -eq 1 ] && { [ "$endpoint_state" = dead ] || [ "$endpoint_state" = alive ]; }; then
+    _last_st=$(fast_last_status_line "$status" 90)
+    if ! fast_status_is_actionable "$_last_st" \
+      && { [ "$endpoint_state" = dead ] || fast_status_is_settled "$_last_st"; }; then
+      _m_proj="" _m_pr="" _mk="" _mv=""
+      while IFS='=' read -r _mk _mv || [ -n "$_mk" ]; do
+        case "$_mk" in
+          project) _m_proj=$_mv ;;
+          pr) _m_pr=$_mv ;;
+        esac
+      done < "$meta"
+      FAST_SETTLED_COUNT=$((FAST_SETTLED_COUNT + 1))
+      printf -- '- %s [%s %s' "$id" "$endpoint_state" "${backend:-unknown}"
+      [ -z "$_m_proj" ] || printf ' proj=%s' "$_m_proj"
+      [ -z "$_m_pr" ] || printf ' pr=%s' "$_m_pr"
+      printf '] %s (state/%s.{meta,status})\n' "$_last_st" "$id"
+      continue
+    fi
+  fi
+
+  printf '\n--- %s ---\n' "$id"
+  if [ "$FAST_COMPACT" -eq 1 ]; then
+    print_meta_fast "$meta"
+  else
+    cat "$meta"
+  fi
+  case "$endpoint_state" in
+    alive)
+      printf 'endpoint: alive (backend=%s window=%s)\n' "$backend" "$window"
+      ;;
+    error)
+      printf 'endpoint: error (backend=%s window=%s - the endpoint read died or hit its %ss bound; the digest continued past it)\n' \
+        "$backend" "$window" "$ENDPOINT_TIMEOUT"
+      ;;
+    dead)
+      printf 'endpoint: dead (backend=%s window=%s)\n' "$backend" "$window"
+      ;;
+    *)
+      printf 'endpoint: unknown (no window recorded)\n'
+      ;;
+  esac
+
   if [ -f "$status" ]; then
     print_status_tail "$status"
   else
     printf 'status tail: (no status file yet: %s)\n' "$status"
   fi
 done
+[ -z "$FAST_EP_DIR" ] || rm -rf -- "$FAST_EP_DIR" 2>/dev/null || true
+FAST_EP_DIR=
+trap - EXIT
+if [ "$FAST_COMPACT" -eq 1 ] && [ "$FAST_SETTLED_COUNT" -gt 0 ]; then
+  printf '(fast-tier compact: %s settled worker(s) summarized to 1 line each; actively working/blocked/decision workers shown in full)\n' \
+    "$FAST_SETTLED_COUNT"
+fi
 [ "$META_FOUND" -eq 1 ] || printf '(none)\n'
 
 subsection "Orphan status logs (state/*.status without matching .meta)"
 ORPHAN_STATUS_FOUND=0
+ORPHAN_SHOWN=0
+ORPHAN_OMITTED=0
 for status in "$STATE"/*.status; do
   [ -f "$status" ] || continue
   id=$(basename "$status" .status)
   [ -f "$STATE/$id.meta" ] && continue
   ORPHAN_STATUS_FOUND=1
-  printf '\n--- %s ---\n' "$id"
-  print_status_tail "$status"
+  if [ "$FAST_COMPACT" -eq 1 ]; then
+    if [ "$ORPHAN_SHOWN" -lt "$FAST_ORPHAN_MAX" ]; then
+      ORPHAN_SHOWN=$((ORPHAN_SHOWN + 1))
+      printf -- '- %s last=%s (log: %s)\n' "$id" "$(fast_last_status_line "$status" 120)" "$status"
+    else
+      ORPHAN_OMITTED=$((ORPHAN_OMITTED + 1))
+    fi
+  else
+    printf '\n--- %s ---\n' "$id"
+    print_status_tail "$status"
+  fi
 done
+if [ "$FAST_COMPACT" -eq 1 ] && [ "$ORPHAN_OMITTED" -gt 0 ]; then
+  printf '(%s more orphan status log(s) omitted in fast-tier compact mode; inspect state/*.status if needed)\n' \
+    "$ORPHAN_OMITTED"
+fi
 [ "$ORPHAN_STATUS_FOUND" -eq 1 ] || printf '(none)\n'
 
 subsection "AFK"
@@ -1048,11 +1264,11 @@ fi
 # take (see this file's ORDERING note).
 stage context
 section "CONTEXT"
-print_file_or_absent "$DATA/projects.md" "data/projects.md"
-print_file_or_absent "$DATA/secondmates.md" "data/secondmates.md"
-print_file_or_absent "$DATA/captain.md" "data/captain.md"
-print_file_or_absent "$DATA/captain-shared.md" "data/captain-shared.md (shared, main-authoritative, read-only in secondmate homes)"
-print_file_or_absent "$DATA/learnings.md" "data/learnings.md"
+print_file_or_absent "$DATA/projects.md" "data/projects.md" "$FAST_MAP_MAX_BYTES"
+print_file_or_absent "$DATA/secondmates.md" "data/secondmates.md" "$FAST_MAP_MAX_BYTES"
+print_file_or_absent "$DATA/captain.md" "data/captain.md" "$FAST_CONTEXT_MAX_BYTES"
+print_file_or_absent "$DATA/captain-shared.md" "data/captain-shared.md (shared, main-authoritative, read-only in secondmate homes)" "$FAST_CONTEXT_MAX_BYTES"
+print_file_or_absent "$DATA/learnings.md" "data/learnings.md" "$FAST_CONTEXT_MAX_BYTES"
 
 # --- 9. closing reminder -----------------------------------------------
 stage next-step
@@ -1097,6 +1313,10 @@ cat <<'EOF'
 The digest above is complete for this session start. The READ-ONCE CONTRACT
 section near the top of it governs what may still be read from disk.
 EOF
+if [ "$FAST_COMPACT" -eq 1 ]; then
+  printf '\n'
+  fm_mcp_endpoints_hint
+fi
 
 if [ "$READ_ONLY" -eq 0 ] && [ "$REEMIT" -eq 0 ]; then
   COMPLETION_RECORDED=0

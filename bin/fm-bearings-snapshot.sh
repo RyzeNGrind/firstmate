@@ -78,6 +78,10 @@
 # Flags:
 #   (default)        compact projection with bounded remote-ledger collection, TOON
 #   --json           the same projected model as JSON (machine/debug; parity form)
+#   --fast,--cached  serve cached projection within FM_BEARINGS_CACHE_TTL (default 30s)
+#                    or stale-while-revalidate up to FM_BEARINGS_STALE_MAX (default 600s);
+#                    auto-enabled in fast model tier (FM_MODEL_TIER=fast|luna|haiku)
+#   --no-cache       bypass cache read and compute a fresh live snapshot
 #   --include-prs    ALSO do live GitHub open-PR discovery + checks
 #   --fields <list>  opt in to dropped surfaces: bodies,paths,actions,endpoints
 #   --all-in-flight  include every in-flight task
@@ -103,6 +107,9 @@ FLEET="$SCRIPT_DIR/fm-fleet-snapshot.sh"
 # shellcheck source=bin/fm-landed-lib.sh
 # shellcheck disable=SC1091
 . "$SCRIPT_DIR/fm-landed-lib.sh"  # FM_LANDED_JQ_DEFS: the shared landed selector
+# shellcheck source=bin/fm-model-tier-lib.sh
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/fm-model-tier-lib.sh"
 
 # Bounds (overridable for tests / large fleets).
 FM_BEARINGS_LANDED=${FM_BEARINGS_LANDED:-6}
@@ -187,9 +194,15 @@ ALL_RECORDED_PRS=0
 ALL_UNHEALTHY=0
 ALL_PR_REPOS=0
 FIELDS=""
+FAST_CACHE_REQ=0
+NO_CACHE=0
+BG_REFRESH=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --json) FORMAT=json ;;
+    --fast|--cached) FAST_CACHE_REQ=1 ;;
+    --no-cache) NO_CACHE=1 ;;
+    --_bg-refresh) BG_REFRESH=1 ;;
     --include-prs) INCLUDE_PRS=1 ;;
     --all-reports) ALL_REPORTS=1 ;;
     --all-queued) ALL_QUEUED=1 ;;
@@ -210,6 +223,99 @@ done
 
 command -v jq >/dev/null 2>&1 || { echo "fm-bearings-snapshot: jq not found" >&2; exit 1; }
 
+# --- optional stale-while-revalidate fast cache -----------------------------
+# Active ONLY for default-view calls when --fast/--cached is passed,
+# FM_BEARINGS_CACHE_TTL > 0, or the active model is in fast tier (Luna/Haiku).
+# Standard tier default calls stay 100% live and never touch state/ cache files.
+BEARINGS_CACHE_ELIGIBLE=0
+if [ -z "${FM_BEARINGS_NOW:-}" ] \
+  && [ "$INCLUDE_PRS" = 0 ] && [ "$ALL_REPORTS" = 0 ] && [ "$ALL_QUEUED" = 0 ] \
+  && [ "$ALL_IN_FLIGHT" = 0 ] && [ "$ALL_DECISIONS" = 0 ] && [ "$ALL_SECONDMATES" = 0 ] \
+  && [ "$ALL_LANDED" = 0 ] && [ "$ALL_RECORDED_PRS" = 0 ] && [ "$ALL_UNHEALTHY" = 0 ] \
+  && [ "$ALL_PR_REPOS" = 0 ] && [ -z "$FIELDS" ]; then
+  BEARINGS_CACHE_ELIGIBLE=1
+fi
+
+BEARINGS_CACHE_TTL=0
+if [ "$BG_REFRESH" = 1 ]; then
+  BEARINGS_CACHE_TTL=${FM_BEARINGS_CACHE_TTL:-30}
+elif [ "$BEARINGS_CACHE_ELIGIBLE" = 1 ]; then
+  if [ "$FAST_CACHE_REQ" = 1 ]; then
+    BEARINGS_CACHE_TTL=${FM_BEARINGS_CACHE_TTL:-30}
+  elif [ -n "${FM_BEARINGS_CACHE_TTL:-}" ]; then
+    BEARINGS_CACHE_TTL=$FM_BEARINGS_CACHE_TTL
+  elif fm_model_is_fast; then
+    BEARINGS_CACHE_TTL=30
+  fi
+fi
+case "$BEARINGS_CACHE_TTL" in ''|*[!0-9]*) BEARINGS_CACHE_TTL=0 ;; esac
+BEARINGS_STALE_MAX=${FM_BEARINGS_STALE_MAX:-600}
+case "$BEARINGS_STALE_MAX" in ''|*[!0-9]*) BEARINGS_STALE_MAX=600 ;; esac
+
+BEARINGS_CACHE_READ=0
+BEARINGS_CACHE_WRITE=0
+if [ "$BG_REFRESH" = 1 ]; then
+  BEARINGS_CACHE_WRITE=1
+elif [ "$BEARINGS_CACHE_ELIGIBLE" = 1 ]; then
+  if [ "$BEARINGS_CACHE_TTL" -gt 0 ]; then
+    [ "$NO_CACHE" = 1 ] || BEARINGS_CACHE_READ=1
+    BEARINGS_CACHE_WRITE=1
+  elif [ "${FM_BEARINGS_CACHE_WRITE:-0}" = 1 ]; then
+    BEARINGS_CACHE_WRITE=1
+  fi
+fi
+
+BEARINGS_CACHE_BASE=""
+if [ "$BEARINGS_CACHE_READ" = 1 ] || [ "$BEARINGS_CACHE_WRITE" = 1 ]; then
+  _bc_root="${FM_ROOT_OVERRIDE:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+  _bc_home="${FM_HOME:-${FM_ROOT_OVERRIDE:-$_bc_root}}"
+  _bc_state="${FM_STATE_OVERRIDE:-$_bc_home/state}"
+  if [ -n "${FM_BEARINGS_CACHE_DIR:-}" ]; then
+    mkdir -p "$FM_BEARINGS_CACHE_DIR" 2>/dev/null || true
+    BEARINGS_CACHE_BASE="$FM_BEARINGS_CACHE_DIR/bearings-cache"
+  elif [ -d "$_bc_state" ] && [ -w "$_bc_state" ]; then
+    BEARINGS_CACHE_BASE="$_bc_state/.bearings-cache"
+  else
+    _bc_tmp="${TMPDIR:-/tmp}/fm-bearings-cache.${UID:-0}"
+    mkdir -p "$_bc_tmp" 2>/dev/null || true
+    _bc_key=$(printf '%s' "$_bc_state" | cksum | awk '{print $1}')
+    BEARINGS_CACHE_BASE="$_bc_tmp/bearings-${_bc_key}"
+  fi
+fi
+
+_bearings_now_epoch() {
+  local ts=""
+  if [ "${BASH_VERSINFO[0]:-0}" -gt 4 ] \
+    || { [ "${BASH_VERSINFO[0]:-0}" -eq 4 ] && [ "${BASH_VERSINFO[1]:-0}" -ge 2 ]; }; then
+    printf -v ts '%(%s)T' -1 2>/dev/null || ts=""
+  fi
+  [ -n "$ts" ] || ts=$(date +%s 2>/dev/null || printf '0')
+  printf '%s\n' "$ts"
+}
+
+_bearings_write_atomic() {  # <target> <content>
+  local target=$1 content=$2 tmp
+  tmp=$(umask 077; mktemp "${target}.tmp.XXXXXX" 2>/dev/null) || return 1
+  if printf '%s\n' "$content" > "$tmp" 2>/dev/null \
+    && mv -f -- "$tmp" "$target" 2>/dev/null; then
+    return 0
+  fi
+  rm -f -- "$tmp" 2>/dev/null || true
+  return 1
+}
+
+if [ "$BG_REFRESH" = 1 ] && [ -n "$BEARINGS_CACHE_BASE" ]; then
+  if command -v flock >/dev/null 2>&1; then
+    exec 9>"${BEARINGS_CACHE_BASE}.lock"
+    flock -n 9 || exit 0
+  else
+    _bc_lockd="${BEARINGS_CACHE_BASE}.lock.d"
+    mkdir "$_bc_lockd" 2>/dev/null || exit 0
+    # shellcheck disable=SC2064
+    trap "rmdir '$_bc_lockd' 2>/dev/null || true" EXIT
+  fi
+fi
+
 # The shared read-only away-return owner is consulted, not obeyed. An active
 # away window still refuses here: the correct answer to a bearings request then
 # is to run the return first. Return CATCH-UP is different - the captain is
@@ -223,6 +329,39 @@ GUARD_ERR=$("$SCRIPT_DIR/fm-afk-return.sh" guard 2>&1 >/dev/null) || GUARD_RC=$?
 if [ "$GUARD_RC" -ne 0 ] && [ "$GUARD_RC" -ne 4 ]; then
   [ -z "$GUARD_ERR" ] || printf '%s\n' "$GUARD_ERR" >&2
   exit "$GUARD_RC"
+fi
+
+if [ "$BEARINGS_CACHE_READ" = 1 ] && [ -n "$BEARINGS_CACHE_BASE" ]; then
+  _bc_meta="${BEARINGS_CACHE_BASE}.meta"
+  _bc_file="${BEARINGS_CACHE_BASE}.${FORMAT}"
+  if [ -r "$_bc_meta" ] && [ -r "$_bc_file" ] && [ -s "$_bc_file" ]; then
+    _bc_epoch=""
+    _bc_guard=""
+    IFS=$'\t' read -r _bc_epoch _bc_guard < "$_bc_meta" 2>/dev/null || true
+    case "$_bc_epoch" in
+      ''|*[!0-9]*) ;;
+      *)
+        if [ "${_bc_guard:-}" = "$GUARD_RC" ]; then
+          _bc_now=$(_bearings_now_epoch)
+          _bc_age=$((_bc_now - _bc_epoch))
+          [ "$_bc_age" -ge 0 ] || _bc_age=0
+          if [ "$_bc_age" -le "$BEARINGS_CACHE_TTL" ]; then
+            cat "$_bc_file"
+            exit 0
+          elif [ "$_bc_age" -le "$BEARINGS_STALE_MAX" ]; then
+            cat "$_bc_file"
+            (
+              exec </dev/null >/dev/null 2>&1
+              FM_BEARINGS_CACHE_DIR="${FM_BEARINGS_CACHE_DIR:-}" \
+                FM_BEARINGS_CACHE_TTL="$BEARINGS_CACHE_TTL" \
+                "$SCRIPT_DIR/fm-bearings-snapshot.sh" --_bg-refresh &
+            )
+            exit 0
+          fi
+        fi
+        ;;
+    esac
+  fi
 fi
 if [ "$GUARD_RC" -eq 4 ]; then
   CATCHUP_LINE=$("$SCRIPT_DIR/fm-afk-return.sh" catchup-summary) || CATCHUP_LINE=""
@@ -703,7 +842,7 @@ MODEL=$(printf '%s' "$SNAP" | jq \
         (if $include_prs == 1 then empty else {surface:"live PR discovery + checks", reveal:"--include-prs"} end) ]) }
 ') || { echo "fm-bearings-snapshot: projection failed" >&2; exit 1; }
 
-if [ "$FORMAT" = json ]; then
+if [ "$FORMAT" = json ] && [ "$BEARINGS_CACHE_WRITE" != 1 ]; then
   printf '%s\n' "$MODEL"
   exit 0
 fi
@@ -744,4 +883,19 @@ TOON=$(printf '%s\n' "$MODEL" | jq -r '
     end;
   [ to_entries[] | emit(.key; .value) ] | join("\n")
 ') || { echo "fm-bearings-snapshot: TOON rendering failed" >&2; exit 1; }
+
+if [ "$BEARINGS_CACHE_WRITE" = 1 ] && [ -n "$BEARINGS_CACHE_BASE" ]; then
+  _bc_write_epoch=$(_bearings_now_epoch)
+  _bearings_write_atomic "${BEARINGS_CACHE_BASE}.json" "$MODEL" || true
+  _bearings_write_atomic "${BEARINGS_CACHE_BASE}.toon" "$TOON" || true
+  _bearings_write_atomic "${BEARINGS_CACHE_BASE}.meta" "${_bc_write_epoch}	${GUARD_RC}" || true
+fi
+
+if [ "$BG_REFRESH" = 1 ]; then
+  exit 0
+fi
+if [ "$FORMAT" = json ]; then
+  printf '%s\n' "$MODEL"
+  exit 0
+fi
 printf '%s\n' "$TOON"

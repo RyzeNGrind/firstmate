@@ -997,6 +997,8 @@ fm_backlog_directory_present "$STATE" "state directory" || {
 . "$SCRIPT_DIR/fm-worker-account-lib.sh"
 # shellcheck source=bin/fm-omp-profile-lib.sh
 . "$SCRIPT_DIR/fm-omp-profile-lib.sh"
+# shellcheck source=bin/fm-model-tier-lib.sh
+. "$SCRIPT_DIR/fm-model-tier-lib.sh"
 # Fail closed before any fleet mutation: a no-mistakes gate agent must never spawn
 # a direct report (see bin/fm-gate-refuse-lib.sh).
 fm_refuse_if_gate_agent
@@ -1430,6 +1432,14 @@ spawn_remote_secondmate() {
       effort=$("$SCRIPT_DIR/fm-harness.sh" secondmate-effort "$id")
       [ -n "$effort" ] || effort=-
     fi
+  fi
+  if [ "$EFFORT_SET" -eq 0 ] && [ "$effort" = "-" ] && [ -n "$model" ] && [ "$model" != "-" ]; then
+    case "$harness" in
+    claude | codex | opencode | pi | pi-signed | omp | grok)
+      rec_effort=$(fm_model_recommended_effort "$model" 2>/dev/null || true)
+      [ -z "$rec_effort" ] || effort=$rec_effort
+      ;;
+    esac
   fi
   case "$effort" in
   - | low | medium | high | xhigh | max | ultra) ;;
@@ -3542,6 +3552,20 @@ if [ "$KIND" = secondmate ] && [ -z "$ARG3" ]; then
       *) echo "warning: config/secondmate-harness effort token '$SM_EFFORT' is not one of low, medium, high, xhigh, max, ultra; ignoring" >&2 ;;
       esac
     fi
+  fi
+fi
+# Fast-tier models (Luna/Haiku/Flash/Mini/Nano) default to low reasoning effort
+# on secondmate spawns (or when FM_MODEL_TIER=fast) unless the operator pinned
+# --effort or a config/secondmate-harness effort token, avoiding 30-90s high/
+# xhigh hidden-reasoning stalls on routine supervision turns.
+if [ "$EFFORT_SET" -eq 0 ] && [ -z "$EFFORT" ] && [ "${RAW_LAUNCH:-0}" -eq 0 ] && [ -n "$MODEL" ]; then
+  if [ "$KIND" = secondmate ] || [ "${FM_MODEL_TIER:-}" = fast ]; then
+    case "$HARNESS" in
+    claude | codex | opencode | pi | pi-signed | omp | agy | kiro | grok | cortex)
+      SM_REC_EFFORT=$(fm_model_recommended_effort "$MODEL" 2>/dev/null || true)
+      [ -z "$SM_REC_EFFORT" ] || EFFORT=$SM_REC_EFFORT
+      ;;
+    esac
   fi
 fi
 fm_backend_validate_harness "$BACKEND" "$HARNESS" || exit 1
