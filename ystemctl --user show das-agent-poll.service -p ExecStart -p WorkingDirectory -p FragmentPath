@@ -1,8 +1,0 @@
-ActiveState=inactive
-SubState=dead
-FragmentPath=/home/ryzengrind/.config/systemd/user/das-agent-poll.service
-Result=success
-ExecMainStartTimestamp=Tue 2026-11-10 18:44:52 EST
-ExecMainExitTimestamp=Tue 2026-11-10 18:46:04 EST
-ExecMainCode=1
-ExecMainStatus=0

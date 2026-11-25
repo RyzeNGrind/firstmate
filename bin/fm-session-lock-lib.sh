@@ -58,6 +58,12 @@ fm_harness_path_name() {  # <path>
       */"$name"/*) printf '%s' "$name"; return 0 ;;
     esac
   done
+  # The Claude desktop app runs each session from a version-named binary under
+  # ~/.claude/remote/ccd-cli/<version>; no component says claude, so name the
+  # install directory explicitly (whole component only).
+  case "/$path/" in
+    */.claude/remote/ccd-cli/*) printf 'claude'; return 0 ;;
+  esac
   return 1
 }
 

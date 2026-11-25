@@ -140,6 +140,21 @@ SH
   pass "session-lock: a harness that is pid 1 of its own namespace is examined, not skipped"
 }
 
+test_desktop_app_ccd_cli_binary_is_a_claude_harness() {
+  local fakebin got
+  fakebin=$(fm_fakebin "$TMP_ROOT/ccd-cli")
+  got=$(lib_eval "$fakebin" 'fm_harness_path_name /home/u/.claude/remote/ccd-cli/2.1.325-1ef04b37a794') \
+    || fail "the desktop app's ccd-cli binary was not identified as a harness"
+  [ "$got" = claude ] || fail "ccd-cli binary identified as '$got', expected claude"
+  if lib_eval "$fakebin" 'fm_harness_path_name /home/u/.claude/remote/ccd-cli-helper/run' >/dev/null; then
+    fail "a path merely prefixed with ccd-cli must not be a harness"
+  fi
+  if lib_eval "$fakebin" 'fm_harness_path_name /opt/ccd-cli/tool' >/dev/null; then
+    fail "ccd-cli outside ~/.claude/remote must not be a harness"
+  fi
+  pass "session-lock: the desktop app's ccd-cli session binary is a claude harness, lookalikes are not"
+}
+
 test_bun_run_omp_is_identified_on_both_platforms() {
   local comm fakebin
   fakebin=$(fm_fakebin "$TMP_ROOT/bun-omp")
@@ -1659,6 +1674,7 @@ test_reanchor_keeps_autoarm_midturn_healthy() {
 
 test_version_named_session_is_identified_on_both_platforms
 test_harness_at_namespace_pid1_is_examined
+test_desktop_app_ccd_cli_binary_is_a_claude_harness
 test_bun_run_omp_is_identified_on_both_platforms
 test_ordinary_paths_are_never_harness_processes
 test_harness_beyond_a_gap_never_owns_the_lock
