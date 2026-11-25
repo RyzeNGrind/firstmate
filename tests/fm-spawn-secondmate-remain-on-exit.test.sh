@@ -32,6 +32,7 @@ test_secondmate_supervisor_window_gets_remain_on_exit_on() {
   sub="$case_dir/design-home"
   mkdir -p "$home/projects" "$home/data" "$home/state" "$home/config"
   mkdir -p "$sub/data"
+  git init -q "$sub"
   mark_firstmate_home "$sub"
   printf 'design\n' > "$sub/.fm-secondmate-home"
   printf '# Charter\n\nHandled work.\n' > "$sub/data/charter.md"
@@ -103,14 +104,26 @@ EOF
   cat > "$fakebin/tmux" <<SH
 #!/usr/bin/env bash
 set -u
+window_file="$case_dir/.ship-window"
 printf '%s\n' "\$*" >> "$log"
 case "\$*" in
   *"#{pane_current_path}"*) printf '%s\n' "$wt"; exit 0 ;;
 esac
 case "\${1:-}" in
   display-message) printf 'firstmate\n'; exit 0 ;;
-  list-windows) exit 0 ;;
-  has-session|new-session|new-window|kill-window|set-option|set-window-option|send-keys) exit 0 ;;
+  new-window)
+    name=
+    previous=
+    for arg in "\$@"; do
+      [ "\$previous" = -n ] && name=\$arg
+      previous=\$arg
+    done
+    printf '%s\n' "\$name" > "\$window_file"
+    printf '@1\n'
+    exit 0 ;;
+  list-windows) [ ! -s "\$window_file" ] || cat "\$window_file"; exit 0 ;;
+  kill-window) : > "\$window_file"; exit 0 ;;
+  has-session|new-session|set-option|set-window-option|send-keys) exit 0 ;;
 esac
 exit 0
 SH
@@ -121,10 +134,11 @@ SH
   FM_ROOT_OVERRIDE='' FM_HOME="$home" \
     FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
     FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
+    INFRA_BUDGETS_FILE="$case_dir/no-infra-budgets.json" \
     FM_SPAWN_NO_GUARD=1 TMUX="fake,1,0" \
     PATH="$fakebin:$PATH" \
-    "$SPAWN" "$id" "$proj" --mode no-mistakes --yolo off >/dev/null 2>&1 \
-    || fail "ship launch did not succeed"
+    "$SPAWN" "$id" "$proj" --mode no-mistakes --yolo off >"$case_dir/spawn.out" 2>"$case_dir/spawn.err" \
+    || fail "ship launch did not succeed: $(cat "$case_dir/spawn.err" "$case_dir/spawn.out")"
 
   # The window must have been created (proves the code path was exercised).
   grep -E '^new-window ' "$log" >/dev/null \

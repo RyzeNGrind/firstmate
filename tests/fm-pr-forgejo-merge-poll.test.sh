@@ -285,6 +285,7 @@ run_forgejo_check_entry() {
   shift
   FM_ROOT_OVERRIDE="$dir/root" FM_HOME="$dir/home" \
     FM_STATE_OVERRIDE="$dir/home/state" \
+    FM_FORGEJO_CREDS_FILE="$CREDS" \
     PATH="$dir/fakebin:$PATH" \
     "$PR_CHECK" "$@"
 }
