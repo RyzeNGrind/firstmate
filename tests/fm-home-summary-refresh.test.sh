@@ -47,6 +47,7 @@ cat > "$FAKEBIN/tmux" <<'SH'
 #!/usr/bin/env bash
 case "${1:-}" in
   display-message) printf '%%1\n' ;;
+  list-windows) printf 'fm-ledger-task\nfm-cost-task\nfm-restart-task\n' ;;
   capture-pane) printf 'fixture pane\n> \n' ;;
 esac
 exit 0

@@ -4954,7 +4954,7 @@ FORGEJO_PATH=demo/repo
 FORGEJO_URL="https://$FORGEJO_HOST/$FORGEJO_PATH/pulls/42"
 FORGEJO_HEAD=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
 
-write_forgejo_pr_json() {
+write_forgejo_curl_pr_json() {
   local file=$1 state=${2:-open} draft=${3:-false} mergeable=${4:-true} head=${5:-$FORGEJO_HEAD}
   cat > "$file" <<JSON
 {"state":"$state","draft":$draft,"mergeable":$mergeable,"head":{"sha":"$head"}}
@@ -4978,7 +4978,7 @@ JSON
 add_forgejo_mock() {
   local case_dir=$1
   mkdir -p "$case_dir/forgejo-data"
-  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json"
+  write_forgejo_curl_pr_json "$case_dir/forgejo-data/pr.json"
   write_forgejo_runs_json "$case_dir/forgejo-data/runs.json"
   write_forgejo_statuses_json "$case_dir/forgejo-data/statuses.json"
 
@@ -5751,7 +5751,7 @@ test_allow_no_pipeline_is_attended_only_and_gitlab_only() {
 test_forgejo_merge_not_mergeable() {
   local case_dir rc
   case_dir=$(make_forgejo_curl_case forgejo-not-mergeable)
-  write_forgejo_pr_json "$case_dir/forgejo-data/pr.json" open false false
+  write_forgejo_curl_pr_json "$case_dir/forgejo-data/pr.json" open false false
 
   set +e
   run_pr_merge "$case_dir" task-x1 "$FORGEJO_URL" \
